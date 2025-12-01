@@ -1,36 +1,127 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌍 Улаанбаатар LIVE - Air Quality Monitor
 
-## Getting Started
+Real-time air quality monitoring dashboard for Ulaanbaatar, Mongolia. Track AQI, PM2.5, PM10, temperature, and weather conditions in a beautiful, responsive interface.
 
-First, run the development server:
+## ✨ Features
+
+- 🌡️ **Real-time AQI Data** - Live air quality index from WAQI
+- 🌤️ **Weather Information** - Current temperature, wind speed, and conditions
+- 📱 **Responsive Design** - Works perfectly on mobile and desktop
+- 🇲🇳 **Mongolian Language** - Full support with Noto Sans Mongolian font
+- 🎨 **Visual Health Indicators** - Color-coded AQI levels with health advice
+- ⚡ **Auto-refresh** - Data updates every 2 minutes
+- 📞 **Emergency Access** - Quick dial 103 for emergencies
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- API keys (see below)
+
+### API Keys Required
+
+1. **WAQI Token** - Get from [aqicn.org/data-platform/token](https://aqicn.org/data-platform/token/)
+2. **OpenWeather API Key** - Get from [openweathermap.org/api](https://openweathermap.org/api)
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone <your-repo-url>
+cd ulaanbaatar
+
+# Install dependencies
+npm install
+
+# Create .env.local file
+cp .env.example .env.local
+
+# Add your API keys to .env.local
+NEXT_PUBLIC_WAQI_TOKEN=your_waqi_token_here
+NEXT_PUBLIC_OPENWEATHER_KEY=your_openweather_key_here
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+Ulaanbaatar/
+├── app/
+│   ├── favicon.ico
+│   ├── globals.css       # Tailwind v4 + custom theme
+│   ├── layout.tsx        # Root layout with fonts
+│   └── page.tsx          # Main dashboard page
+├── components/
+│   ├── GiantAQI.tsx      # Large AQI display component
+│   └── Header.tsx        # Top navigation bar
+├── lib/
+│   ├── constants.ts      # Health messages & UI text
+│   ├── fetchAQI.ts       # WAQI API integration
+│   └── fetchWeather.ts   # OpenWeather API integration
+├── types/
+│   └── index.ts          # TypeScript interfaces
+├── .env.local            # API keys (DO NOT COMMIT)
+└── package.json
+```
 
-## Learn More
+## 🎨 Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS v4
+- **Fonts**: Noto Sans Mongolian, Inter
+- **APIs**: WAQI (Air Quality), OpenWeather (Weather)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🔧 Configuration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Tailwind v4 Theme
 
-## Deploy on Vercel
+Custom colors are defined in `globals.css` using the new `@theme` directive:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```css
+@theme {
+  --color-golden: #ffc107;
+  --color-aqi-good: #10b981;
+  --color-aqi-moderate: #ffc107;
+  /* ... more colors */
+}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### AQI Health Levels
+
+| AQI Range | Level                       | Color    | Advice                             |
+| --------- | --------------------------- | -------- | ---------------------------------- |
+| 0-50      | Сайн                        | Green    | Safe to go outside                 |
+| 51-100    | Хүлээн зөвшөөрөгдөх         | Golden   | Sensitive groups should be careful |
+| 101-150   | Мэдрэмтгий бүлэгт эрүүл бус | Orange   | Wear masks, keep children inside   |
+| 151-200   | Эрүүл бус                   | Red      | Use HEPA filters, close windows    |
+| 201-300   | Маш эрүүл бус               | Purple   | Avoid going outside                |
+| 300+      | Аюултай                     | Dark Red | DO NOT GO OUTSIDE                  |
+
+## 🔒 Security
+
+- Never commit `.env.local` to version control
+- Regenerate API keys if accidentally exposed
+- Use environment variables for all sensitive data
+
+## 📝 License
+
+MIT License - feel free to use this project for your own city!
+
+## 🤝 Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+## 📧 Contact
+
+For questions or support, please open an issue on GitHub.
+
+---
+
+Made with ❤️ for the people of Ulaanbaatar
