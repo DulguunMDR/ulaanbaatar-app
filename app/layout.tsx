@@ -1,3 +1,4 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Inter, Noto_Sans } from "next/font/google";
 import "./globals.css";
@@ -8,7 +9,7 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-// Load Noto Sans for Mongolian
+// Load Noto Sans for Mongolian (Монгол бичгийн фонт)
 const notoSansMongolian = Noto_Sans({
   subsets: ["cyrillic"],
   weight: ["400", "700"],
@@ -20,6 +21,43 @@ export const metadata: Metadata = {
   title: "Улаанбаатар - Агаарын чанар LIVE",
   description: "Улаанбаатарын агаарын чанар, цаг агаар, эрүүл мэндийн зөвлөмж",
   themeColor: "#FFC107",
+
+  // Favicon (Хөтчийн таб дээрх жижиг зураг)
+  icons: {
+    icon: [
+      { url: "/logo.svg", type: "image/svg+xml" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    apple: "/logo.png",
+  },
+
+  // Open Graph - Нийгмийн сүлжээнд хуваалцахад харагдах мэдээлэл
+  openGraph: {
+    title: "Улаанбаатар - Агаарын чанар LIVE",
+    description:
+      "Улаанбаатарын агаарын чанар, цаг агаар, эрүүл мэндийн зөвлөмж",
+    url: "https://www.ulaanbaatar.app",
+    siteName: "Ulaanbaatar.app",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Улаанбаатар - Агаарын чанар",
+      },
+    ],
+    locale: "mn_MN",
+    type: "website",
+  },
+
+  // Twitter Card (Twitter дээр хуваалцахад)
+  twitter: {
+    card: "summary_large_image",
+    title: "Улаанбаатар - Агаарын чанар LIVE",
+    description:
+      "Улаанбаатарын агаарын чанар, цаг агаар, эрүүл мэндийн зөвлөмж",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
