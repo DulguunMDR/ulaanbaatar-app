@@ -44,10 +44,25 @@ export default function AboutPage() {
             </div>
           </section>
 
-          {/* Contact */}
+          {/* Contact (Холбоо барих) */}
           <div className="text-center border-t pt-8">
+            <h2 className="font-mongolian text-xl font-bold text-gray-900 mb-4">
+              Холбоо барих
+            </h2>
+            <p className="text-gray-700 mb-2">
+              <strong>М.Дөлгөөн</strong>
+            </p>
+            <p className="text-gray-500 text-sm mb-4">
+              {" "}
+              <a
+                href="mailto:dulguun.mdr@gmail.com"
+                className="text-blue-600 hover:underline"
+              >
+                dulguun.mdr@gmail.com
+              </a>
+            </p>
             <p className="text-gray-500 text-sm mb-2">
-              🌐{" "}
+              {" "}
               <a
                 href="https://www.ulaanbaatar.app"
                 className="text-blue-600 hover:underline"
@@ -55,8 +70,8 @@ export default function AboutPage() {
                 www.ulaanbaatar.app
               </a>
             </p>
-            <p className="text-gray-400 text-xs">
-              🏙️ Улаанбаатарын ирээдүйд хамтдаа
+            <p className="text-gray-400 text-xs mt-4">
+              Улаанбаатарын ирээдүйд хамтдаа
             </p>
           </div>
         </div>
