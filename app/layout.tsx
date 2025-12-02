@@ -2,6 +2,8 @@
 import type { Metadata } from "next";
 import { Inter, Noto_Sans } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -70,7 +72,14 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${notoSansMongolian.variable} antialiased`}
       >
+        {/* Header автоматаар бүх хуудсанд харагдана */}
+        <Header temp={null} windSpeed={0} />
+
+        {/* Page content (Хуудасны агуулга) */}
         {children}
+
+        {/* Footer автоматаар бүх хуудсанд харагдана */}
+        <Footer />
       </body>
     </html>
   );

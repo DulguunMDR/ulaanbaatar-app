@@ -3,7 +3,6 @@
 import { fetchAQI } from "@/lib/fetchAQI";
 import { fetchWeather } from "@/lib/fetchWeather";
 import GiantAQI from "@/components/GiantAQI";
-import Header from "@/components/Header";
 
 export default async function Home() {
   // Fetch data from APIs
@@ -36,12 +35,6 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-white">
-      {/* Fixed header with quick stats */}
-      <Header
-        temp={aqiData.temp || weatherData?.current.temp || null}
-        windSpeed={weatherData?.current.windSpeed || 0}
-      />
-
       {/* Add top padding to account for fixed header */}
       <div className="pt-16">
         {/* Giant AQI Display */}

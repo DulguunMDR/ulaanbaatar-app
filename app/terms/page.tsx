@@ -1,12 +1,8 @@
 // app/terms/page.tsx
-import Header from "@/components/Header";
 
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-white">
-      {/* Header */}
-      <Header temp={null} windSpeed={0} />
-
       {/* Content (Агуулга) */}
       <div className="pt-24 pb-12 px-4">
         <div className="max-w-4xl mx-auto">
