@@ -28,14 +28,34 @@ export async function fetchAQI(): Promise<AQIData | null> {
     console.log("WAQI Response:", JSON.stringify(data, null, 2));
 
     if (data.status === "ok" && data.data) {
-      return {
-        aqi: data.data.aqi,
+      // Бүх бохирдуулагчдын утгыг авах
+      const pollutants = {
         pm25: data.data.iaqi?.pm25?.v || null,
         pm10: data.data.iaqi?.pm10?.v || null,
+        o3: data.data.iaqi?.o3?.v || null,
+        no2: data.data.iaqi?.no2?.v || null,
+        so2: data.data.iaqi?.so2?.v || null,
+        co: data.data.iaqi?.co?.v || null,
+      };
+
+      // Хамгийн их утгатай бохирдуулагчийг олох
+      let maxValue = 0;
+      let dominant = "";
+      Object.entries(pollutants).forEach(([key, value]) => {
+        if (value && value > maxValue) {
+          maxValue = value;
+          dominant = key.toUpperCase();
+        }
+      });
+
+      return {
+        aqi: data.data.aqi,
+        ...pollutants,
         temp: data.data.iaqi?.t?.v || null,
         humidity: data.data.iaqi?.h?.v || null,
         time: data.data.time.s,
         city: data.data.city.name,
+        dominantPollutant: dominant,
       };
     }
 

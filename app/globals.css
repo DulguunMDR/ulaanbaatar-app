@@ -1,10 +1,12 @@
+/* app/globals.css */
+
 @import "tailwindcss";
 
 /* Custom theme configuration for Tailwind v4 */
 @theme {
   /* Custom colors */
-  --color-golden: #ffc107;
-  --color-golden-hover: #ffa000;
+  --color-golden: #c9b458; /* ✏️ ШИНЭЧЛЭГДСЭН - Лого өнгө */
+  --color-golden-hover: #b8a24f; /* ✏️ ШИНЭЧЛЭГДСЭН - Hover үед бага зэрэг бараан */
   --color-aqi-good: #10b981;
   --color-aqi-moderate: #ffc107;
   --color-aqi-sensitive: #f97316;

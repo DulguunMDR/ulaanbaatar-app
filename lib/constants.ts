@@ -1,4 +1,4 @@
-// lib/constant.ts
+// lib/constants.ts
 
 import { HealthMessage } from "@/types";
 

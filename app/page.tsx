@@ -1,14 +1,16 @@
 // app/page.tsx
+// Нүүр хуудас (Homepage) - Option B: Fully Interactive Hero
 
 import { fetchAQI } from "@/lib/fetchAQI";
-import { fetchWeather } from "@/lib/fetchWeather";
-import GiantAQI from "@/components/GiantAQI";
+import { fetchAllStations } from "@/lib/fetchStations";
+import InteractiveHero from "@/components/home/InteractiveHero";
+import AQIMapWrapper from "@/components/map/AQIMapWrapper";
 
 export default async function Home() {
-  // Fetch data from APIs
-  const [aqiData, weatherData] = await Promise.all([
+  // Fetch data from APIs (бүх өгөгдлийг зэрэг татах)
+  const [aqiData, stations] = await Promise.all([
     fetchAQI(),
-    fetchWeather(),
+    fetchAllStations(),
   ]);
 
   // Show error state if data fetch failed
@@ -37,57 +39,30 @@ export default async function Home() {
     <main className="min-h-screen bg-white">
       {/* Add top padding to account for fixed header */}
       <div className="pt-16">
-        {/* Giant AQI Display */}
-        <GiantAQI
-          aqi={aqiData.aqi}
-          city={aqiData.city}
-          updatedTime={aqiData.time}
-        />
-
-        {/* Quick info cards */}
-        <div className="max-w-4xl mx-auto px-4 pb-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {aqiData.pm25 && (
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <p className="text-gray-600 text-sm mb-1">PM2.5</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {aqiData.pm25}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">μg/m³</p>
-              </div>
-            )}
-
-            {aqiData.pm10 && (
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <p className="text-gray-600 text-sm mb-1">PM10</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {aqiData.pm10}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">μg/m³</p>
-              </div>
-            )}
-
-            {aqiData.humidity && (
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <p className="text-gray-600 text-sm mb-1">Чийгшил</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {aqiData.humidity}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">%</p>
-              </div>
-            )}
-
-            {weatherData && (
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <p className="text-gray-600 text-sm mb-1">Мэдрэмж</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {weatherData.current.feelsLike}°
-                </p>
-                <p className="text-xs text-gray-500 mt-1">Celsius</p>
-              </div>
-            )}
+        {/* 1️⃣ Interactive Hero - Станц солиход бүх өгөгдөл шинэчлэгдэнэ */}
+        {stations.length > 0 ? (
+          <InteractiveHero stations={stations} initialData={aqiData} />
+        ) : (
+          // Fallback: If no stations, show basic info
+          <div className="text-center py-12">
+            <p className="text-2xl text-gray-600">Станцын өгөгдөл олдсонгүй</p>
           </div>
-        </div>
+        )}
+
+        {/* 2️⃣ Interactive Map (Станцуудын газрын зураг) */}
+        {stations.length > 0 && (
+          <section className="max-w-6xl mx-auto px-4 pb-12">
+            <div className="mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                🗺️ Станцуудын газрын зураг
+              </h2>
+              <p className="text-gray-600">
+                Улаанбаатарын өөр өөр цэгүүдийн агаарын чанар
+              </p>
+            </div>
+            <AQIMapWrapper stations={stations} />
+          </section>
+        )}
       </div>
     </main>
   );

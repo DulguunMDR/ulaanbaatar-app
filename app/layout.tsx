@@ -1,5 +1,5 @@
 // app/layout.tsx
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -19,10 +19,15 @@ const notoSansMongolian = Noto_Sans({
   variable: "--font-mongolian",
 });
 
+// Viewport тохиргоо (themeColor энд байрлана)
+export const viewport: Viewport = {
+  themeColor: "#FFC107",
+};
+
 export const metadata: Metadata = {
   title: "Улаанбаатар - Агаарын чанар LIVE",
   description: "Улаанбаатарын агаарын чанар, цаг агаар, эрүүл мэндийн зөвлөмж",
-  themeColor: "#FFC107",
+  metadataBase: new URL("https://www.ulaanbaatar.app"),
 
   // Favicon (Хөтчийн таб дээрх жижиг зураг)
   icons: {
