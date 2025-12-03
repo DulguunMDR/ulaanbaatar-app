@@ -20,30 +20,6 @@ export default function AboutPage() {
             </p>
           </div>
 
-          {/* Data Sources (Өгөгдлийн эх үүсвэр) */}
-          <section className="mb-12">
-            <h2 className="font-mongolian text-2xl font-bold text-gray-900 mb-6 text-center">
-              Өгөгдлийн эх үүсвэр
-            </h2>
-            <div className="space-y-4">
-              <div className="bg-gray-50 rounded-xl p-6 text-center">
-                <h3 className="font-mongolian font-bold text-gray-900 mb-2">
-                  World Air Quality Index
-                </h3>
-                <p className="text-gray-600 text-sm">AQI, PM2.5, PM10</p>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl p-6 text-center">
-                <h3 className="font-mongolian font-bold text-gray-900 mb-2">
-                  OpenWeather
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Температур, салхи, чийгшил
-                </p>
-              </div>
-            </div>
-          </section>
-
           {/* Contact (Холбоо барих) */}
           <div className="text-center border-t pt-8">
             <h2 className="font-mongolian text-xl font-bold text-gray-900 mb-4">
