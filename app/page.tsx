@@ -1,10 +1,11 @@
 // app/page.tsx
-// Нүүр хуудас (Homepage) - Option B: Fully Interactive Hero
+// Нүүр хуудас (Homepage) - Updated with Historical Data & Weather Features
 
 import { fetchAQI } from "@/lib/fetchAQI";
 import { fetchAllStations } from "@/lib/fetchStations";
 import InteractiveHero from "@/components/home/InteractiveHero";
 import AQIMapWrapper from "@/components/map/AQIMapWrapper";
+import InsightsDashboard from "@/components/home/InsightsDashboard";
 
 export default async function Home() {
   // Fetch data from APIs (бүх өгөгдлийг зэрэг татах)
@@ -35,6 +36,16 @@ export default async function Home() {
     );
   }
 
+  // Station ID форматлах (Format station ID with @ prefix)
+  // WAQI API нь "@8074" гэх мэт формат шаарддаг (WAQI API requires "@8074" format)
+  const stationId = aqiData.idx ? `@${aqiData.idx}` : undefined;
+
+  // 🆕 DEBUG: Console log to see values
+  console.log("🔍 Page.tsx Debug:");
+  console.log("aqiData.idx:", aqiData.idx);
+  console.log("stationId:", stationId);
+  console.log("aqiData.aqi:", aqiData.aqi);
+
   return (
     <main className="min-h-screen bg-white">
       {/* Add top padding to account for fixed header */}
@@ -62,6 +73,23 @@ export default async function Home() {
             </div>
             <AQIMapWrapper stations={stations} />
           </section>
+        )}
+
+        {/* 3️⃣ Historical Data & Weather Dashboard */}
+        {stationId ? (
+          <InsightsDashboard stationId={stationId} currentAqi={aqiData.aqi} />
+        ) : (
+          <div className="max-w-6xl mx-auto px-4 pb-12">
+            <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 text-center">
+              <p className="text-2xl mb-2">⚠️</p>
+              <p className="text-red-900 font-semibold">
+                Station ID олдсонгүй - InsightsDashboard харагдахгүй байна
+              </p>
+              <p className="text-sm text-red-700 mt-2">
+                aqiData.idx утга: {aqiData.idx || "undefined"}
+              </p>
+            </div>
+          </div>
         )}
       </div>
     </main>

@@ -34,6 +34,7 @@ export default function InteractiveHero({
       setLoading(true);
       const details = await fetchStationDetails(selectedStation.uid);
       if (details) {
+        // fetchStationDetails одоо зөв AQIData төрлийг буцаана (now returns proper AQIData type)
         setStationData(details);
       }
       setLoading(false);

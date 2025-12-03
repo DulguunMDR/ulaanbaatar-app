@@ -17,7 +17,7 @@ import { HumiditySection } from "@/components/terms/HumiditySection";
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <main className="min-h-screen bg-linear-to-b from-blue-50 to-white">
       <div className="pt-24 pb-12 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Title (Гарчиг) */}

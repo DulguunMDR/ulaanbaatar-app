@@ -1,6 +1,8 @@
 // types/index.ts
+// TypeScript төрлүүдийн тодорхойлолт (Type definitions)
 
 export interface AQIData {
+  idx: string; // 🆕 Station ID нэмэгдсэн (Added for InsightsDashboard)
   aqi: number;
   pm25: number | null;
   pm10: number | null;
@@ -96,4 +98,43 @@ export interface PollutantInfo {
     moderate: number;
     unhealthy: number;
   };
+}
+
+// 🆕 Шинэ төрлүүд - Historical Data & Weather Features
+// (New types for Historical Data & Weather Features)
+
+export interface HistoricalDataPoint {
+  time: string; // ISO timestamp
+  aqi: number;
+  dominantPollutant: string;
+}
+
+export interface HistoricalAQIData {
+  hourly: HistoricalDataPoint[]; // Сүүлийн 24 цаг (Last 24 hours)
+  daily: HistoricalDataPoint[]; // Сүүлийн 7 хоног (Last 7 days)
+}
+
+export interface ForecastDay {
+  date: string; // YYYY-MM-DD
+  temp: number; // Дундаж температур (Average temp in Celsius)
+  tempMin: number;
+  tempMax: number;
+  feelsLike: number;
+  humidity: number; // Чийгшил (Humidity %)
+  windSpeed: number; // Салхины хурд (Wind speed m/s)
+  description: string; // "clear sky", "light rain"
+  icon: string; // OpenWeather icon code
+  condition: string; // Монголоор (In Mongolian)
+}
+
+export interface WeatherForecast {
+  current: ForecastDay;
+  forecast: ForecastDay[]; // 5 хоногийн таамаглал (5-day forecast)
+}
+
+export interface WeatherImpact {
+  level: "good" | "moderate" | "bad"; // Нөлөөлөл (Impact level)
+  message: string; // Монгол хэл дээрх мессеж (Message in Mongolian)
+  icon: string; // Emoji
+  recommendation: string; // Зөвлөмж (Recommendation)
 }

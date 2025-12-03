@@ -1,7 +1,7 @@
 // lib/fetchStations.ts
 // Улаанбаатарын бүх хэмжих станцуудын өгөгдөл татах (дэлгэрэнгүй)
 
-import { StationData } from "@/types";
+import { StationData, AQIData } from "@/types";
 
 export async function fetchAllStations(): Promise<StationData[]> {
   const token = process.env.NEXT_PUBLIC_WAQI_TOKEN;
@@ -65,7 +65,10 @@ export async function fetchAllStations(): Promise<StationData[]> {
 }
 
 // Станцын дэлгэрэнгүй өгөгдөл татах (PM2.5, PM10, O3, NO2, гэх мэт)
-export async function fetchStationDetails(stationId: number) {
+// AQIData төрлийг буцаана (Returns AQIData type)
+export async function fetchStationDetails(
+  stationId: number
+): Promise<AQIData | null> {
   const token = process.env.NEXT_PUBLIC_WAQI_TOKEN;
 
   if (!token) {
@@ -113,7 +116,9 @@ export async function fetchStationDetails(stationId: number) {
         }
       });
 
+      // AQIData төрөлд тохирсон объект буцаах (Return object matching AQIData type)
       return {
+        idx: `@${stationId}`, // 🆕 Station ID нэмэгдсэн (Added idx field)
         aqi: data.data.aqi,
         ...pollutants,
         temp: iaqi.t?.v || null,

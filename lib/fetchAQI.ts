@@ -1,4 +1,6 @@
 // lib/fetchAQI.ts
+// Улаанбаатарын агаарын чанарын өгөгдөл татах (Fetch Ulaanbaatar AQI data)
+
 import { AQIData } from "@/types";
 
 export async function fetchAQI(): Promise<AQIData | null> {
@@ -38,7 +40,7 @@ export async function fetchAQI(): Promise<AQIData | null> {
         co: data.data.iaqi?.co?.v || null,
       };
 
-      // Хамгийн их утгатай бохирдуулагчийг олох
+      // Хамгийн их утгатай бохирдуулагчийг олох (Find dominant pollutant)
       let maxValue = 0;
       let dominant = "";
       Object.entries(pollutants).forEach(([key, value]) => {
@@ -49,6 +51,7 @@ export async function fetchAQI(): Promise<AQIData | null> {
       });
 
       return {
+        idx: data.data.idx?.toString() || "", // 🆕 Station ID нэмэгдсэн (Added idx field)
         aqi: data.data.aqi,
         ...pollutants,
         temp: data.data.iaqi?.t?.v || null,
