@@ -24,42 +24,42 @@ export function OzoneSection() {
   const formationSteps = [
     {
       step: 1,
-      icon: "🚗",
+      icon: "",
       text: "Машин, үйлдвэрээс NOx, VOC ялгарна",
       color: "text-gray-700",
     },
     {
       step: 2,
-      icon: "☀️",
+      icon: "",
       text: "Нарны хурц гэрэл (UV туяа)",
       color: "text-yellow-600",
     },
-    { step: 3, icon: "⚗️", text: "Химийн урвал үүснэ", color: "text-blue-600" },
-    { step: 4, icon: "☁️", text: "Озон (O₃) үүснэ", color: "text-purple-600" },
+    { step: 3, icon: "", text: "Химийн урвал үүснэ", color: "text-blue-600" },
+    { step: 4, icon: "", text: "Озон (O₃) үүснэ", color: "text-purple-600" },
   ];
 
   // Эрүүл мэндийн нөлөө (Health effects)
   const healthEffects = [
     {
-      icon: "👁️",
+      icon: "",
       effect: "Нүдний цочрол",
       severity: "Дунд",
       color: "bg-yellow-100",
     },
     {
-      icon: "🫁",
+      icon: "",
       effect: "Уушгины үрэвсэл",
       severity: "Хүнд",
       color: "bg-orange-100",
     },
     {
-      icon: "😮‍💨",
+      icon: "",
       effect: "Астма дордох",
       severity: "Хүнд",
       color: "bg-red-100",
     },
     {
-      icon: "🤧",
+      icon: "",
       effect: "Амьсгал хүндрэх",
       severity: "Дунд",
       color: "bg-yellow-100",
@@ -68,15 +68,15 @@ export function OzoneSection() {
 
   // Улирлын хувилбар (Seasonal variation)
   const seasonalData = [
-    { season: "🌸 Хавар", level: "Дунд", description: "Озон эхэлж нэмэгдэнэ" },
+    { season: " Хавар", level: "Дунд", description: "Озон эхэлж нэмэгдэнэ" },
     {
-      season: "☀️ Зун",
+      season: " Зун",
       level: "Өндөр",
       description: "Хамгийн их түвшин (халуун, нартай)",
     },
-    { season: "🍂 Намар", level: "Дунд", description: "Аажмаар буурна" },
+    { season: " Намар", level: "Дунд", description: "Аажмаар буурна" },
     {
-      season: "❄️ Өвөл",
+      season: " Өвөл",
       level: "Бага",
       description: "Хамгийн бага (нар багатай)",
     },
@@ -87,7 +87,7 @@ export function OzoneSection() {
       <div className="bg-gradient-to-br from-blue-50 to-sky-100 rounded-2xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-blue-200">
         {/* Header section */}
         <div className="flex items-start gap-4 mb-6">
-          <div className="text-5xl">☀️</div>
+          <div className="text-5xl"></div>
           <div className="flex-1">
             <h2 className="font-mongolian text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               O₃ - Озон (Газрын гадаргын)
@@ -128,7 +128,7 @@ export function OzoneSection() {
                 : "bg-white text-gray-600 hover:bg-blue-50"
             }`}
           >
-            📊 Мэдээлэл
+            Мэдээлэл
           </button>
           <button
             onClick={() => setActiveTab("formation")}
@@ -138,7 +138,7 @@ export function OzoneSection() {
                 : "bg-white text-gray-600 hover:bg-blue-50"
             }`}
           >
-            ⚗️ Үүсэх үйл явц
+            Үүсэх үйл явц
           </button>
           <button
             onClick={() => setActiveTab("effects")}
@@ -148,7 +148,7 @@ export function OzoneSection() {
                 : "bg-white text-gray-600 hover:bg-blue-50"
             }`}
           >
-            ⚕️ Эрүүл мэнд
+            Эрүүл мэнд
           </button>
         </div>
 
@@ -157,7 +157,7 @@ export function OzoneSection() {
           {activeTab === "info" && (
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <span className="text-2xl">📏</span>
+                <span className="text-2xl"></span>
                 <div>
                   <p className="font-semibold text-gray-800">Хэмжих нэгж</p>
                   <p className="text-gray-600">
@@ -166,7 +166,7 @@ export function OzoneSection() {
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <span className="text-2xl">🧪</span>
+                <span className="text-2xl"></span>
                 <div>
                   <p className="font-semibold text-gray-800">Химийн томьёо</p>
                   <p className="text-gray-600">
@@ -175,7 +175,7 @@ export function OzoneSection() {
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <span className="text-2xl">⏰</span>
+                <span className="text-2xl"></span>
                 <div>
                   <p className="font-semibold text-gray-800">Огцом цаг</p>
                   <p className="text-gray-600">
@@ -185,7 +185,7 @@ export function OzoneSection() {
               </div>
               <div className="bg-blue-50 border-l-4 border-blue-400 rounded-lg p-4 mt-4">
                 <p className="text-sm text-blue-900">
-                  <strong>ℹ️ Сонирхолтой:</strong> Стратосферийн озон (дээд
+                  <strong> Сонирхолтой:</strong> Стратосферийн озон (дээд
                   давхарга) биднийг хамгаална. Харин газрын гадарга дээрх озон
                   (доод давхарга) хортой!
                 </p>
@@ -229,9 +229,9 @@ export function OzoneSection() {
               ))}
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
                 <p className="text-sm text-yellow-900">
-                  <strong>⚠️ Анхаарах:</strong> Зуны халуун, нартай өдрүүдэд
-                  озоны түвшин огцом өснө. Үд дундын цагаар гадаа явахаас
-                  зайлсхийх хэрэгтэй!
+                  <strong> Анхаарах:</strong> Зуны халуун, нартай өдрүүдэд озоны
+                  түвшин огцом өснө. Үд дундын цагаар гадаа явахаас зайлсхийх
+                  хэрэгтэй!
                 </p>
               </div>
             </div>
@@ -264,7 +264,7 @@ export function OzoneSection() {
               </div>
               <div className="bg-red-50 border-l-4 border-red-400 rounded-lg p-4 mt-4">
                 <p className="text-sm text-red-900 mb-2">
-                  <strong>🚨 Эмзэг бүлэг:</strong>
+                  <strong> Эмзэг бүлэг:</strong>
                 </p>
                 <ul className="text-sm text-red-800 space-y-1 ml-4">
                   <li>• Астма өвчтэй хүмүүс</li>
@@ -280,7 +280,7 @@ export function OzoneSection() {
         {/* Protection tips */}
         <div className="mt-6 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4">
           <p className="text-sm font-semibold text-gray-800 mb-2">
-            🛡️ Хамгаалах аргууд:
+            Хамгаалах аргууд:
           </p>
           <ul className="text-sm text-gray-700 space-y-1 ml-4">
             <li>• Үд дундын 12:00-17:00 цагт гадуур гарахаас зайлсхийх</li>

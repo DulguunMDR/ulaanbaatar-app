@@ -22,10 +22,10 @@ export function PM10Section() {
 
   // Эх үүсвэрүүд (Sources)
   const sources = [
-    { icon: "🏗️", name: "Барилгын ажил", description: "Тоос шороо" },
-    { icon: "🚗", name: "Авто зам", description: "Дугуйн хуучирсан хэсэг" },
-    { icon: "🌾", name: "Хөдөө аж ахуй", description: "Хөрсний тоос" },
-    { icon: "🏭", name: "Үйлдвэрлэл", description: "Үйлдвэрийн утаа" },
+    { icon: "", name: "Барилгын ажил", description: "Тоос шороо" },
+    { icon: "", name: "Авто зам", description: "Дугуйн хуучирсан хэсэг" },
+    { icon: "", name: "Хөдөө аж ахуй", description: "Хөрсний тоос" },
+    { icon: "", name: "Үйлдвэрлэл", description: "Үйлдвэрийн утаа" },
   ];
 
   // Хамгаалах арга (Protection methods)
@@ -98,7 +98,7 @@ export function PM10Section() {
                 : "bg-white text-gray-600 hover:bg-gray-100"
             }`}
           >
-            📊 Мэдээлэл
+            Мэдээлэл
           </button>
           <button
             onClick={() => setActiveTab("sources")}
@@ -108,7 +108,7 @@ export function PM10Section() {
                 : "bg-white text-gray-600 hover:bg-gray-100"
             }`}
           >
-            🔍 Эх үүсвэр
+            Эх үүсвэр
           </button>
           <button
             onClick={() => setActiveTab("protection")}
@@ -118,7 +118,7 @@ export function PM10Section() {
                 : "bg-white text-gray-600 hover:bg-gray-100"
             }`}
           >
-            🛡️ Хамгаалалт
+            Хамгаалалт
           </button>
         </div>
 
@@ -127,14 +127,14 @@ export function PM10Section() {
           {activeTab === "info" && (
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <span className="text-2xl">📏</span>
+                <span className="text-2xl"></span>
                 <div>
                   <p className="font-semibold text-gray-800">Хэмжих нэгж</p>
                   <p className="text-gray-600">μg/m³ (микрограмм/шоо метр)</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <span className="text-2xl">🔬</span>
+                <span className="text-2xl"></span>
                 <div>
                   <p className="font-semibold text-gray-800">Хэмжээ</p>
                   <p className="text-gray-600">
@@ -143,7 +143,7 @@ export function PM10Section() {
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <span className="text-2xl">⚕️</span>
+                <span className="text-2xl"></span>
                 <div>
                   <p className="font-semibold text-gray-800">
                     Эрүүл мэндийн нөлөө
@@ -155,9 +155,9 @@ export function PM10Section() {
               </div>
               <div className="bg-orange-50 border-l-4 border-orange-400 rounded-lg p-4 mt-4">
                 <p className="text-sm text-orange-900">
-                  <strong>⚠️ Онцгой анхаарал:</strong> Хүүхэд, өндөр настан,
-                  астма өвчтэй хүмүүст илүү хортой. PM2.5-аас том боловч
-                  амьсгалын дээд замд бохирдол үүсгэнэ.
+                  <strong> Онцгой анхаарал:</strong> Хүүхэд, өндөр настан, астма
+                  өвчтэй хүмүүст илүү хортой. PM2.5-аас том боловч амьсгалын
+                  дээд замд бохирдол үүсгэнэ.
                 </p>
               </div>
             </div>
@@ -202,7 +202,7 @@ export function PM10Section() {
         {/* Comparison with PM2.5 */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <p className="text-sm text-blue-900">
-            <strong>💡 PM2.5-тай харьцуулбал:</strong> PM10 нь PM2.5-аас 4 дахин
+            <strong> PM2.5-тай харьцуулбал:</strong> PM10 нь PM2.5-аас 4 дахин
             том. PM2.5 уушгинд хүрч чадах бол, PM10 амьсгалын дээд замд (хамар,
             хоолой) үлдэнэ.
           </p>

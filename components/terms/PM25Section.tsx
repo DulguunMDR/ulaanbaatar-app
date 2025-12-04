@@ -50,17 +50,17 @@ export function PM25Section() {
   ];
 
   const sources = [
-    { name: "Нүүрс түлэх", icon: "🔥", percentage: "40%" },
-    { name: "Автомашины яндан", icon: "🚗", percentage: "30%" },
-    { name: "Үйлдвэрийн утаа", icon: "🏭", percentage: "20%" },
-    { name: "Тоос шороо", icon: "🌪️", percentage: "10%" },
+    { name: "Нүүрс түлэх", icon: "", percentage: "40%" },
+    { name: "Автомашины яндан", icon: "", percentage: "30%" },
+    { name: "Үйлдвэрийн утаа", icon: "", percentage: "20%" },
+    { name: "Тоос шороо", icon: "", percentage: "10%" },
   ];
 
   return (
     <section className="mb-10">
       <div className="bg-linear-to-br from-gray-50 to-red-50 rounded-2xl p-6 md:p-8 shadow-lg">
         <div className="flex items-center gap-3 mb-4">
-          <span className="text-4xl">💨</span>
+          <span className="text-4xl"></span>
           <h2 className="font-mongolian text-2xl md:text-3xl font-bold text-gray-900">
             PM2.5 (Нарийн тоосонцор)
           </h2>
@@ -76,7 +76,7 @@ export function PM25Section() {
         <div className="bg-white rounded-xl p-6 mb-6 shadow-md">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-mongolian font-bold text-gray-900 text-lg">
-              📏 Хэмжээний харьцуулалт
+              Хэмжээний харьцуулалт
             </h3>
             <button
               onClick={() => setShowComparison(!showComparison)}
@@ -89,7 +89,7 @@ export function PM25Section() {
           {showComparison && (
             <div className="space-y-3 animate-in slide-in-from-top duration-300">
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <span className="text-2xl">👁️</span>
+                <span className="text-2xl"></span>
                 <div>
                   <p className="font-bold text-gray-900">Хүний үс</p>
                   <p className="text-sm text-gray-600">
@@ -98,7 +98,7 @@ export function PM25Section() {
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <span className="text-2xl">🏖️</span>
+                <span className="text-2xl"></span>
                 <div>
                   <p className="font-bold text-gray-900">Элсний ширхэг</p>
                   <p className="text-sm text-gray-600">
@@ -107,7 +107,7 @@ export function PM25Section() {
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg border-2 border-red-200">
-                <span className="text-2xl">🔬</span>
+                <span className="text-2xl"></span>
                 <div>
                   <p className="font-bold text-red-900">PM2.5</p>
                   <p className="text-sm text-red-700">
@@ -122,7 +122,7 @@ export function PM25Section() {
         {/* Sources (Эх үүсвэрүүд) */}
         <div className="bg-white rounded-xl p-6 mb-6 shadow-md">
           <h3 className="font-mongolian font-bold text-gray-900 text-lg mb-4">
-            🏭 Үүсэх эх үүсвэрүүд
+            Үүсэх эх үүсвэрүүд
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {sources.map((source, index) => (
@@ -143,7 +143,7 @@ export function PM25Section() {
         {/* Levels (Түвшингүүд) */}
         <div className="bg-white rounded-xl p-6 mb-6 shadow-md">
           <h3 className="font-mongolian font-bold text-gray-900 text-lg mb-4">
-            📊 Хэмжих түвшингүүд
+            Хэмжих түвшингүүд
           </h3>
           <div className="space-y-2">
             {levels.map((level, index) => (
@@ -166,14 +166,14 @@ export function PM25Section() {
             ))}
           </div>
           <p className="text-xs text-gray-500 mt-3">
-            📏 <strong>Хэмжих нэгж:</strong> μg/m³ (микрограмм/шоо метр)
+            <strong>Хэмжих нэгж:</strong> μg/m³ (микрограмм/шоо метр)
           </p>
         </div>
 
         {/* Health effects (Эрүүл мэндэд үзүүлэх нөлөө) */}
         <div className="bg-red-50 rounded-xl p-6 border-2 border-red-200">
           <div className="flex items-start gap-3">
-            <span className="text-3xl shrink-0">⚠️</span>
+            <span className="text-3xl shrink-0"></span>
             <div>
               <h3 className="font-mongolian font-bold text-red-900 text-lg mb-3">
                 Эрүүл мэндэд үзүүлэх нөлөө
@@ -198,7 +198,7 @@ export function PM25Section() {
               </ul>
               <div className="mt-4 p-3 bg-white rounded-lg">
                 <p className="text-sm text-red-900">
-                  <strong>👶 Онцгой эмзэг бүлэг:</strong> Хүүхэд, жирэмсэн
+                  <strong> Онцгой эмзэг бүлэг:</strong> Хүүхэд, жирэмсэн
                   эмэгтэйчүүд, өндөр настан, астма болон зүрхний өвчтэй хүмүүс
                   PM2.5-д илүү мэдрэмтгий байдаг.
                 </p>
