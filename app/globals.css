@@ -5,8 +5,8 @@
 /* Custom theme configuration for Tailwind v4 */
 @theme {
   /* Custom colors */
-  --color-golden: #c9b458; /* ✏️ ШИНЭЧЛЭГДСЭН - Лого өнгө */
-  --color-golden-hover: #b8a24f; /* ✏️ ШИНЭЧЛЭГДСЭН - Hover үед бага зэрэг бараан */
+  --color-golden: #c9a961; /* ✏️ ШИНЭЧЛЭГДСЭН - UB лого өнгө */
+  --color-golden-hover: #b99951; /* ✏️ ШИНЭЧЛЭГДСЭН - Hover үед бага зэрэг бараан */
   --color-aqi-good: #10b981;
   --color-aqi-moderate: #ffc107;
   --color-aqi-sensitive: #f97316;
