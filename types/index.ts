@@ -100,7 +100,7 @@ export interface PollutantInfo {
   };
 }
 
-// 🆕 Шинэ төрлүүд - Historical Data & Weather Features
+// Шинэ төрлүүд - Historical Data & Weather Features
 // (New types for Historical Data & Weather Features)
 
 export interface HistoricalDataPoint {
@@ -137,4 +137,80 @@ export interface WeatherImpact {
   message: string; // Монгол хэл дээрх мессеж (Message in Mongolian)
   icon: string; // Emoji
   recommendation: string; // Зөвлөмж (Recommendation)
+}
+
+// ============================================
+// 🆕 ОЛОН ЖИЛИЙН ТҮҮХЭН ӨГӨГДӨЛ
+// MULTI-YEAR HISTORICAL DATA TYPES
+// ============================================
+// OpenWeather Air Pollution API-с авсан өгөгдөл (Data from OpenWeather Air Pollution API)
+
+export interface PollutionComponents {
+  co: number; // Carbon monoxide (μg/m³)
+  no: number; // Nitrogen monoxide (μg/m³)
+  no2: number; // Nitrogen dioxide (μg/m³)
+  o3: number; // Ozone (μg/m³)
+  so2: number; // Sulphur dioxide (μg/m³)
+  pm2_5: number; // Fine particles matter (μg/m³)
+  pm10: number; // Coarse particulate matter (μg/m³)
+  nh3: number; // Ammonia (μg/m³)
+}
+
+export interface HistoricalPollutionDataPoint {
+  dt: number; // Unix timestamp
+  date: string; // ISO date string for easier use
+  aqi: number; // 1-5 scale (1=Good, 5=Very Poor) - converted to 0-500 EPA scale
+  components: PollutionComponents;
+  dominantPollutant: string; // Which pollutant is highest
+}
+
+export interface YearlyData {
+  year: number;
+  data: HistoricalPollutionDataPoint[];
+  avgAqi: number; // Жилийн дундаж AQI (Yearly average AQI)
+  maxAqi: number; // Хамгийн их AQI (Maximum AQI)
+  minAqi: number; // Хамгийн бага AQI (Minimum AQI)
+}
+
+export interface MultiYearHistoricalData {
+  years: YearlyData[]; // Жил бүрийн өгөгдөл (Data for each year)
+  startDate: string; // Эхлэх огноо (Start date)
+  endDate: string; // Дуусах огноо (End date)
+  totalDays: number; // Нийт өдрийн тоо (Total days)
+}
+
+// "Өнөөдөр түүхэнд" - "Today in History"
+export interface TodayInHistoryData {
+  currentDate: string; // Өнөөдрийн огноо (Today's date)
+  dayOfYear: number; // Жилийн хэддүгээр өдөр (Day of year 1-365)
+  historicalData: {
+    year: number;
+    date: string;
+    aqi: number;
+    pm25: number;
+    comparison: string; // "Better", "Worse", "Similar"
+  }[];
+}
+
+// Улирлын харьцуулалт - Seasonal Comparison
+export interface SeasonData {
+  season: string; // "Зун" | "Өвөл" | "Хавар" | "Намар"
+  avgAqi: number;
+  avgPm25: number;
+  avgTemp: number;
+  daysCount: number;
+}
+
+export interface SeasonalComparison {
+  years: {
+    year: number;
+    seasons: SeasonData[];
+  }[];
+}
+
+// Heatmap өгөгдөл - Calendar Heatmap Data
+export interface HeatmapDataPoint {
+  date: string; // YYYY-MM-DD
+  count: number; // AQI value (used for color intensity)
+  aqi: number; // Actual AQI for tooltip
 }

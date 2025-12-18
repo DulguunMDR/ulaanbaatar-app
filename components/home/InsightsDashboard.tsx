@@ -10,8 +10,13 @@ import BestWorstTimes from "@/components/charts/BestWorstTimes";
 import CurrentWeather from "@/components/weather/CurrentWeather";
 import ForecastCards from "@/components/weather/ForecastCards";
 import WeatherImpact from "@/components/weather/WeatherImpact";
+import TodayInHistoryCard from "@/components/charts/TodayInHistoryCard";
+import YearComparisonChart from "@/components/charts/YearComparisonChart";
+import PollutionHeatmap from "@/components/charts/PollutionHeatmap";
+import SeasonalComparison from "@/components/charts/SeasonalComparison";
 import { HistoricalAQIData } from "@/lib/fetchHistoricalAQI";
 import { WeatherForecast } from "@/lib/fetchForecast";
+import { MultiYearHistoricalData } from "@/types";
 import {
   analyzeWeatherImpact,
   findBestTimeOutside,
@@ -26,9 +31,14 @@ export default function InsightsDashboard({ stationId, currentAqi }: Props) {
   const [historicalData, setHistoricalData] =
     useState<HistoricalAQIData | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherForecast | null>(null);
+  const [multiYearData, setMultiYearData] =
+    useState<MultiYearHistoricalData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [multiYearLoading, setMultiYearLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [multiYearError, setMultiYearError] = useState<string | null>(null);
 
+  // Богино хугацааны өгөгдөл татах (Fetch short-term data: 24h + 7 days)
   useEffect(() => {
     async function fetchData() {
       try {
@@ -85,6 +95,38 @@ export default function InsightsDashboard({ stationId, currentAqi }: Props) {
 
     fetchData();
   }, [stationId, currentAqi]);
+
+  // Олон жилийн өгөгдөл татах (Fetch multi-year data: 2020-present)
+  useEffect(() => {
+    async function fetchMultiYearData() {
+      try {
+        setMultiYearLoading(true);
+        setMultiYearError(null);
+
+        console.log("📅 Fetching multi-year historical data...");
+
+        const response = await fetch("/api/historical-pollution");
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("❌ Multi-year data error:", errorText);
+          throw new Error(`Олон жилийн өгөгдөл: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("✅ Multi-year data:", data);
+
+        setMultiYearData(data);
+      } catch (err) {
+        console.error("❌ Error fetching multi-year data:", err);
+        setMultiYearError(err instanceof Error ? err.message : "Алдаа гарлаа");
+      } finally {
+        setMultiYearLoading(false);
+      }
+    }
+
+    fetchMultiYearData();
+  }, []);
 
   // Ачаалж байна (Loading)
   if (loading) {
@@ -145,8 +187,8 @@ export default function InsightsDashboard({ stationId, currentAqi }: Props) {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 space-y-8">
-      {/* Цаг агаар (Weather) */}
+    <div className="max-w-6xl mx-auto px-4 py-12 space-y-12">
+      {/* 1️⃣ Цаг агаар (Weather) */}
       <section>
         <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">
           🌤️ Цаг агаарын мэдээлэл
@@ -178,10 +220,10 @@ export default function InsightsDashboard({ stationId, currentAqi }: Props) {
         </div>
       </section>
 
-      {/* Түүхэн өгөгдөл (Historical) */}
+      {/* 2️⃣ Богино хугацааны түүх (Short-term history: 24h + 7 days) */}
       <section>
         <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          📊 Түүхэн өгөгдөл ба хандлага
+          📊 Сүүлийн үеийн хандлага
         </h2>
 
         <div className="space-y-6">
@@ -197,7 +239,102 @@ export default function InsightsDashboard({ stationId, currentAqi }: Props) {
         </div>
       </section>
 
-      {/* Мэдээлэл (Info) */}
+      {/* 3️⃣ ОЛОН ЖИЛИЙН ТҮҮХ (Multi-year history: 2020-present) */}
+      <section>
+        <div className="border-t-4 border-blue-500 pt-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+            🏛️ Олон жилийн түүхэн өгөгдөл
+          </h2>
+          <p className="text-gray-600 mb-6">
+            2020 оноос хойшхи агаарын чанарын өөрчлөлт
+          </p>
+
+          {multiYearLoading ? (
+            <div className="bg-blue-50 rounded-2xl p-12 text-center">
+              <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mb-4"></div>
+              <p className="text-gray-900 font-semibold text-lg">
+                📅 Олон жилийн өгөгдөл татаж байна...
+              </p>
+              <p className="text-sm text-gray-600 mt-2">
+                Энэ нь хэдэн секунд үргэлжилж болно
+              </p>
+            </div>
+          ) : multiYearError || !multiYearData ? (
+            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6">
+              <p className="text-2xl mb-2 text-center">⚠️</p>
+              <p className="text-yellow-900 font-semibold text-center mb-2">
+                {multiYearError || "Олон жилийн өгөгдөл олдсонгүй"}
+              </p>
+              <p className="text-sm text-gray-600 text-center mb-4">
+                WAQI API-ээс өгөгдөл татахад алдаа гарлаа. Таны интернет холболт
+                эсвэл API түлхүүрийг шалгана уу.
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="w-full px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+              >
+                🔄 Дахин оролдох
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Өнөөдөр түүхэнд + Жилийн харьцуулалт */}
+              <div className="grid lg:grid-cols-2 gap-6">
+                <TodayInHistoryCard
+                  data={multiYearData}
+                  currentAqi={currentAqi}
+                />
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl shadow-lg p-6 border-2 border-purple-200">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    📈 Жилүүдийн статистик
+                  </h3>
+                  <div className="space-y-3">
+                    {multiYearData.years.map((year) => (
+                      <div
+                        key={year.year}
+                        className="bg-white rounded-lg p-3 flex justify-between items-center"
+                      >
+                        <span className="font-bold text-gray-900">
+                          {year.year}
+                        </span>
+                        <div className="flex gap-4 text-sm">
+                          <div>
+                            <span className="text-gray-600">Дундаж: </span>
+                            <span className="font-bold">{year.avgAqi}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Max: </span>
+                            <span className="font-bold text-red-600">
+                              {year.maxAqi}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Min: </span>
+                            <span className="font-bold text-green-600">
+                              {year.minAqi}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Жилийн харьцуулалт график */}
+              <YearComparisonChart data={multiYearData} />
+
+              {/* Heatmap календар */}
+              <PollutionHeatmap data={multiYearData} />
+
+              {/* Улирлын харьцуулалт */}
+              <SeasonalComparison data={multiYearData} />
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* 4️⃣ Мэдээлэл (Info) */}
       <section>
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-lg p-6 border-2 border-blue-200">
           <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
@@ -205,16 +342,13 @@ export default function InsightsDashboard({ stationId, currentAqi }: Props) {
           </h3>
           <div className="space-y-2 text-sm text-gray-700">
             <p>
-              • Түүхэн өгөгдөл нь ойролцоо утга бөгөөд одоогийн өгөгдөл дээр
-              суурилсан simulation юм.
+              • <strong>Олон жилийн өгөгдөл:</strong> Сүүлийн 30 хоногийн бодит
+              өгөгдөл + 2020-2024 оны улирлын хандлагад суурилсан симуляци.
             </p>
+
             <p>
-              • Цаг агаарын таамаглал өдөр бүр шинэчлэгддэг боловч 100%
-              нарийвчлалтай байдаггүй.
-            </p>
-            <p>
-              • Агаарын чанарын индексийг тодорхойлоход олон хүчин зүйл
-              нөлөөлдөг: салхи, температур, чийгшил гэх мэт.
+              • <strong>AQI тооцоолол:</strong> PM2.5 утга дээр суурилсан EPA
+              стандарт ашиглана (0-500 scale).
             </p>
           </div>
         </div>
