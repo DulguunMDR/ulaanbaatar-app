@@ -214,3 +214,40 @@ export interface HeatmapDataPoint {
   count: number; // AQI value (used for color intensity)
   aqi: number; // Actual AQI for tooltip
 }
+
+// ADD THESE TYPES TO THE END OF types/index.ts
+// (Одоо байгаа кодын доор нэмнэ үү)
+
+// ============================================
+// 🆕 OPEN-METEO ЦАГ АГААРЫН ТААМАГЛАЛ
+// OPEN-METEO WEATHER FORECAST TYPES
+// ============================================
+
+export interface OpenMeteoForecastDay {
+  date: string; // YYYY-MM-DD
+  tempMax: number; // Хамгийн их температур (Maximum temperature °C)
+  tempMin: number; // Хамгийн бага температур (Minimum temperature °C)
+  weatherCode: number; // WMO weather code
+  weatherText: string; // Монгол тайлбар (Mongolian description)
+  weatherEmoji: string; // Цаг агаарын emoji
+  windSpeed: number; // Салхины хурд (Wind speed m/s)
+  precipitation: number; // Хур тунадас (Precipitation mm)
+}
+
+export interface OpenMeteoHourlyData {
+  time: string; // ISO timestamp
+  temp: number;
+  humidity: number;
+  windSpeed: number;
+  weatherCode: number;
+}
+
+// Цаг агаарын давхарга (Weather map layers)
+export interface WeatherLayer {
+  id: string;
+  name: string; // Англи нэр (English name)
+  nameMn: string; // Монгол нэр (Mongolian name)
+  enabled: boolean;
+  opacity: number; // 0-1
+  tileUrl: string; // OpenWeatherMap tile URL
+}

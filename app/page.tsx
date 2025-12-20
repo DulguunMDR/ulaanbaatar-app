@@ -1,11 +1,12 @@
 // app/page.tsx
-// Нүүр хуудас (Homepage) - Updated with Historical Data & Weather Features
+// Нүүр хуудас (Homepage) - Updated with OpenMeteo Weather Forecast
 
 import { fetchAQI } from "@/lib/fetchAQI";
 import { fetchAllStations } from "@/lib/fetchStations";
 import InteractiveHero from "@/components/home/InteractiveHero";
 import AQIMapWrapper from "@/components/map/AQIMapWrapper";
 import InsightsDashboard from "@/components/home/InsightsDashboard";
+import OpenMeteoForecast from "@/components/weather/OpenMeteoForecast";
 
 export default async function Home() {
   // Fetch data from APIs (бүх өгөгдлийг зэрэг татах)
@@ -37,14 +38,7 @@ export default async function Home() {
   }
 
   // Station ID форматлах (Format station ID with @ prefix)
-  // WAQI API нь "@8074" гэх мэт формат шаарддаг (WAQI API requires "@8074" format)
   const stationId = aqiData.idx ? `@${aqiData.idx}` : undefined;
-
-  // 🆕 DEBUG: Console log to see values
-  console.log("🔍 Page.tsx Debug:");
-  console.log("aqiData.idx:", aqiData.idx);
-  console.log("stationId:", stationId);
-  console.log("aqiData.aqi:", aqiData.aqi);
 
   return (
     <main className="min-h-screen bg-white">
@@ -54,7 +48,6 @@ export default async function Home() {
         {stations.length > 0 ? (
           <InteractiveHero stations={stations} initialData={aqiData} />
         ) : (
-          // Fallback: If no stations, show basic info
           <div className="text-center py-12">
             <p className="text-2xl text-gray-600">Станцын өгөгдөл олдсонгүй</p>
           </div>
@@ -68,14 +61,18 @@ export default async function Home() {
                 🗺️ Станцуудын газрын зураг
               </h2>
               <p className="text-gray-600">
-                Улаанбаатарын өөр өөр цэгүүдийн агаарын чанар
+                Улаанбаатарын өөр өөр цэгүүдийн агаарын чанар + цаг агаарын
+                давхаргууд
               </p>
             </div>
             <AQIMapWrapper stations={stations} />
           </section>
         )}
 
-        {/* 3️⃣ Historical Data & Weather Dashboard */}
+        {/* 3️⃣ 🆕 Open-Meteo Weather Forecast (Цаг агаарын таамаглал) */}
+        <OpenMeteoForecast />
+
+        {/* 4️⃣ Historical Data & Weather Dashboard */}
         {stationId ? (
           <InsightsDashboard stationId={stationId} currentAqi={aqiData.aqi} />
         ) : (
