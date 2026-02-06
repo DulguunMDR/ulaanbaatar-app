@@ -1,9 +1,7 @@
 // components/Menu.tsx
 // Файлын байршил: components/Menu.tsx
 // Цэсний компонент (Navigation menu component)
-
 "use client";
-
 import { useState } from "react";
 import Link from "next/link";
 
@@ -67,7 +65,6 @@ export default function Menu() {
               >
                 Цаг агаар
               </Link>
-
               {/* Nested item - Нэр томъёо (Child under Weather) */}
               <Link
                 href="/weather/terms"
@@ -75,6 +72,17 @@ export default function Menu() {
                 className="block pl-8 pr-4 py-2 rounded-lg hover:bg-gray-50 transition-colors font-mongolian text-gray-600 hover:text-gray-900 text-sm ml-4 border-l-2 border-gray-200"
               >
                 ↳ Нэр томъёо
+              </Link>
+            </li>
+
+            {/* Passivhaus */}
+            <li>
+              <Link
+                href="/passivhaus"
+                onClick={closeMenu}
+                className="block px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-mongolian text-gray-700 hover:text-gray-900"
+              >
+                Passivhaus
               </Link>
             </li>
 
