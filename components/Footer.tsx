@@ -15,12 +15,7 @@ export default function Footer() {
           >
             Нүүр
           </Link>
-          <Link
-            href="/terms"
-            className="text-gray-600 hover:text-gray-900 text-sm transition-colors"
-          >
-            Нэр томъёо
-          </Link>
+
           <Link
             href="/about"
             className="text-gray-600 hover:text-gray-900 text-sm transition-colors"

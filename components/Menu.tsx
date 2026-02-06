@@ -1,4 +1,7 @@
 // components/Menu.tsx
+// Файлын байршил: components/Menu.tsx
+// Цэсний компонент (Navigation menu component)
+
 "use client";
 
 import { useState } from "react";
@@ -44,6 +47,7 @@ export default function Menu() {
         {/* Menu Items (Цэсний жагсаалт) */}
         <nav className="max-w-7xl mx-auto px-4 py-6">
           <ul className="space-y-1">
+            {/* Нүүр хуудас */}
             <li>
               <Link
                 href="/"
@@ -53,15 +57,28 @@ export default function Menu() {
                 Нүүр хуудас
               </Link>
             </li>
+
+            {/* Цаг агаар (Parent) */}
             <li>
               <Link
-                href="/terms"
+                href="/weather"
                 onClick={closeMenu}
-                className="block px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-mongolian text-gray-700 hover:text-gray-900"
+                className="block px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-mongolian text-gray-900 hover:text-gray-900 font-semibold"
               >
-                Нэр томъёо
+                Цаг агаар
+              </Link>
+
+              {/* Nested item - Нэр томъёо (Child under Weather) */}
+              <Link
+                href="/weather/terms"
+                onClick={closeMenu}
+                className="block pl-8 pr-4 py-2 rounded-lg hover:bg-gray-50 transition-colors font-mongolian text-gray-600 hover:text-gray-900 text-sm ml-4 border-l-2 border-gray-200"
+              >
+                ↳ Нэр томъёо
               </Link>
             </li>
+
+            {/* Бидний тухай */}
             <li>
               <Link
                 href="/about"

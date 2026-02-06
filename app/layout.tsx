@@ -25,8 +25,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Улаанбаатар - Агаарын чанар LIVE",
-  description: "Улаанбаатарын агаарын чанар, цаг агаар, эрүүл мэндийн зөвлөмж",
+  title: "Улаанбаатар",
+  description: "Улаанбаатар",
   metadataBase: new URL("https://www.ulaanbaatar.app"),
 
   // Favicon (Хөтчийн таб дээрх жижиг зураг)
@@ -40,9 +40,8 @@ export const metadata: Metadata = {
 
   // Open Graph - Нийгмийн сүлжээнд хуваалцахад харагдах мэдээлэл
   openGraph: {
-    title: "Улаанбаатар - Агаарын чанар LIVE",
-    description:
-      "Улаанбаатарын агаарын чанар, цаг агаар, эрүүл мэндийн зөвлөмж",
+    title: "Улаанбаатар",
+    description: "Улаанбаатар",
     url: "https://www.ulaanbaatar.app",
     siteName: "Ulaanbaatar.app",
     images: [
@@ -50,7 +49,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Улаанбаатар - Агаарын чанар",
+        alt: "Улаанбаатар",
       },
     ],
     locale: "mn_MN",
@@ -60,9 +59,8 @@ export const metadata: Metadata = {
   // Twitter Card (Twitter дээр хуваалцахад)
   twitter: {
     card: "summary_large_image",
-    title: "Улаанбаатар - Агаарын чанар LIVE",
-    description:
-      "Улаанбаатарын агаарын чанар, цаг агаар, эрүүл мэндийн зөвлөмж",
+    title: "Улаанбаатар",
+    description: "Улаанбаатар",
     images: ["/og-image.png"],
   },
 };

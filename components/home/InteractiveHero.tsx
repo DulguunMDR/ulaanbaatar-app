@@ -1,4 +1,5 @@
 // components/home/InteractiveHero.tsx
+// Файлын байршил: components/home/InteractiveHero.tsx
 // Интерактив Hero - Станц сонгоход бүх өгөгдөл шинэчлэгдэнэ
 
 "use client";
@@ -21,9 +22,9 @@ export default function InteractiveHero({
   const [selectedStation, setSelectedStation] = useState<StationData>(
     stations[0] ||
       stations.find(
-        (s) => s.aqi === Math.min(...stations.map((st) => st.aqi))
+        (s) => s.aqi === Math.min(...stations.map((st) => st.aqi)),
       ) ||
-      stations[0]
+      stations[0],
   );
   const [stationData, setStationData] = useState<AQIData>(initialData);
   const [loading, setLoading] = useState(false);
@@ -55,7 +56,10 @@ export default function InteractiveHero({
     return "bg-red-900";
   };
 
-  const sortedStations = [...stations].sort((a, b) => b.aqi - a.aqi);
+  // Зөвхөн хүчинтэй AQI утгатай станцуудыг эрэмбэлэх (Sort only stations with valid AQI values)
+  const sortedStations = [...stations]
+    .filter((s) => s.aqi && !isNaN(s.aqi))
+    .sort((a, b) => b.aqi - a.aqi);
 
   return (
     <div className="relative">
@@ -89,7 +93,7 @@ export default function InteractiveHero({
           <div className="flex justify-center mb-8">
             <div
               className={`${getAQIColorClass(
-                stationData.aqi
+                stationData.aqi,
               )} w-64 h-64 md:w-80 md:h-80 rounded-full shadow-2xl flex flex-col items-center justify-center text-white transition-all duration-500`}
             >
               <div className="text-8xl md:text-9xl font-bold">
@@ -356,7 +360,7 @@ export default function InteractiveHero({
 
                 <div className="text-right">
                   <p className="text-4xl font-bold text-gray-900 mb-1">
-                    {station.aqi}
+                    {station.aqi || "—"}
                   </p>
                   <span
                     className={`${stationHealthMsg.color} text-white text-sm font-semibold px-4 py-1 rounded-full inline-block`}
@@ -378,24 +382,24 @@ export default function InteractiveHero({
           <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
             <p className="text-sm text-green-700 mb-1">Хамгийн сайн</p>
             <p className="text-3xl font-bold text-green-900">
-              {sortedStations[sortedStations.length - 1]?.aqi}
+              {sortedStations[sortedStations.length - 1]?.aqi || "—"}
             </p>
             <p className="text-xs text-green-600 mt-1">
-              {
-                sortedStations[sortedStations.length - 1]?.station.name.split(
-                  ","
-                )[0]
-              }
+              {sortedStations[sortedStations.length - 1]?.station.name.split(
+                ",",
+              )[0] || "—"}
             </p>
           </div>
 
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
             <p className="text-sm text-gray-700 mb-1">Дундаж</p>
             <p className="text-3xl font-bold text-gray-900">
-              {Math.round(
-                sortedStations.reduce((sum, s) => sum + s.aqi, 0) /
-                  sortedStations.length
-              )}
+              {sortedStations.length > 0
+                ? Math.round(
+                    sortedStations.reduce((sum, s) => sum + s.aqi, 0) /
+                      sortedStations.length,
+                  )
+                : "—"}
             </p>
             <p className="text-xs text-gray-600 mt-1">Бүх станцууд</p>
           </div>
@@ -403,10 +407,10 @@ export default function InteractiveHero({
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
             <p className="text-sm text-red-700 mb-1">Хамгийн муу</p>
             <p className="text-3xl font-bold text-red-900">
-              {sortedStations[0]?.aqi}
+              {sortedStations[0]?.aqi || "—"}
             </p>
             <p className="text-xs text-red-600 mt-1">
-              {sortedStations[0]?.station.name.split(",")[0]}
+              {sortedStations[0]?.station.name.split(",")[0] || "—"}
             </p>
           </div>
         </div>
