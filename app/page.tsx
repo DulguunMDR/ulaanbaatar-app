@@ -2,6 +2,7 @@
 // ФАЙЛ: app/page.tsx
 // Файлын байршил: app/page.tsx
 // Нүүр хуудас (Homepage) - Enhanced minimalist design
+// Мобайл дэлгэцэнд зориулж засварласан (Mobile optimized)
 // ============================================
 
 import { fetchAQI } from "@/lib/fetchAQI";
@@ -112,18 +113,41 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      <div className="max-w-7xl mx-auto px-4 py-12 md:py-20">
+      {/* 
+        МОБАЙЛ ЗАСВАР:
+        - pt-20 (padding-top: 5rem / 80px) нь header-ын өндрийг тооцох
+        - md:pt-24 нь том дэлгэцэнд илүү зай өгөх
+        - overflow-x-hidden нь хэвтээ чиглэлийн scroll-ийг арилгах
+      */}
+      <div className="max-w-7xl mx-auto px-4 pt-20 pb-12 md:pt-24 md:pb-20 overflow-x-hidden">
         {/* Hero Section (Гол дэлгэц) */}
         <div className="text-center mb-16 md:mb-20">
           <div className="inline-block mb-8">
             <div className="text-xs md:text-sm font-semibold tracking-widest text-gray-500 uppercase mb-4">
               Бодит цагийн мэдээлэл
             </div>
-            <h1 className="font-mongolian text-6xl md:text-8xl lg:text-9xl font-bold text-gray-900 mb-4 tracking-tight">
+            {/* 
+              МОБАЙЛ ЗАСВАР - УЛААНБААТАР ТЕКСТ:
+              - text-5xl (mobile) = 48px - Утасны дэлгэцэнд багасгасан
+              - md:text-7xl (tablet) = 72px
+              - lg:text-8xl (desktop) = 96px
+              - xl:text-9xl (large desktop) = 128px
+              - break-words нь урт үгийг хэд хэдэн мөрөнд хуваах
+              - max-w-full нь эцэг элементийн өргөнөөс хэтрэхгүй байх
+            */}
+            <h1 className="font-mongolian text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-gray-900 mb-4 tracking-tight break-words max-w-full px-2">
               Улаанбаатар
             </h1>
             <div className="h-1 w-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 mx-auto mb-6"></div>
-            <p className="text-base md:text-lg text-gray-600 font-mongolian font-light max-w-2xl mx-auto">
+            {/* 
+              SUBTITLE ЗАСВАР:
+              - text-sm (mobile) = 14px
+              - md:text-base (tablet) = 16px 
+              - lg:text-lg (desktop) = 18px
+              - px-4 нь хажуу талын зай
+              - max-w-2xl нь хамгийн их өргөн хязгаарлах
+            */}
+            <p className="text-sm md:text-base lg:text-lg text-gray-600 font-mongolian font-light max-w-2xl mx-auto px-4">
               Агаарын чанар, цаг агаарын шинэчлэгдсэн мэдээлэл
             </p>
           </div>
@@ -330,10 +354,23 @@ export default async function Home() {
                   </div>
 
                   <div>
-                    <h2 className="font-mongolian text-2xl md:text-3xl font-bold text-white mb-2">
+                    {/* 
+                      МОБАЙЛ ЗАСВАР - Passivhaus гарчиг:
+                      - text-xl (mobile) = 20px
+                      - md:text-2xl (tablet) = 24px
+                      - lg:text-3xl (desktop) = 30px
+                      - break-words урт текстийг хуваах
+                    */}
+                    <h2 className="font-mongolian text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2 break-words">
                       Passivhaus Гарын Авлага
                     </h2>
-                    <p className="font-mongolian text-sm md:text-base text-emerald-50 max-w-xl">
+                    {/* 
+                      МОБАЙЛ ЗАСВАР - Тайлбар текст:
+                      - text-xs (mobile) = 12px
+                      - md:text-sm (tablet) = 14px
+                      - lg:text-base (desktop) = 16px
+                    */}
+                    <p className="font-mongolian text-xs md:text-sm lg:text-base text-emerald-50 max-w-xl break-words">
                       Монголын уур амьсгалд тохирсон эрчим хүч хэмнэсэн,
                       байгальд ээлтэй байшин барих бүрэн гарын авлага
                     </p>

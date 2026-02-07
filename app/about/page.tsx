@@ -1,7 +1,7 @@
 // ============================================
 // ФАЙЛ: app/about/page.tsx
 // Файлын байршил: app/about/page.tsx
-// Тухай хуудас - Шинэчлэгдсэн загвар
+// Тухай хуудас - Мобайл дэлгэцэнд сайжруулсан
 // ============================================
 
 import Link from "next/link";
@@ -9,14 +9,26 @@ import Link from "next/link";
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 py-12 md:py-20">
+      {/* 
+        МОБАЙЛ ЗАСВАР:
+        - pt-20 (mobile) = 80px - Header-ын өндрийг тооцох
+        - md:pt-24 (desktop) = 96px - Том дэлгэцэнд илүү их зай
+        - Энэ нь header доогуур контент харагдахгүй байхыг баталгаажуулна
+      */}
+      <div className="max-w-7xl mx-auto px-4 pt-20 pb-12 md:pt-24 md:pb-20">
         {/* Hero Section (Гарчиг хэсэг) */}
         <div className="text-center mb-20">
           <div className="inline-block mb-8">
             <div className="text-sm font-semibold tracking-widest text-gray-500 uppercase mb-4">
               Улаанбаатарын Агаарын Чанар
             </div>
-            <h1 className="font-mongolian text-5xl md:text-7xl font-bold text-gray-900 mb-4">
+            {/* 
+              Responsive heading:
+              - text-4xl (mobile) = 36px
+              - md:text-6xl (tablet) = 60px
+              - lg:text-7xl (desktop) = 72px
+            */}
+            <h1 className="font-mongolian text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4">
               Бидний
               <br />
               Тухай
@@ -25,7 +37,13 @@ export default function AboutPage() {
 
           <div className="h-1 w-24 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-8"></div>
 
-          <p className="text-lg md:text-xl text-gray-600 font-mongolian max-w-3xl mx-auto leading-relaxed">
+          {/* 
+            Responsive subtitle:
+            - text-base (mobile) = 16px
+            - md:text-lg (tablet) = 18px
+            - lg:text-xl (desktop) = 20px
+          */}
+          <p className="text-base md:text-lg lg:text-xl text-gray-600 font-mongolian max-w-3xl mx-auto leading-relaxed px-4">
             Улаанбаатарын агаарын чанар, цаг агаарын мэдээллийг бодит цагт,
             ойлгомжтой, үзэмжтэй хэлбэрээр хүргэдэг платформ
           </p>
@@ -118,7 +136,7 @@ export default function AboutPage() {
             <h2 className="font-mongolian text-2xl md:text-3xl font-bold text-gray-900 mb-4">
               Цэвэр, Ногоон Улаанбаатарт
             </h2>
-            <p className="text-gray-700 leading-relaxed mb-6">
+            <p className="text-gray-700 leading-relaxed mb-6 px-4">
               Бид зөвхөн агаарын чанарыг хэмжихээс гадна шийдлийг санал болгож
               байна. Эрчим хүч хэмнэсэн, байгальд ээлтэй барилга барих мэдлэгийг
               хүртээмжтэй болгож, хотын агаарын чанарыг сайжруулахад хувь нэмрээ
@@ -152,7 +170,7 @@ export default function AboutPage() {
             <h2 className="font-mongolian text-2xl md:text-3xl font-bold text-gray-900 mb-4">
               Холбоо Барих
             </h2>
-            <p className="text-gray-600 mb-8 leading-relaxed">
+            <p className="text-gray-600 mb-8 leading-relaxed px-4">
               Санал хүсэлт, асуулт байвал бидэнтэй холбогдоорой. Таны саналыг
               үнэлж, платформоо сайжруулахад ашиглана.
             </p>

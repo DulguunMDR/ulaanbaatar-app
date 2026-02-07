@@ -1,6 +1,8 @@
-// app/passivhaus/page.tsx
+// ============================================
+// ФАЙЛ: app/passivhaus/page.tsx
 // Файлын байршил: app/passivhaus/page.tsx
-// Passivhaus үндсэн хуудас - Шинэчлэгдсэн загвар
+// Passivhaus үндсэн хуудас - Мобайл дэлгэцэнд сайжруулсан
+// ============================================
 
 import Link from "next/link";
 
@@ -107,14 +109,26 @@ export default function PassivhausPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 py-12 md:py-20">
+      {/* 
+        МОБАЙЛ ЗАСВАР:
+        - pt-20 (mobile) = 80px - Header-ын өндрийг тооцох
+        - md:pt-24 (desktop) = 96px - Том дэлгэцэнд илүү их зай
+        - Энэ нь header доогуур контент харагдахгүй байхыг баталгаажуулна
+      */}
+      <div className="max-w-7xl mx-auto px-4 pt-20 pb-12 md:pt-24 md:pb-20">
         {/* Hero Section */}
         <div className="text-center mb-20">
           <div className="inline-block mb-8">
             <div className="text-sm font-semibold tracking-widest text-gray-500 uppercase mb-4">
               Эрчим Хүч Хэмнэсэн Барилга
             </div>
-            <h1 className="font-mongolian text-5xl md:text-7xl font-bold text-gray-900 mb-4">
+            {/* 
+              Responsive heading:
+              - text-4xl (mobile) = 36px
+              - md:text-6xl (tablet) = 60px
+              - lg:text-7xl (desktop) = 72px
+            */}
+            <h1 className="font-mongolian text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4">
               Passivhaus
               <br />
               Гарын Авлага
@@ -123,7 +137,13 @@ export default function PassivhausPage() {
 
           <div className="h-1 w-24 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-8"></div>
 
-          <p className="text-lg md:text-xl text-gray-600 font-mongolian max-w-3xl mx-auto leading-relaxed">
+          {/* 
+            Responsive subtitle:
+            - text-base (mobile) = 16px
+            - md:text-lg (tablet) = 18px
+            - lg:text-xl (desktop) = 20px
+          */}
+          <p className="text-base md:text-lg lg:text-xl text-gray-600 font-mongolian max-w-3xl mx-auto leading-relaxed px-4">
             Монголын хүйтэн уур амьсгалд тохирсон эрчим хүчний хэмнэлттэй,
             байгальд ээлтэй гэр барих бүрэн гарын авлага
           </p>

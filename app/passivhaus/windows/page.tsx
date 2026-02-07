@@ -7,7 +7,7 @@ import Link from "next/link";
 export default function WindowsPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-4xl mx-auto px-4 py-12 md:py-16">
+      <div className="max-w-4xl mx-auto px-4 pt-20 pb-12 md:pt-24 md:pb-16">
         {/* Breadcrumb */}
         <div className="mb-8">
           <Link
@@ -37,7 +37,7 @@ export default function WindowsPage() {
             <div className="text-sm font-semibold tracking-widest text-emerald-600 uppercase mb-2">
               03 — Цонх ба Хаалга
             </div>
-            <h1 className="font-mongolian text-4xl md:text-6xl font-bold text-gray-900 mb-4">
+            <h1 className="font-mongolian text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
               Өндөр Чанарын
               <br />
               Цонх Хаалга
