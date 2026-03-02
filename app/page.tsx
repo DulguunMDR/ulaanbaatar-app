@@ -1,19 +1,18 @@
 // ============================================
 // ФАЙЛ: app/page.tsx
-// Файлын байршил: app/page.tsx
 // Нүүр хуудас (Homepage) - Enhanced minimalist design
-// Мобайл дэлгэцэнд зориулж засварласан (Mobile optimized)
+// Single weather source: Open-Meteo (same as weather page)
 // ============================================
 
 import { fetchAQI } from "@/lib/fetchAQI";
-import { fetchWeather } from "@/lib/fetchWeather";
+import { fetchOpenMeteo, getWeatherDescription } from "@/lib/fetchOpenMeteo";
 import Link from "next/link";
 
 export default async function Home() {
   // Fetch AQI and Weather data simultaneously (Зэрэг өгөгдөл татах)
-  const [aqiData, weatherData] = await Promise.all([
+  const [aqiData, meteoData] = await Promise.all([
     fetchAQI(),
-    fetchWeather(),
+    fetchOpenMeteo(),
   ]);
 
   // Get AQI status and color based on value
@@ -87,66 +86,48 @@ export default async function Home() {
 
   const status = aqiData ? getAQIStatus(aqiData.aqi) : null;
 
-  // Монгол хэл дээрх цаг агаарын байдлын орчуулга
-  const translateWeather = (description: string): string => {
-    const translations: Record<string, string> = {
-      "clear sky": "Цэлмэг",
-      "few clouds": "Бага үүлтэй",
-      "scattered clouds": "Сарнисан үүл",
-      "broken clouds": "Үүлэрхэг",
-      "overcast clouds": "Бүрэн үүлтэй",
-      "light rain": "Бага зэргийн бороо",
-      "moderate rain": "Дунд зэргийн бороо",
-      "heavy intensity rain": "Их бороо",
-      rain: "Бороо",
-      "shower rain": "Аадар бороо",
-      "light snow": "Бага зэргийн цас",
-      snow: "Цас",
-      "heavy snow": "Их цас",
-      mist: "Манан",
-      fog: "Манан",
-      haze: "Үүлэрхэг",
-    };
-
-    return translations[description.toLowerCase()] || description;
+  // Extract current conditions from Open-Meteo hourly arrays
+  // Open-Meteo has no "current" field — find the index matching the current hour
+  const getCurrentHourIndex = (times: string[]): number => {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
+    const hh = String(now.getHours()).padStart(2, "0");
+    const currentHour = `${yyyy}-${mm}-${dd}T${hh}:00`;
+    const idx = times.indexOf(currentHour);
+    return idx !== -1 ? idx : 0;
   };
+
+  const hourIdx = meteoData ? getCurrentHourIndex(meteoData.hourly.time) : 0;
+
+  const todayTemp = meteoData
+    ? Math.round(meteoData.hourly.temperature_2m[hourIdx])
+    : null;
+  const todayHumidity = meteoData
+    ? meteoData.hourly.relative_humidity_2m[hourIdx]
+    : null;
+  const todayWeatherCode = meteoData
+    ? meteoData.hourly.weather_code[hourIdx]
+    : null;
+  const todayWeather =
+    todayWeatherCode !== null && todayWeatherCode !== undefined
+      ? getWeatherDescription(todayWeatherCode)
+      : null;
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      {/* 
-        МОБАЙЛ ЗАСВАР:
-        - pt-20 (padding-top: 5rem / 80px) нь header-ын өндрийг тооцох
-        - md:pt-24 нь том дэлгэцэнд илүү зай өгөх
-        - overflow-x-hidden нь хэвтээ чиглэлийн scroll-ийг арилгах
-      */}
       <div className="max-w-7xl mx-auto px-4 pt-20 pb-12 md:pt-24 md:pb-20 overflow-x-hidden">
-        {/* Hero Section (Гол дэлгэц) */}
+        {/* Hero Section */}
         <div className="text-center mb-16 md:mb-20">
           <div className="inline-block mb-8">
             <div className="text-xs md:text-sm font-semibold tracking-widest text-gray-500 uppercase mb-4">
               Бодит цагийн мэдээлэл
             </div>
-            {/* 
-              МОБАЙЛ ЗАСВАР - УЛААНБААТАР ТЕКСТ:
-              - text-5xl (mobile) = 48px - Утасны дэлгэцэнд багасгасан
-              - md:text-7xl (tablet) = 72px
-              - lg:text-8xl (desktop) = 96px
-              - xl:text-9xl (large desktop) = 128px
-              - break-words нь урт үгийг хэд хэдэн мөрөнд хуваах
-              - max-w-full нь эцэг элементийн өргөнөөс хэтрэхгүй байх
-            */}
             <h1 className="font-mongolian text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-gray-900 mb-4 tracking-tight break-words max-w-full px-2">
               Улаанбаатар
             </h1>
             <div className="h-1 w-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 mx-auto mb-6"></div>
-            {/* 
-              SUBTITLE ЗАСВАР:
-              - text-sm (mobile) = 14px
-              - md:text-base (tablet) = 16px 
-              - lg:text-lg (desktop) = 18px
-              - px-4 нь хажуу талын зай
-              - max-w-2xl нь хамгийн их өргөн хязгаарлах
-            */}
             <p className="text-sm md:text-base lg:text-lg text-gray-600 font-mongolian font-light max-w-2xl mx-auto px-4">
               Агаарын чанар, цаг агаарын шинэчлэгдсэн мэдээлэл
             </p>
@@ -158,12 +139,11 @@ export default async function Home() {
           <div className="space-y-6">
             {/* AQI + Weather Cards Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* AQI Card - Enhanced Design */}
+              {/* AQI Card */}
               <Link
                 href="/weather"
                 className={`group relative block ${status.bg} ${status.border} border-2 rounded-2xl p-8 md:p-10 shadow-sm ${status.borderHover} transition-all duration-300 hover:shadow-xl overflow-hidden`}
               >
-                {/* Gradient accent line (үзэмж нэмэх) */}
                 <div
                   className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${status.gradientFrom} ${status.gradientTo}`}
                 ></div>
@@ -213,7 +193,6 @@ export default async function Home() {
                     </p>
                   )}
 
-                  {/* Call to action */}
                   <div
                     className={`flex items-center gap-2 ${status.color} text-sm font-mongolian font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
                   >
@@ -235,13 +214,12 @@ export default async function Home() {
                 </div>
               </Link>
 
-              {/* Weather Card - Enhanced Design */}
-              {weatherData ? (
+              {/* Weather Card - now uses Open-Meteo */}
+              {meteoData && todayWeather ? (
                 <Link
                   href="/weather"
                   className="group relative block bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-2xl p-8 md:p-10 shadow-sm hover:border-blue-400 transition-all duration-300 hover:shadow-xl overflow-hidden"
                 >
-                  {/* Gradient accent line */}
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
 
                   <div className="relative">
@@ -250,51 +228,37 @@ export default async function Home() {
                         Цаг агаар
                       </p>
                       <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
-                        <svg
-                          className="w-4 h-4 text-blue-600"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
-                          />
-                        </svg>
+                        <span className="text-lg leading-none">
+                          {todayWeather.emoji}
+                        </span>
                       </div>
                     </div>
 
                     <div className="mb-6">
                       <div className="flex items-baseline gap-1 mb-3">
                         <span className="text-7xl md:text-8xl font-bold text-blue-900 leading-none">
-                          {Math.round(weatherData.current.temp)}
+                          {todayTemp}
                         </span>
                         <span className="text-3xl md:text-4xl font-light text-blue-700">
                           °C
                         </span>
                       </div>
                       <div className="inline-block px-5 py-2 bg-white rounded-full font-semibold text-sm md:text-base font-mongolian shadow-sm text-blue-900 border border-blue-200">
-                        {translateWeather(
-                          weatherData.current.weather.description,
-                        )}
+                        {todayWeather.text}
                       </div>
                     </div>
 
-                    {/* Additional weather info (Нэмэлт мэдээлэл) */}
                     <div className="mb-4">
                       <div className="bg-white/50 rounded-lg p-3 border border-blue-100">
                         <p className="text-xs text-blue-600 font-mongolian mb-1">
                           Чийгшил
                         </p>
                         <p className="text-lg font-semibold text-blue-900">
-                          {weatherData.current.humidity}%
+                          {todayHumidity}%
                         </p>
                       </div>
                     </div>
 
-                    {/* Call to action */}
                     <div className="flex items-center gap-2 text-blue-700 text-sm font-mongolian font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <span>Дэлгэрэнгүй үзэх</span>
                       <svg
@@ -325,18 +289,15 @@ export default async function Home() {
               )}
             </div>
 
-            {/* Passivhaus Featured Section - Enhanced */}
+            {/* Passivhaus Featured Section */}
             <Link
               href="/passivhaus"
               className="group relative block bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 rounded-2xl p-8 md:p-10 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
             >
-              {/* Animated gradient overlay (Хөдөлгөөнт давхарга) */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
 
               <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
-                {/* Left Content */}
                 <div className="flex items-center gap-6 text-center md:text-left">
-                  {/* Icon */}
                   <div className="hidden md:block w-16 h-16 bg-white/20 rounded-xl flex-shrink-0 backdrop-blur-sm border border-white/30 p-3">
                     <svg
                       className="w-full h-full text-white"
@@ -354,22 +315,9 @@ export default async function Home() {
                   </div>
 
                   <div>
-                    {/* 
-                      МОБАЙЛ ЗАСВАР - Passivhaus гарчиг:
-                      - text-xl (mobile) = 20px
-                      - md:text-2xl (tablet) = 24px
-                      - lg:text-3xl (desktop) = 30px
-                      - break-words урт текстийг хуваах
-                    */}
                     <h2 className="font-mongolian text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2 break-words">
                       Passivhaus Гарын Авлага
                     </h2>
-                    {/* 
-                      МОБАЙЛ ЗАСВАР - Тайлбар текст:
-                      - text-xs (mobile) = 12px
-                      - md:text-sm (tablet) = 14px
-                      - lg:text-base (desktop) = 16px
-                    */}
                     <p className="font-mongolian text-xs md:text-sm lg:text-base text-emerald-50 max-w-xl break-words">
                       Монголын уур амьсгалд тохирсон эрчим хүч хэмнэсэн,
                       байгальд ээлтэй байшин барих бүрэн гарын авлага
@@ -377,7 +325,6 @@ export default async function Home() {
                   </div>
                 </div>
 
-                {/* Right Arrow */}
                 <div className="flex items-center gap-3">
                   <div className="hidden lg:flex flex-col items-end gap-1">
                     <div className="w-12 h-1 bg-white/30 rounded-full"></div>

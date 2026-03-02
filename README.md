@@ -1,6 +1,6 @@
 # 🌍 Улаанбаатар LIVE - Air Quality Monitor
 
-Real-time air quality monitoring dashboard for Ulaanbaatar, Mongolia. Track AQI, PM2.5, PM10, temperature, and weather conditions in a beautiful, responsive interface.
+Real-time air quality monitoring dashboard for Ulaanbaatar, Mongolia. Track AQI, PM2.5, PM10, temperature, and weather conditions in a beautiful, responsive interface. "www.ulaanbaatar.app"
 
 ## ✨ Features
 
