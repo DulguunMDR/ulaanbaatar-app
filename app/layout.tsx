@@ -2,6 +2,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Sans } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { fetchAQI } from "@/lib/fetchAQI";
@@ -98,6 +99,12 @@ export default async function RootLayout({
 
   return (
     <html lang="mn">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+        />
+      </head>
       <body
         className={`${inter.variable} ${notoSansMongolian.variable} antialiased`}
       >
@@ -109,6 +116,7 @@ export default async function RootLayout({
         />
         {children}
         <Footer />
+        <Script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" />
       </body>
     </html>
   );
