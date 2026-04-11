@@ -77,6 +77,109 @@ Contributions are welcome! Please open an issue or submit a pull request.
 
 For questions or support, please open an issue on GitHub.
 
----
+## 📁 Project Structure
+
+> To regenerate this tree, run in PowerShell from the project root:
+>
+> ```powershell
+> Get-ChildItem -Recurse -Exclude @("node_modules", ".next", ".git") | Where-Object { $_.FullName -notmatch "node_modules|\.next|\.git" } | Select-Object FullName | ForEach-Object { $_.FullName.Replace((Get-Location).Path + "\", "") }
+> ```
+
+```
+ulaanbaatar/
+├── app/
+│   ├── about/
+│   │   └── page.tsx
+│   ├── api/
+│   │   ├── forecast/
+│   │   │   └── route.ts
+│   │   ├── historical/
+│   │   │   └── route.ts
+│   │   └── historical-pollution/
+│   │       └── route.ts
+│   ├── map/
+│   │   └── page.tsx
+│   ├── passivhaus/
+│   │   ├── airtightness/
+│   │   │   └── page.tsx
+│   │   ├── construction/
+│   │   │   └── page.tsx
+│   │   ├── heating/
+│   │   │   └── page.tsx
+│   │   ├── insulation/
+│   │   │   └── page.tsx
+│   │   ├── introduction/
+│   │   │   └── page.tsx
+│   │   ├── materials/
+│   │   │   └── page.tsx
+│   │   ├── ventilation/
+│   │   │   └── page.tsx
+│   │   ├── windows/
+│   │   │   └── page.tsx
+│   │   └── page.tsx
+│   ├── weather/
+│   │   ├── terms/
+│   │   │   └── page.tsx
+│   │   └── page.tsx
+│   ├── error.tsx
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── loading.tsx
+│   ├── not-found.tsx
+│   └── page.tsx
+├── components/
+│   ├── charts/
+│   │   ├── AQITrendChart.tsx
+│   │   ├── BestWorstTimes.tsx
+│   │   ├── PollutionHeatmap.tsx
+│   │   ├── SeasonalComparison.tsx
+│   │   ├── TodayInHistoryCard.tsx
+│   │   ├── WeeklyComparison.tsx
+│   │   └── YearComparisonChart.tsx
+│   ├── home/
+│   │   ├── InsightsDashboard.tsx
+│   │   └── InteractiveHero.tsx
+│   ├── map/
+│   │   ├── AQIMap.tsx
+│   │   ├── AQIMapWrapper.tsx
+│   │   └── WeatherLayerControls.tsx
+│   ├── terms/
+│   │   ├── AQISection.tsx
+│   │   ├── COSection.tsx
+│   │   ├── FeelsLikeSection.tsx
+│   │   ├── HumiditySection.tsx
+│   │   ├── NO2Section.tsx
+│   │   ├── OzoneSection.tsx
+│   │   ├── PM10Section.tsx
+│   │   ├── PM25Section.tsx
+│   │   ├── SO2Section.tsx
+│   │   ├── TemperatureSection.tsx
+│   │   └── WindSpeedSection.tsx
+│   ├── weather/
+│   │   ├── CurrentWeather.tsx
+│   │   ├── ForecastCards.tsx
+│   │   ├── OpenMeteoForecast.tsx
+│   │   └── WeatherImpact.tsx
+│   ├── Footer.tsx
+│   ├── Header.tsx
+│   ├── Menu.tsx
+│   └── ViolationMap.tsx
+├── lib/
+│   ├── constants.ts
+│   ├── fetchAQI.ts
+│   ├── fetchForecast.ts
+│   ├── fetchHistoricalAQI.ts
+│   ├── fetchHistoricalPollution.ts
+│   ├── fetchOpenMeteo.ts
+│   ├── fetchStations.ts
+│   ├── fetchWeather.ts
+│   ├── mongolianDate.ts
+│   ├── pollutantInfo.ts
+│   ├── rainviewer.ts
+│   ├── supabase.ts
+│   ├── weatherImpactAnalyzer.ts
+│   └── windOverlay.ts
+```
 
 Made with ❤️ for the people of Ulaanbaatar
