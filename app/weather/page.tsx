@@ -2,7 +2,8 @@
 
 import { fetchAQI } from "@/lib/fetchAQI";
 import { fetchAllStations } from "@/lib/fetchStations";
-import InteractiveHero from "@/components/home/InteractiveHero";
+import AQINumber from "@/components/home/AQINumber";
+import AQIDetail from "@/components/home/AQIDetail";
 import AQIMapWrapper from "@/components/map/AQIMapWrapper";
 import InsightsDashboard from "@/components/home/InsightsDashboard";
 import OpenMeteoForecast from "@/components/weather/OpenMeteoForecast";
@@ -39,10 +40,16 @@ export default async function WeatherPage() {
               Өгөгдөл татаж чадсангүй
             </h1>
             <hr className="border-gray-100 mb-6 max-w-xs" />
-            <p className="text-sm text-gray-400 leading-relaxed mb-4">
+            <p
+              className="text-gray-400 leading-relaxed mb-4"
+              style={{ fontFamily: "var(--font-inter)", fontSize: "13px" }}
+            >
               API түлхүүрүүдээ шалгана уу.
             </p>
-            <code className="block text-xs text-gray-400 font-mono bg-gray-50 border border-gray-100 rounded p-4 max-w-xs">
+            <code
+              className="block text-gray-400 bg-gray-50 border border-gray-100 p-4 max-w-xs"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "11px" }}
+            >
               NEXT_PUBLIC_WAQI_TOKEN
               <br />
               NEXT_PUBLIC_OPENWEATHER_KEY
@@ -57,7 +64,7 @@ export default async function WeatherPage() {
 
   return (
     <main className="pt-14 md:pt-16 min-h-screen bg-white">
-      {/* HERO — page label */}
+      {/* ── 1. PAGE LABEL ─────────────────────────────────────────── */}
       <section
         className="grid border-b border-gray-100"
         style={{ gridTemplateColumns: "32px 1fr" }}
@@ -81,13 +88,12 @@ export default async function WeatherPage() {
             ЦАГ АГААР · WEATHER
           </span>
         </div>
-
         <div className="px-8 md:px-14 py-8 md:py-12">
           <p
             className="text-gray-400 uppercase mb-3"
             style={{ fontSize: "9px", letterSpacing: "0.14em" }}
           >
-            Агаарын чанар · Air quality
+            Улаанбаатар
           </p>
           <h1
             className="font-normal text-gray-900"
@@ -101,19 +107,25 @@ export default async function WeatherPage() {
         </div>
       </section>
 
-      {/* INTERACTIVE HERO — station selector + AQI */}
-      {stations.length > 0 ? (
-        <InteractiveHero stations={stations} initialData={aqiData} />
-      ) : (
-        <div className="px-8 md:px-14 py-12 border-b border-gray-100">
-          <p className="text-sm text-gray-400">Станцын өгөгдөл олдсонгүй</p>
-        </div>
-      )}
+      {/* ── 2. FORECAST ───────────────────────────────────────────── */}
+      {/* Temperature, rain, wind — universal, quick to scan */}
+      <section className="border-b border-gray-100">
+        <OpenMeteoForecast />
+      </section>
 
-      {/* MAP */}
+      {/* ── 3. AQI NUMBER ─────────────────────────────────────────── */}
+      {/* Current air quality at a glance */}
+      <AQINumber data={aqiData} />
+
+      {/* ── 4. MAP ────────────────────────────────────────────────── */}
+      {/* Spatial context for the AQI reading above */}
       {stations.length > 0 && (
-        <section className="border-t border-gray-100 px-4 md:px-8 py-10">
-          <div className="max-w-6xl mx-auto">
+        <section
+          className="grid border-b border-gray-100"
+          style={{ gridTemplateColumns: "32px 1fr" }}
+        >
+          <div className="border-r border-gray-100" />
+          <div className="px-4 md:px-8 py-8">
             <p
               className="text-gray-400 uppercase mb-6 px-4"
               style={{ fontSize: "9px", letterSpacing: "0.14em" }}
@@ -125,19 +137,33 @@ export default async function WeatherPage() {
         </section>
       )}
 
-      {/* FORECAST */}
-      <section className="border-t border-gray-100">
-        <OpenMeteoForecast />
-      </section>
+      {/* ── 5. POLLUTANTS + STATION SELECTOR ──────────────────────── */}
+      {/* Detail for users who want to dig deeper or switch stations */}
+      {stations.length > 0 ? (
+        <AQIDetail stations={stations} initialData={aqiData} />
+      ) : (
+        <section className="px-8 md:px-14 py-10 border-b border-gray-100">
+          <p
+            className="text-gray-300"
+            style={{ fontFamily: "var(--font-inter)", fontSize: "11px" }}
+          >
+            Станцын өгөгдөл олдсонгүй
+          </p>
+        </section>
+      )}
 
-      {/* INSIGHTS DASHBOARD */}
+      {/* ── 6. INSIGHTS DASHBOARD ─────────────────────────────────── */}
+      {/* Historical trends — deepest layer, for power users */}
       {stationId ? (
         <section className="border-t border-gray-100">
           <InsightsDashboard stationId={stationId} currentAqi={aqiData.aqi} />
         </section>
       ) : (
         <section className="px-8 md:px-14 py-10 border-t border-gray-100">
-          <p className="text-sm text-gray-400">
+          <p
+            className="text-gray-300"
+            style={{ fontFamily: "var(--font-inter)", fontSize: "11px" }}
+          >
             Station ID олдсонгүй — dashboard харагдахгүй байна.
           </p>
         </section>

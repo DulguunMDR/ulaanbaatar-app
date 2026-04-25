@@ -56,6 +56,20 @@ The site uses a Japanese minimalist aesthetic — sparse, high-contrast, intenti
 
 ---
 
+## Data Sources
+
+| Data                | Source     | Revalidation | Notes                                                   |
+| ------------------- | ---------- | ------------ | ------------------------------------------------------- |
+| AQI (city-level)    | WAQI API   | 2 min        | `/feed/ulaanbaatar/` — used in header + AQINumber       |
+| AQI (station-level) | WAQI API   | on-demand    | Per-station fetch in AQIDetail — differs from city feed |
+| Weather forecast    | Open-Meteo | 1 hour       | No API key required                                     |
+| Precipitation radar | RainViewer | on-demand    | Loaded only when layer is toggled                       |
+| Regional wind       | Open-Meteo | on-demand    | Loaded only when layer is toggled                       |
+
+**Header vs weather page:** The header shows city-level WAQI data and Open-Meteo temperature — both fetched in `layout.tsx`. The weather page shows the same city-level AQI in `AQINumber`, then offers station-level drill-down in `AQIDetail`. Station readings may differ from the city aggregate; this is labeled explicitly in the UI.
+
+---
+
 ## Tech Stack
 
 - **Framework:** Next.js 15 (App Router)
@@ -80,11 +94,11 @@ ulaanbaatar/
 │   │   ├── forecast/route.ts
 │   │   ├── historical/route.ts
 │   │   └── historical-pollution/route.ts
-│   ├── journal/                          ← NEW
+│   ├── journal/
 │   │   └── page.tsx
 │   ├── map/
 │   │   └── page.tsx
-│   ├── museums/                          ← NEW
+│   ├── museums/
 │   │   └── page.tsx
 │   ├── passivhaus/
 │   │   ├── airtightness/page.tsx
@@ -96,18 +110,26 @@ ulaanbaatar/
 │   │   ├── ventilation/page.tsx
 │   │   ├── windows/page.tsx
 │   │   └── page.tsx
-│   ├── sacred/                           ← NEW
+│   ├── sacred/
 │   │   └── page.tsx
 │   ├── weather/
 │   │   ├── terms/page.tsx
 │   │   └── page.tsx
+│   ├── error.tsx
 │   ├── globals.css
 │   ├── layout.tsx
 │   └── page.tsx
 ├── components/
 │   ├── charts/
 │   ├── home/
+│   │   ├── AQINumber.tsx       ← city-level AQI display (top of weather page)
+│   │   ├── AQIDetail.tsx       ← station-level drill-down (below map)
+│   │   ├── InsightsDashboard.tsx
+│   │   └── InteractiveHero.tsx ← legacy, kept for other pages
 │   ├── map/
+│   │   ├── AQIMap.tsx
+│   │   ├── AQIMapWrapper.tsx
+│   │   └── WeatherLayerControls.tsx
 │   ├── terms/
 │   ├── weather/
 │   ├── Footer.tsx
@@ -115,7 +137,7 @@ ulaanbaatar/
 │   ├── Menu.tsx
 │   └── ViolationMap.tsx
 ├── content/
-│   └── journal/                          ← NEW (MDX or TS entries)
+│   └── journal/
 │       ├── 2026-04-25.ts
 │       └── index.ts
 └── lib/
@@ -137,9 +159,24 @@ ulaanbaatar/
 
 ---
 
-## Files to Create
+## Weather Page Structure
 
-See **[PAGES.md](./PAGES.md)** for complete instructions on building each new page.
+The weather page follows a deliberate information hierarchy — from universal and quick to specific and deep:
+
+```
+1. Page label
+2. OpenMeteoForecast       ← temperature, rain, wind (everyone)
+3. AQINumber               ← city-level AQI at a glance (matches header)
+4. AQIMapWrapper           ← spatial context for the AQI reading
+5. AQIDetail               ← station drill-down: pollutants + station selector
+6. InsightsDashboard       ← historical trends (power users)
+```
+
+`AQINumber` and `AQIDetail` replace the old `InteractiveHero` component. `InteractiveHero` is kept for any other pages that reference it.
+
+---
+
+## Files to Create
 
 | File                       | Status          | Priority                             |
 | -------------------------- | --------------- | ------------------------------------ |
