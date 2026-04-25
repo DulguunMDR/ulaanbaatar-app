@@ -1,218 +1,231 @@
-// ============================================
-// ФАЙЛ: app/about/page.tsx
-// Файлын байршил: app/about/page.tsx
-// Тухай хуудас - Мобайл дэлгэцэнд сайжруулсан
-// ============================================
+// app/about/page.tsx
 
 import Link from "next/link";
 
+const sections = [
+  {
+    label: "Агаарын чанар",
+    href: "/weather",
+    body: "Бодит цагийн AQI, PM2.5, PM10 болон цаг агаарын мэдээлэл. Өдөр бүр шинэчлэгддэг.",
+  },
+  {
+    label: "Ариун гэгээн хот",
+    href: "/sacred",
+    body: "Улаанбаатарын түүх — 1639 оноос өнөөг хүртэл. Олон хүн мэддэггүй энэ хотын нэгэн өөр нүүр.",
+  },
+  {
+    label: "Музей · Галерей",
+    href: "/museums",
+    body: "Чойжин ламын сүм, Богд хааны ордон, Занабазарын музей — хотын санах ойн газрууд.",
+  },
+  {
+    label: "Passivhaus",
+    href: "/passivhaus",
+    body: "Монголын уур амьсгалд тохирсон эрчим хүч хэмнэсэн байшин барих бүрэн гарын авлага.",
+  },
+];
+
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* 
-        МОБАЙЛ ЗАСВАР:
-        - pt-20 (mobile) = 80px - Header-ын өндрийг тооцох
-        - md:pt-24 (desktop) = 96px - Том дэлгэцэнд илүү их зай
-        - Энэ нь header доогуур контент харагдахгүй байхыг баталгаажуулна
-      */}
-      <div className="max-w-7xl mx-auto px-4 pt-20 pb-12 md:pt-24 md:pb-20">
-        {/* Hero Section (Гарчиг хэсэг) */}
-        <div className="text-center mb-20">
-          <div className="inline-block mb-8">
-            <div className="text-sm font-semibold tracking-widest text-gray-500 uppercase mb-4">
-              Улаанбаатарын Агаарын Чанар
-            </div>
-            {/* 
-              Responsive heading:
-              - text-4xl (mobile) = 36px
-              - md:text-6xl (tablet) = 60px
-              - lg:text-7xl (desktop) = 72px
-            */}
-            <h1 className="font-mongolian text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4">
-              Бидний
-              <br />
+    <main className="pt-14 md:pt-16 min-h-screen bg-white">
+      {/* HERO */}
+      <section
+        className="grid border-b border-gray-100"
+        style={{ gridTemplateColumns: "32px 1fr" }}
+      >
+        <div
+          className="border-r border-gray-100 flex items-center justify-center py-16"
+          style={{
+            writingMode: "vertical-rl",
+            textOrientation: "mixed",
+            transform: "rotate(180deg)",
+          }}
+        >
+          <span
+            className="text-gray-300 uppercase"
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "9px",
+              letterSpacing: "0.4em",
+            }}
+          >
+            БИДНИЙ ТУХАЙ · ABOUT
+          </span>
+        </div>
+
+        <div className="px-8 md:px-14 py-12 md:py-20">
+          <p
+            className="text-gray-400 uppercase mb-5"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Сайтын тухай · About this site
+          </p>
+
+          <h1
+            className="font-normal tracking-tight text-gray-900 mb-8"
+            style={{
+              fontFamily: "var(--font-playfair)",
+              fontSize: "clamp(40px, 8vw, 80px)",
+              lineHeight: "0.9",
+            }}
+          >
+            Бидний
+            <span
+              className="block text-gray-300"
+              style={{ marginLeft: "clamp(1.5rem, 4vw, 4rem)" }}
+            >
               Тухай
-            </h1>
+            </span>
+          </h1>
+
+          <hr className="border-gray-100 mb-6" />
+        </div>
+      </section>
+
+      {/* WHO + WHY */}
+      <section className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-100">
+        <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-gray-100">
+          <p
+            className="text-gray-400 uppercase mb-5"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Хэн бэ · Who
+          </p>
+
+          <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-6">
+            <span
+              className="font-mono text-gray-500 font-light"
+              style={{ fontSize: "16px" }}
+            >
+              МД
+            </span>
           </div>
 
-          <div className="h-1 w-24 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-8"></div>
+          <h2
+            className="font-normal text-gray-900 mb-1"
+            style={{
+              fontFamily: "var(--font-playfair)",
+              fontSize: "22px",
+            }}
+          >
+            М.Дөлгөөн
+          </h2>
 
-          {/* 
-            Responsive subtitle:
-            - text-base (mobile) = 16px
-            - md:text-lg (tablet) = 18px
-            - lg:text-xl (desktop) = 20px
-          */}
-          <p className="text-base md:text-lg lg:text-xl text-gray-600 font-mongolian max-w-3xl mx-auto leading-relaxed px-4">
-            Улаанбаатарын агаарын чанар, цаг агаарын мэдээллийг бодит цагт,
-            ойлгомжтой, үзэмжтэй хэлбэрээр хүргэдэг платформ
+          <p className="text-gray-400 mb-6" style={{ fontSize: "13px" }}>
+            Үүсгэн байгуулагч
+          </p>
+
+          <div className="space-y-2">
+            <a
+              href="mailto:dulguun.mdr@gmail.com"
+              className="block text-gray-500 hover:text-gray-900 transition-colors"
+              style={{ fontSize: "13px" }}
+            >
+              dulguun.mdr@gmail.com
+            </a>
+            <a
+              href="https://www.ulaanbaatar.app"
+              className="block text-gray-500 hover:text-gray-900 transition-colors"
+              style={{ fontSize: "13px" }}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              www.ulaanbaatar.app
+            </a>
+          </div>
+        </div>
+
+        <div className="md:col-span-2 p-8 md:p-12">
+          <p
+            className="text-gray-400 uppercase mb-5"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Яагаад · Why
+          </p>
+
+          <h2
+            className="font-normal text-gray-800 mb-5 leading-snug"
+            style={{
+              fontFamily: "var(--font-playfair)",
+              fontSize: "clamp(22px, 3vw, 32px)",
+            }}
+          >
+            Улаанбаатар хот
+          </h2>
+
+          <div className="space-y-4 max-w-lg">
+            <p className="text-sm text-gray-500 leading-relaxed">
+              Улаанбаатар бол өвлийн улиралд утаа агаарыг бүрхдэг дэлхийн
+              хамгийн их агаарын бохирдолтой хотуудын нэг.
+            </p>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              Гэхдээ манай хот, зөвхөн утаагаар танигдахаас гадна, 1639 онд
+              дөрвөн тахилгат уулаар хүрээлэгдэн, ариун гэгээн суурин болж
+              үүссэн, олон зуун жилийн түүхэн хот билээ.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* WHAT */}
+      <section className="border-b border-gray-100">
+        <div className="px-8 md:px-14 py-10 border-b border-gray-100">
+          <p
+            className="text-gray-400 uppercase"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Юу хийдэг вэ · What this site does
           </p>
         </div>
 
-        {/* Mission Statement (Эрхэм зорилго) */}
-        <div className="bg-white rounded-2xl p-8 md:p-12 shadow-lg mb-12 border-2 border-blue-100">
-          <h2 className="font-mongolian text-2xl md:text-3xl font-bold text-gray-900 mb-6 text-center">
-            Эрхэм Зорилго
-          </h2>
-          <div className="space-y-4 text-gray-700 leading-relaxed max-w-4xl mx-auto">
-            <p className="text-base md:text-lg">
-              <strong className="text-blue-600">ulaanbaatar.app</strong> нь
-              Улаанбаатар хотын иргэд бүрт агаарын чанарын мэдээллийг
-              хүртээмжтэй, ойлгомжтой хэлбэрээр хүргэх зорилготой. Бид хүн бүр
-              өөрийн эрүүл мэндээ хамгаалж, мэдээлэлтэй шийдвэр гаргахад нь
-              туслахыг эрхэмлэдэг.
-            </p>
-            <p className="text-gray-600">
-              Агаарын бохирдол нь бидний хотын хамгийн ноцтой асуудлуудын нэг.
-              Бид энэ асуудлыг шийдвэрлэхийн тулд өгөгдөл, мэдлэг, боловсрол
-              гэсэн гурван чиглэлээр ажиллаж байна.
-            </p>
-          </div>
-        </div>
-
-        {/* Why This Matters (Яагаад энэ чухал вэ) */}
-        <div className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-2xl p-8 md:p-12 mb-12">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-              </div>
-              <h2 className="font-mongolian text-2xl md:text-3xl font-bold text-gray-900">
-                Яагаад Энэ Чухал Вэ?
-              </h2>
-            </div>
-
-            <div className="space-y-4 text-gray-700 leading-relaxed">
-              <p className="text-base">
-                Улаанбаатар хот нь{" "}
-                <strong>
-                  дэлхийд агаарын бохирдол хамгийн их хотуудын нэг
-                </strong>{" "}
-                юм. Ялангуяа өвлийн улиралд нүүрсний утаа, машины яндан, усан
-                үеийн нөхцөл байдлаас шалтгаалан агаарын чанар эрс муудардаг.
-              </p>
-              <p className="text-gray-600">
-                Агаарын бохирдол нь хүүхдүүд, өндөр настнууд, уушигны өвчтэй
-                хүмүүст ялангуяа хортой. Мэдээллийг мэдэж байж, өдөр тутмын үйл
-                ажиллагаагаа төлөвлөх (гадуур гарах, дасгал хөдөлгөөн хийх,
-                хүүхдийг сургуульд явуулах гэх мэт) нь{" "}
-                <strong>эрүүл мэндийг хамгаалахад чухал ач холбогдолтой</strong>
-                .
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Vision for Clean City (Цэвэр хотын төлөвлөгөө) */}
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-8 md:p-12 mb-12">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg
-                className="w-8 h-8 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <h2 className="font-mongolian text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Цэвэр, Ногоон Улаанбаатарт
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-6 px-4">
-              Бид зөвхөн агаарын чанарыг хэмжихээс гадна шийдлийг санал болгож
-              байна. Эрчим хүч хэмнэсэн, байгальд ээлтэй барилга барих мэдлэгийг
-              хүртээмжтэй болгож, хотын агаарын чанарыг сайжруулахад хувь нэмрээ
-              оруулахыг эрмэлж байна.
-            </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          {sections.map((item, i) => (
             <Link
-              href="/passivhaus"
-              className="inline-flex items-center gap-2 text-green-700 hover:text-green-900 font-mongolian font-medium text-sm transition-colors group"
+              key={item.href}
+              href={item.href}
+              className={
+                "group p-8 hover:bg-gray-50 transition-colors duration-300 border-b border-gray-100 " +
+                (i < sections.length - 1
+                  ? "lg:border-b-0 lg:border-r"
+                  : "lg:border-b-0")
+              }
             >
-              <span>Passivhaus Гарын Авлага</span>
-              <svg
-                className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+              <h3
+                className="font-normal text-gray-800 mb-3"
+                style={{
+                  fontFamily: "var(--font-playfair)",
+                  fontSize: "18px",
+                }}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
+                {item.label}
+              </h3>
+              <p className="text-sm text-gray-400 leading-relaxed mb-5">
+                {item.body}
+              </p>
+              <span
+                className="text-gray-400 group-hover:text-gray-600 transition-colors tracking-wider"
+                style={{ fontSize: "11px" }}
+              >
+                Үзэх →
+              </span>
             </Link>
-          </div>
+          ))}
         </div>
+      </section>
 
-        {/* Contact Section (Холбоо барих хэсэг) */}
-        <div className="bg-white rounded-2xl p-8 md:p-12 shadow-lg border-2 border-gray-200">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="font-mongolian text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Холбоо Барих
-            </h2>
-            <p className="text-gray-600 mb-8 leading-relaxed px-4">
-              Санал хүсэлт, асуулт байвал бидэнтэй холбогдоорой. Таны саналыг
-              үнэлж, платформоо сайжруулахад ашиглана.
-            </p>
-
-            <div className="inline-block bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 border-2 border-blue-200">
-              <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-white font-bold text-2xl">МД</span>
-              </div>
-              <p className="text-gray-900 mb-1 font-semibold text-lg font-mongolian">
-                М.Дөлгөөн
-              </p>
-              <p className="text-gray-600 text-sm mb-4 font-mongolian">
-                Үүсгэн байгуулагч
-              </p>
-              <div className="space-y-2">
-                <p>
-                  <a
-                    href="mailto:dulguun.mdr@gmail.com"
-                    className="text-blue-600 hover:text-blue-800 hover:underline transition-colors font-medium text-sm"
-                  >
-                    dulguun.mdr@gmail.com
-                  </a>
-                </p>
-                <p>
-                  <a
-                    href="https://www.ulaanbaatar.app"
-                    className="text-blue-600 hover:text-blue-800 hover:underline transition-colors font-medium text-sm"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    www.ulaanbaatar.app
-                  </a>
-                </p>
-              </div>
-            </div>
-
-            <p className="text-gray-400 text-sm mt-8 italic font-mongolian">
-              &quot;Улаанбаатарын цэвэр агаарт хамтдаа&quot;
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* CLOSING QUOTE */}
+      <section className="px-8 md:px-14 py-12 md:py-16 bg-gray-50/50">
+        <blockquote
+          className="font-normal text-gray-400 leading-relaxed max-w-xl"
+          style={{
+            fontFamily: "var(--font-playfair)",
+            fontStyle: "italic",
+            fontSize: "clamp(16px, 2vw, 20px)",
+          }}
+        >
+          &ldquo;Улаанбаатарт хамтдаа.&rdquo;
+        </blockquote>
+      </section>
     </main>
   );
 }

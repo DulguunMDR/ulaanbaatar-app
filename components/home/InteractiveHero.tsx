@@ -1,7 +1,4 @@
 // components/home/InteractiveHero.tsx
-// Файлын байршил: components/home/InteractiveHero.tsx
-// Интерактив Hero - Станц сонгоход бүх өгөгдөл шинэчлэгдэнэ
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -12,7 +9,17 @@ import { POLLUTANT_INFO, getPollutantColor } from "@/lib/pollutantInfo";
 
 interface InteractiveHeroProps {
   stations: StationData[];
-  initialData: AQIData; // Анхны өгөгдөл (server-аас ирнэ)
+  initialData: AQIData;
+}
+
+// Semantic AQI color — only used for the small indicator dot
+function getAQIDotColor(aqi: number): string {
+  if (aqi <= 50) return "#22c55e";
+  if (aqi <= 100) return "#f59e0b";
+  if (aqi <= 150) return "#f97316";
+  if (aqi <= 200) return "#ef4444";
+  if (aqi <= 300) return "#a855f7";
+  return "#7f1d1d";
 }
 
 export default function InteractiveHero({
@@ -20,401 +27,459 @@ export default function InteractiveHero({
   initialData,
 }: InteractiveHeroProps) {
   const [selectedStation, setSelectedStation] = useState<StationData>(
-    stations[0] ||
-      stations.find(
-        (s) => s.aqi === Math.min(...stations.map((st) => st.aqi)),
-      ) ||
-      stations[0],
+    stations[0],
   );
   const [stationData, setStationData] = useState<AQIData>(initialData);
   const [loading, setLoading] = useState(false);
 
-  // Станц солигдоход өгөгдөл татах
   useEffect(() => {
     const loadStationData = async () => {
       setLoading(true);
       const details = await fetchStationDetails(selectedStation.uid);
-      if (details) {
-        // fetchStationDetails одоо зөв AQIData төрлийг буцаана (now returns proper AQIData type)
-        setStationData(details);
-      }
+      if (details) setStationData(details);
       setLoading(false);
     };
-
     loadStationData();
   }, [selectedStation]);
 
   const healthMsg = getHealthMessage(stationData.aqi);
 
-  // AQI-д харгалзах өнгө
-  const getAQIColorClass = (aqi: number): string => {
-    if (aqi <= 50) return "bg-green-500";
-    if (aqi <= 100) return "bg-golden";
-    if (aqi <= 150) return "bg-orange-500";
-    if (aqi <= 200) return "bg-red-500";
-    if (aqi <= 300) return "bg-purple-600";
-    return "bg-red-900";
-  };
-
-  // Зөвхөн хүчинтэй AQI утгатай станцуудыг эрэмбэлэх (Sort only stations with valid AQI values)
   const sortedStations = [...stations]
     .filter((s) => s.aqi && !isNaN(s.aqi))
     .sort((a, b) => b.aqi - a.aqi);
 
+  const avgAqi = Math.round(
+    sortedStations.reduce((sum, s) => sum + s.aqi, 0) / sortedStations.length,
+  );
+
   return (
-    <div className="relative">
-      {/* Loading overlay */}
-      {loading && (
-        <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-xl p-6 shadow-2xl flex items-center gap-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-golden"></div>
-            <p className="text-gray-700 font-semibold">
-              Өгөгдөл ачааллаж байна...
-            </p>
-          </div>
+    <div
+      className={
+        loading
+          ? "opacity-60 pointer-events-none transition-opacity"
+          : "transition-opacity"
+      }
+    >
+      {/* AQI Hero */}
+      <div
+        className="grid border-b border-gray-100"
+        style={{ gridTemplateColumns: "32px 1fr" }}
+      >
+        <div
+          className="border-r border-gray-100 flex items-center justify-center py-10"
+          style={{
+            writingMode: "vertical-rl",
+            textOrientation: "mixed",
+            transform: "rotate(180deg)",
+          }}
+        >
+          <span
+            className="text-gray-300 uppercase"
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "9px",
+              letterSpacing: "0.4em",
+            }}
+          >
+            AQI · АГААРЫН ЧАНАР
+          </span>
         </div>
-      )}
 
-      {/* Giant AQI Hero Section */}
-      <section className="bg-white py-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Station name */}
-          <h1 className="text-center text-2xl md:text-3xl font-bold text-gray-700 mb-2">
+        <div className="px-8 md:px-14 py-10">
+          <p
+            className="text-gray-400 uppercase mb-2"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
             {stationData.city}
-          </h1>
-
-          {/* Coordinates */}
-          <p className="text-center text-sm text-gray-500 mb-8">
-            📍 {selectedStation.station.geo[0].toFixed(4)}°N,{" "}
+          </p>
+          <p
+            className="text-gray-300 mb-8"
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "11px",
+              letterSpacing: "0.06em",
+            }}
+          >
+            {selectedStation.station.geo[0].toFixed(4)}°N ·{" "}
             {selectedStation.station.geo[1].toFixed(4)}°E
           </p>
 
-          {/* Giant AQI Circle */}
-          <div className="flex justify-center mb-8">
-            <div
-              className={`${getAQIColorClass(
-                stationData.aqi,
-              )} w-64 h-64 md:w-80 md:h-80 rounded-full shadow-2xl flex flex-col items-center justify-center text-white transition-all duration-500`}
+          {/* Giant AQI number */}
+          <div className="flex items-end gap-6 mb-6">
+            <span
+              className="font-normal text-gray-900 leading-none"
+              style={{
+                fontFamily: "var(--font-playfair)",
+                fontSize: "clamp(80px, 14vw, 140px)",
+              }}
             >
-              <div className="text-8xl md:text-9xl font-bold">
-                {stationData.aqi}
-              </div>
-              <div className="text-2xl font-semibold mt-2">AQI</div>
-            </div>
-          </div>
-
-          {/* Health Status */}
-          <div className="text-center mb-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              {healthMsg.text}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              {healthMsg.advice}
-            </p>
-          </div>
-
-          {/* Updated time */}
-          {stationData.time && (
-            <p className="text-center text-sm text-gray-500">
-              🕐 {stationData.time} шинэчлэгдсэн
-            </p>
-          )}
-        </div>
-      </section>
-
-      {/* Quick Info Cards - All available data */}
-      <section className="max-w-6xl mx-auto px-4 pb-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {/* PM2.5 */}
-          {stationData.pm25 && (
-            <div className="bg-gray-50 rounded-xl p-4 text-center hover:bg-gray-100 transition-colors">
-              <p className="text-gray-600 text-sm mb-1">PM2.5</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stationData.pm25}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">μg/m³</p>
-            </div>
-          )}
-
-          {/* PM10 */}
-          {stationData.pm10 && (
-            <div className="bg-gray-50 rounded-xl p-4 text-center hover:bg-gray-100 transition-colors">
-              <p className="text-gray-600 text-sm mb-1">PM10</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stationData.pm10}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">μg/m³</p>
-            </div>
-          )}
-
-          {/* O3 */}
-          {stationData.o3 && (
-            <div className="bg-gray-50 rounded-xl p-4 text-center hover:bg-gray-100 transition-colors">
-              <p className="text-gray-600 text-sm mb-1">O₃ (Озон)</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stationData.o3}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">ppb</p>
-            </div>
-          )}
-
-          {/* NO2 */}
-          {stationData.no2 && (
-            <div className="bg-gray-50 rounded-xl p-4 text-center hover:bg-gray-100 transition-colors">
-              <p className="text-gray-600 text-sm mb-1">NO₂</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stationData.no2}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">ppb</p>
-            </div>
-          )}
-
-          {/* SO2 */}
-          {stationData.so2 && (
-            <div className="bg-gray-50 rounded-xl p-4 text-center hover:bg-gray-100 transition-colors">
-              <p className="text-gray-600 text-sm mb-1">SO₂</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stationData.so2}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">ppb</p>
-            </div>
-          )}
-
-          {/* CO */}
-          {stationData.co && (
-            <div className="bg-gray-50 rounded-xl p-4 text-center hover:bg-gray-100 transition-colors">
-              <p className="text-gray-600 text-sm mb-1">CO</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stationData.co}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">ppm</p>
-            </div>
-          )}
-
-          {/* Humidity */}
-          {stationData.humidity && (
-            <div className="bg-gray-50 rounded-xl p-4 text-center hover:bg-gray-100 transition-colors">
-              <p className="text-gray-600 text-sm mb-1">Чийгшил</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stationData.humidity}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">%</p>
-            </div>
-          )}
-
-          {/* Temperature */}
-          {stationData.temp && (
-            <div className="bg-gray-50 rounded-xl p-4 text-center hover:bg-gray-100 transition-colors">
-              <p className="text-gray-600 text-sm mb-1">Температур</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stationData.temp}°
-              </p>
-              <p className="text-xs text-gray-500 mt-1">Celsius</p>
-            </div>
-          )}
-
-          {/* Pressure */}
-          {stationData.pressure && (
-            <div className="bg-gray-50 rounded-xl p-4 text-center hover:bg-gray-100 transition-colors">
-              <p className="text-gray-600 text-sm mb-1">Даралт</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stationData.pressure}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">hPa</p>
-            </div>
-          )}
-
-          {/* Wind */}
-          {stationData.wind && (
-            <div className="bg-gray-50 rounded-xl p-4 text-center hover:bg-gray-100 transition-colors">
-              <p className="text-gray-600 text-sm mb-1">Салхи</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stationData.wind}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">m/s</p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Pollutants Grid with dominant indicator */}
-      <section className="max-w-6xl mx-auto px-4 pb-12">
-        <div className="mb-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-            🔬 Бохирдуулагчид
-          </h2>
-          <p className="text-gray-600">
-            Агаарт байгаа бодисуудын дэлгэрэнгүй мэдээлэл
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {[
-            { key: "pm25", value: stationData.pm25 },
-            { key: "pm10", value: stationData.pm10 },
-            { key: "o3", value: stationData.o3 },
-            { key: "no2", value: stationData.no2 },
-            { key: "so2", value: stationData.so2 },
-            { key: "co", value: stationData.co },
-          ]
-            .filter((p) => p.value !== null)
-            .map(({ key, value }) => {
-              const info = POLLUTANT_INFO[key as keyof typeof POLLUTANT_INFO];
-              const colorClass = getPollutantColor(key, value);
-              const isDominant =
-                stationData.dominantPollutant === key.toUpperCase();
-
-              return (
-                <div
-                  key={key}
-                  className="bg-white border-2 border-gray-200 rounded-xl p-5 relative hover:border-golden transition-all"
+              {stationData.aqi}
+            </span>
+            <div className="mb-3">
+              <div className="flex items-center gap-2 mb-1">
+                <span
+                  className="inline-block rounded-full"
+                  style={{
+                    width: 8,
+                    height: 8,
+                    backgroundColor: getAQIDotColor(stationData.aqi),
+                    flexShrink: 0,
+                  }}
+                />
+                <span
+                  className="text-gray-900"
+                  style={{ fontFamily: "var(--font-inter)", fontSize: "14px" }}
                 >
-                  {isDominant && (
-                    <div className="absolute -top-2 -right-2 bg-golden text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                      ⚠️ Гол асуудал
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <p className="text-xs text-gray-500 mb-1">
-                        {info.nameMn}
-                      </p>
-                      <p className="text-sm font-semibold text-gray-700">
-                        {info.name}
-                      </p>
-                    </div>
-                    <span className="text-3xl">{info.icon}</span>
-                  </div>
-
-                  <div className="mb-3">
-                    <p className="text-4xl font-bold text-gray-900">{value}</p>
-                    <p className="text-xs text-gray-500 mt-1">{info.unit}</p>
-                  </div>
-
-                  <div
-                    className={`${colorClass} text-white text-xs font-semibold px-3 py-1 rounded-full inline-block`}
-                  >
-                    {value! <= info.threshold.good && "Сайн"}
-                    {value! > info.threshold.good &&
-                      value! <= info.threshold.moderate &&
-                      "Дунд"}
-                    {value! > info.threshold.moderate && "Муу"}
-                  </div>
-                </div>
-              );
-            })}
-        </div>
-      </section>
-
-      {/* Station Selector */}
-      <section className="max-w-6xl mx-auto px-4 pb-12">
-        <div className="mb-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-            📍 Станц сонгох
-          </h2>
-          <p className="text-gray-600">
-            Өөр станцын өгөгдлийг харахын тулд доорх жагсаалтаас сонгоно уу
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          {sortedStations.map((station, index) => {
-            const stationHealthMsg = getHealthMessage(station.aqi);
-            const isSelected = station.uid === selectedStation.uid;
-
-            return (
-              <button
-                key={station.uid}
-                onClick={() => setSelectedStation(station)}
-                className={`w-full bg-white rounded-xl p-4 transition-all flex items-center justify-between text-left ${
-                  isSelected
-                    ? "border-2 border-golden shadow-lg scale-[1.02]"
-                    : "border-2 border-gray-200 hover:border-golden hover:shadow-md"
-                }`}
+                  {healthMsg.text}
+                </span>
+              </div>
+              <p
+                className="text-gray-400"
+                style={{ fontFamily: "var(--font-inter)", fontSize: "12px" }}
               >
-                <div className="flex items-center gap-4">
-                  <div
-                    className={`text-2xl font-bold w-10 h-10 rounded-full flex items-center justify-center ${
-                      isSelected
-                        ? "bg-golden text-white"
-                        : "bg-gray-100 text-gray-400"
-                    }`}
-                  >
-                    {index + 1}
-                  </div>
-                  <div>
-                    <p
-                      className={`font-semibold text-lg ${
-                        isSelected ? "text-golden" : "text-gray-900"
-                      }`}
-                    >
-                      {station.station.name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {station.station.geo[0].toFixed(4)}°N,{" "}
-                      {station.station.geo[1].toFixed(4)}°E
-                    </p>
-                  </div>
-                </div>
+                AQI Index
+              </p>
+            </div>
+          </div>
 
-                <div className="text-right">
-                  <p className="text-4xl font-bold text-gray-900 mb-1">
-                    {station.aqi || "—"}
-                  </p>
-                  <span
-                    className={`${stationHealthMsg.color} text-white text-sm font-semibold px-4 py-1 rounded-full inline-block`}
+          <p
+            className="text-gray-500 max-w-md mb-8"
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "13px",
+              lineHeight: 1.6,
+            }}
+          >
+            {healthMsg.advice}
+          </p>
+
+          {stationData.time && (
+            <p
+              className="text-gray-300"
+              style={{ fontSize: "10px", letterSpacing: "0.08em" }}
+            >
+              Шинэчлэгдсэн · {stationData.time}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Quick stats — pollutant readings */}
+      <div
+        className="grid border-b border-gray-100"
+        style={{ gridTemplateColumns: "32px 1fr" }}
+      >
+        <div className="border-r border-gray-100" />
+        <div className="px-8 md:px-14 py-8">
+          <p
+            className="text-gray-400 uppercase mb-6"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Бохирдуулагчид · Pollutants
+          </p>
+
+          <div className="border border-gray-100">
+            {[
+              {
+                key: "pm25",
+                value: stationData.pm25,
+                label: "PM2.5",
+                unit: "μg/m³",
+              },
+              {
+                key: "pm10",
+                value: stationData.pm10,
+                label: "PM10",
+                unit: "μg/m³",
+              },
+              { key: "o3", value: stationData.o3, label: "O₃", unit: "ppb" },
+              { key: "no2", value: stationData.no2, label: "NO₂", unit: "ppb" },
+              { key: "so2", value: stationData.so2, label: "SO₂", unit: "ppb" },
+              { key: "co", value: stationData.co, label: "CO", unit: "ppm" },
+              {
+                key: "humidity",
+                value: stationData.humidity,
+                label: "Чийгшил",
+                unit: "%",
+              },
+              {
+                key: "temp",
+                value: stationData.temp,
+                label: "Температур",
+                unit: "°C",
+              },
+              {
+                key: "pressure",
+                value: stationData.pressure,
+                label: "Даралт",
+                unit: "hPa",
+              },
+              {
+                key: "wind",
+                value: stationData.wind,
+                label: "Салхи",
+                unit: "м/с",
+              },
+            ]
+              .filter((p) => p.value !== null && p.value !== undefined)
+              .map((p, i, arr) => {
+                const info =
+                  POLLUTANT_INFO[p.key as keyof typeof POLLUTANT_INFO];
+                const isDominant =
+                  stationData.dominantPollutant === p.key.toUpperCase();
+
+                return (
+                  <div
+                    key={p.key}
+                    className="flex items-center justify-between px-5 py-4 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors"
                   >
-                    {stationHealthMsg.text}
+                    <div className="flex items-center gap-3">
+                      {isDominant && (
+                        <span
+                          className="inline-block rounded-full"
+                          style={{
+                            width: 5,
+                            height: 5,
+                            backgroundColor: "#ef4444",
+                            flexShrink: 0,
+                          }}
+                          title="Гол бохирдуулагч"
+                        />
+                      )}
+                      {!isDominant && (
+                        <span style={{ width: 5, display: "inline-block" }} />
+                      )}
+                      <span
+                        className="text-gray-900"
+                        style={{
+                          fontFamily: "var(--font-inter)",
+                          fontSize: "13px",
+                        }}
+                      >
+                        {p.label}
+                      </span>
+                      {info && (
+                        <span
+                          className="text-gray-300"
+                          style={{ fontSize: "11px" }}
+                        >
+                          {info.nameMn}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span
+                        className="text-gray-900"
+                        style={{
+                          fontFamily: "var(--font-inter)",
+                          fontSize: "16px",
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {p.value}
+                      </span>
+                      <span
+                        className="text-gray-400"
+                        style={{ fontSize: "10px" }}
+                      >
+                        {p.unit}
+                      </span>
+                      {isDominant && (
+                        <span
+                          className="text-gray-400 uppercase"
+                          style={{ fontSize: "9px", letterSpacing: "0.1em" }}
+                        >
+                          гол
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      </div>
+
+      {/* Station selector */}
+      <div
+        className="grid border-b border-gray-100"
+        style={{ gridTemplateColumns: "32px 1fr" }}
+      >
+        <div
+          className="border-r border-gray-100 flex items-center justify-center"
+          style={{
+            writingMode: "vertical-rl",
+            textOrientation: "mixed",
+            transform: "rotate(180deg)",
+          }}
+        >
+          <span
+            className="text-gray-300 uppercase"
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "9px",
+              letterSpacing: "0.4em",
+            }}
+          >
+            СТАНЦУУД · STATIONS
+          </span>
+        </div>
+
+        <div className="px-8 md:px-14 py-10">
+          <p
+            className="text-gray-400 uppercase mb-6"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Станц сонгох · Select station
+          </p>
+
+          {/* Station table */}
+          <div className="border border-gray-100 mb-8">
+            {/* Header */}
+            <div
+              className="grid border-b border-gray-100"
+              style={{ gridTemplateColumns: "1fr 80px 80px" }}
+            >
+              {["Станц", "AQI", "Төлөв"].map((h) => (
+                <div
+                  key={h}
+                  className="px-4 py-2 border-r border-gray-100 last:border-r-0"
+                >
+                  <span
+                    className="text-gray-300 uppercase"
+                    style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+                  >
+                    {h}
                   </span>
                 </div>
+              ))}
+            </div>
 
-                {isSelected && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-golden rounded-r-full"></div>
-                )}
-              </button>
-            );
-          })}
+            {sortedStations.map((station) => {
+              const msg = getHealthMessage(station.aqi);
+              const isSelected = station.uid === selectedStation.uid;
+
+              return (
+                <button
+                  key={station.uid}
+                  onClick={() => setSelectedStation(station)}
+                  className="w-full grid border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors text-left"
+                  style={{ gridTemplateColumns: "1fr 80px 80px" }}
+                >
+                  <div className="px-4 py-4 border-r border-gray-100 flex items-center gap-2">
+                    {isSelected && (
+                      <span
+                        className="inline-block rounded-full flex-shrink-0"
+                        style={{
+                          width: 5,
+                          height: 5,
+                          backgroundColor: "#1a1a1a",
+                        }}
+                      />
+                    )}
+                    <span
+                      className={isSelected ? "text-gray-900" : "text-gray-500"}
+                      style={{
+                        fontFamily: "var(--font-inter)",
+                        fontSize: "13px",
+                        fontWeight: isSelected ? 500 : 400,
+                      }}
+                    >
+                      {station.station.name}
+                    </span>
+                  </div>
+                  <div className="px-4 py-4 border-r border-gray-100 flex items-center justify-center">
+                    <span
+                      className="text-gray-900"
+                      style={{
+                        fontFamily: "var(--font-inter)",
+                        fontSize: "15px",
+                        fontVariantNumeric: "tabular-nums",
+                      }}
+                    >
+                      {station.aqi}
+                    </span>
+                  </div>
+                  <div className="px-4 py-4 flex items-center justify-center gap-1.5">
+                    <span
+                      className="inline-block rounded-full flex-shrink-0"
+                      style={{
+                        width: 6,
+                        height: 6,
+                        backgroundColor: getAQIDotColor(station.aqi),
+                      }}
+                    />
+                    <span
+                      className="text-gray-400"
+                      style={{ fontSize: "10px" }}
+                    >
+                      {msg.text}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Station statistics — minimal 3-col */}
+          <div className="border border-gray-100">
+            <div
+              className="grid"
+              style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
+            >
+              {[
+                {
+                  labelMn: "Хамгийн сайн",
+                  labelEn: "Best",
+                  value: sortedStations[sortedStations.length - 1]?.aqi ?? "—",
+                  name:
+                    sortedStations[
+                      sortedStations.length - 1
+                    ]?.station.name.split(",")[0] ?? "—",
+                },
+                {
+                  labelMn: "Дундаж",
+                  labelEn: "Average",
+                  value: avgAqi,
+                  name: "Бүх станцууд",
+                },
+                {
+                  labelMn: "Хамгийн муу",
+                  labelEn: "Worst",
+                  value: sortedStations[0]?.aqi ?? "—",
+                  name: sortedStations[0]?.station.name.split(",")[0] ?? "—",
+                },
+              ].map((stat, i) => (
+                <div
+                  key={i}
+                  className="px-5 py-4"
+                  style={{ borderRight: i < 2 ? "1px solid #f3f4f6" : "none" }}
+                >
+                  <p
+                    className="text-gray-400 uppercase mb-2"
+                    style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+                  >
+                    {stat.labelMn}
+                  </p>
+                  <p
+                    className="text-gray-900 mb-0.5"
+                    style={{
+                      fontFamily: "var(--font-inter)",
+                      fontSize: "20px",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                  >
+                    {stat.value}
+                  </p>
+                  <p className="text-gray-300" style={{ fontSize: "10px" }}>
+                    {stat.name}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-
-        {/* Statistics */}
-        <div className="mt-8 grid grid-cols-3 gap-4">
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-            <p className="text-sm text-green-700 mb-1">Хамгийн сайн</p>
-            <p className="text-3xl font-bold text-green-900">
-              {sortedStations[sortedStations.length - 1]?.aqi || "—"}
-            </p>
-            <p className="text-xs text-green-600 mt-1">
-              {sortedStations[sortedStations.length - 1]?.station.name.split(
-                ",",
-              )[0] || "—"}
-            </p>
-          </div>
-
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
-            <p className="text-sm text-gray-700 mb-1">Дундаж</p>
-            <p className="text-3xl font-bold text-gray-900">
-              {sortedStations.length > 0
-                ? Math.round(
-                    sortedStations.reduce((sum, s) => sum + s.aqi, 0) /
-                      sortedStations.length,
-                  )
-                : "—"}
-            </p>
-            <p className="text-xs text-gray-600 mt-1">Бүх станцууд</p>
-          </div>
-
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
-            <p className="text-sm text-red-700 mb-1">Хамгийн муу</p>
-            <p className="text-3xl font-bold text-red-900">
-              {sortedStations[0]?.aqi || "—"}
-            </p>
-            <p className="text-xs text-red-600 mt-1">
-              {sortedStations[0]?.station.name.split(",")[0] || "—"}
-            </p>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }

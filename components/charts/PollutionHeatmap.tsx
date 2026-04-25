@@ -1,6 +1,4 @@
 // components/charts/PollutionHeatmap.tsx
-// Бохирдлын календар heatmap (Pollution calendar heatmap - GitHub style)
-
 "use client";
 
 import { useState } from "react";
@@ -13,68 +11,61 @@ interface Props {
   data: MultiYearHistoricalData;
 }
 
-// Өнгө авах функц (Get color based on AQI)
 function getColorClass(aqi: number): string {
   if (aqi === 0) return "color-empty";
-  if (aqi <= 50) return "color-scale-1"; // Сайн (green)
-  if (aqi <= 100) return "color-scale-2"; // Дунд (yellow)
-  if (aqi <= 150) return "color-scale-3"; // Эрүүл мэндэд муу (orange)
-  if (aqi <= 200) return "color-scale-4"; // Хортой (red)
-  if (aqi <= 300) return "color-scale-5"; // Маш хортой (purple)
-  return "color-scale-6"; // Аюултай (dark red)
+  if (aqi <= 50) return "color-scale-1";
+  if (aqi <= 100) return "color-scale-2";
+  if (aqi <= 150) return "color-scale-3";
+  if (aqi <= 200) return "color-scale-4";
+  if (aqi <= 300) return "color-scale-5";
+  return "color-scale-6";
 }
 
 export default function PollutionHeatmap({ data }: Props) {
   const [selectedYear, setSelectedYear] = useState(
-    data.years[data.years.length - 1]?.year || new Date().getFullYear()
+    data.years[data.years.length - 1]?.year || new Date().getFullYear(),
   );
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
 
   const selectedYearData = data.years.find((y) => y.year === selectedYear);
+  if (!selectedYearData) return null;
 
-  if (!selectedYearData) {
-    return (
-      <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-gray-200">
-        <p className="text-gray-600">Өгөгдөл олдсонгүй</p>
-      </div>
-    );
-  }
-
-  // Heatmap өгөгдөл бэлтгэх (Prepare heatmap data)
   const heatmapData = selectedYearData.data.map((point) => ({
-    date: point.date.split("T")[0], // YYYY-MM-DD
-    count: point.aqi, // Өнгөний эрчмийг тодорхойлно
+    date: point.date.split("T")[0],
+    count: point.aqi,
   }));
 
   const startDate = new Date(selectedYear, 0, 1);
   const endDate = new Date(selectedYear, 11, 31);
 
-  // Tooltip мэдээлэл (Tooltip info)
   const tooltipData = hoveredDate
     ? selectedYearData.data.find((d) => d.date.split("T")[0] === hoveredDate)
     : null;
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-gray-200">
-      <div className="mb-4">
-        <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-          📅 Жилийн календар (Heatmap)
-        </h3>
-        <p className="text-sm text-gray-600 mb-4">
-          календар - өнгө нь агаарын чанарыг илэрхийлнэ
+    <div className="border border-gray-100">
+      {/* Header + year selector */}
+      <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between flex-wrap gap-3">
+        <p
+          className="text-gray-400 uppercase"
+          style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+        >
+          Жилийн календар · Annual heatmap
         </p>
-
-        {/* Жил сонгох (Year selection) */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex gap-1">
           {data.years.map((yearData) => (
             <button
               key={yearData.year}
               onClick={() => setSelectedYear(yearData.year)}
-              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                selectedYear === yearData.year
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
+              className="px-3 py-1 border transition-colors"
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "11px",
+                borderColor:
+                  selectedYear === yearData.year ? "#1a1a1a" : "#f3f4f6",
+                color: selectedYear === yearData.year ? "#1a1a1a" : "#9ca3af",
+                backgroundColor: "transparent",
+              }}
             >
               {yearData.year}
             </button>
@@ -83,7 +74,7 @@ export default function PollutionHeatmap({ data }: Props) {
       </div>
 
       {/* Heatmap */}
-      <div className="overflow-x-auto">
+      <div className="px-5 py-6 border-b border-gray-100 overflow-x-auto">
         <div className="min-w-[800px] pollution-heatmap">
           <CalendarHeatmap
             startDate={startDate}
@@ -95,84 +86,119 @@ export default function PollutionHeatmap({ data }: Props) {
             }}
             titleForValue={(value) => {
               if (!value) return "Өгөгдөл байхгүй";
-              return `${format(new Date(value.date), "yyyy-MM-dd")}: AQI ${
-                value.count
-              }`;
+              return `${format(new Date(value.date), "yyyy-MM-dd")}: AQI ${value.count}`;
             }}
-            onMouseOver={(event, value) => {
-              if (value) {
-                setHoveredDate(value.date);
-              }
+            onMouseOver={(_event, value) => {
+              if (value?.date) setHoveredDate(String(value.date));
             }}
             onMouseLeave={() => setHoveredDate(null)}
           />
         </div>
       </div>
 
-      {/* Tooltip */}
+      {/* Tooltip / hovered date */}
       {tooltipData && (
-        <div className="mt-4 bg-blue-50 rounded-lg p-4 border-2 border-blue-200">
-          <p className="font-semibold text-gray-900">
-            📅 {format(new Date(tooltipData.date), "yyyy оны MM сарын dd")}
+        <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
+          <p
+            className="text-gray-400"
+            style={{ fontFamily: "var(--font-inter)", fontSize: "12px" }}
+          >
+            {format(new Date(tooltipData.date), "yyyy/MM/dd")}
           </p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">
-            AQI: {tooltipData.aqi}
-          </p>
-          <p className="text-sm text-gray-600 mt-1">
-            PM2.5: {tooltipData.components.pm2_5.toFixed(1)} μg/m³
-          </p>
+          <div className="flex items-center gap-4">
+            <span className="text-gray-400" style={{ fontSize: "11px" }}>
+              PM2.5 {tooltipData.components.pm2_5.toFixed(1)} μg/m³
+            </span>
+            <span
+              className="text-gray-900"
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "15px",
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              AQI {tooltipData.aqi}
+            </span>
+          </div>
         </div>
       )}
 
-      {/* Legend (Тайлбар) */}
-      <div className="mt-6 flex flex-wrap items-center gap-4 text-sm">
-        <span className="text-gray-700 font-semibold">Тайлбар:</span>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-[#0e4429]"></div>
-          <span>Сайн (0-50)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-[#fde047]"></div>
-          <span>Дунд (51-100)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-[#fb923c]"></div>
-          <span>Муу (101-150)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-[#f87171]"></div>
-          <span>Хортой (151-200)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-[#a855f7]"></div>
-          <span>Маш хортой (201-300)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-[#7f1d1d]"></div>
-          <span>Аюултай (300+)</span>
-        </div>
+      {/* Legend */}
+      <div className="px-5 py-3 border-b border-gray-100 flex flex-wrap items-center gap-4">
+        <span
+          className="text-gray-400 uppercase"
+          style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+        >
+          Тайлбар
+        </span>
+        {[
+          { color: "#22c55e", label: "0–50" },
+          { color: "#f59e0b", label: "51–100" },
+          { color: "#f97316", label: "101–150" },
+          { color: "#ef4444", label: "151–200" },
+          { color: "#a855f7", label: "201–300" },
+          { color: "#7c2d12", label: "300+" },
+        ].map((item) => (
+          <div key={item.label} className="flex items-center gap-1.5">
+            <span
+              className="inline-block"
+              style={{
+                width: 10,
+                height: 10,
+                backgroundColor: item.color,
+                flexShrink: 0,
+              }}
+            />
+            <span className="text-gray-400" style={{ fontSize: "9px" }}>
+              {item.label}
+            </span>
+          </div>
+        ))}
       </div>
 
-      {/* Статистик (Statistics) */}
-      <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <p className="text-sm text-gray-600">Дундаж AQI</p>
-          <p className="text-3xl font-bold text-gray-900">
-            {selectedYearData.avgAqi}
-          </p>
-        </div>
-        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <p className="text-sm text-gray-600">Хамгийн их</p>
-          <p className="text-3xl font-bold text-red-600">
-            {selectedYearData.maxAqi}
-          </p>
-        </div>
-        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <p className="text-sm text-gray-600">Хамгийн бага</p>
-          <p className="text-3xl font-bold text-green-600">
-            {selectedYearData.minAqi}
-          </p>
-        </div>
+      {/* Stats */}
+      <div className="grid" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+        {[
+          {
+            labelMn: "Дундаж AQI",
+            value: selectedYearData.avgAqi,
+            color: "#1a1a1a",
+          },
+          {
+            labelMn: "Хамгийн их",
+            value: selectedYearData.maxAqi,
+            color: "#ef4444",
+          },
+          {
+            labelMn: "Хамгийн бага",
+            value: selectedYearData.minAqi,
+            color: "#22c55e",
+          },
+        ].map((stat, i) => (
+          <div
+            key={i}
+            className="px-5 py-4"
+            style={{ borderRight: i < 2 ? "1px solid #f3f4f6" : "none" }}
+          >
+            <p
+              className="text-gray-400 uppercase mb-2"
+              style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+            >
+              {stat.labelMn}
+            </p>
+            <p
+              className="font-normal"
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "22px",
+                fontVariantNumeric: "tabular-nums",
+                color: stat.color,
+              }}
+            >
+              {stat.value}
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );

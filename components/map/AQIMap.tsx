@@ -1,5 +1,4 @@
 // components/map/AQIMap.tsx
-// Улаанбаатарын станцууд + RainViewer + салхины давхаргууд (FIXED VERSION)
 
 "use client";
 
@@ -33,7 +32,6 @@ interface AQIMapProps {
   stations: StationData[];
 }
 
-// Станцын дэлгэрэнгүй өгөгдөл (Station details with temp/wind)
 interface StationDetails {
   uid: number;
   temp: number | null;
@@ -43,7 +41,6 @@ interface StationDetails {
 export default function AQIMap({ stations }: AQIMapProps) {
   const [isMounted, setIsMounted] = useState(false);
 
-  // Цаг агаарын давхаргуудын төлөв (Weather layers state)
   const [weatherLayers, setWeatherLayers] = useState({
     rain: false,
     stationWind: false,
@@ -51,75 +48,51 @@ export default function AQIMap({ stations }: AQIMapProps) {
     temperature: false,
   });
 
-  // RainViewer өгөгдөл (RainViewer data)
   const [rainTileUrl, setRainTileUrl] = useState<string | null>(null);
   const [rainLoading, setRainLoading] = useState(false);
   const [rainError, setRainError] = useState<string | null>(null);
   const [rainFetched, setRainFetched] = useState(false);
 
-  // Бүсийн салхины өгөгдөл (Regional wind data)
   const [regionalWind, setRegionalWind] = useState<{
     speed: number;
     direction: number;
   } | null>(null);
 
-  // Станцуудын температур/салхины өгөгдөл (Station temp/wind data)
   const [stationDetails, setStationDetails] = useState<StationDetails[]>([]);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [detailsFetched, setDetailsFetched] = useState(false);
 
-  // Leaflet нь зөвхөн browser дээр ажиллах учир client-side дээр mount хийх
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsMounted(true);
-    }, 0);
-
+    const timer = setTimeout(() => setIsMounted(true), 0);
     return () => clearTimeout(timer);
   }, []);
 
-  // RainViewer өгөгдөл татах - separate effect with better control
   useEffect(() => {
     if (!weatherLayers.rain) {
-      // Reset when layer is disabled
       setRainFetched(false);
       return;
     }
+    if (rainFetched || rainLoading) return;
 
-    if (rainFetched || rainLoading) {
-      // Already fetched or currently fetching
-      return;
-    }
-
-    // Start fetching
     const fetchRain = async () => {
       setRainLoading(true);
       setRainError(null);
-
-      console.log("🌧️ Fetching RainViewer data...");
-
       try {
         const data = await fetchRainViewerData();
-        console.log("🌧️ RainViewer response:", data);
-
         if (data) {
           const latestFrame = getLatestRadarFrame(data);
-          console.log("🌧️ Latest frame:", latestFrame);
-
           if (latestFrame) {
-            const tileUrl = getRainViewerTileUrl(data.host, latestFrame.path);
-            console.log("🌧️ Tile URL:", tileUrl);
-            setRainTileUrl(tileUrl);
+            setRainTileUrl(getRainViewerTileUrl(data.host, latestFrame.path));
           } else {
-            setRainError("Бороо/цасны өгөгдөл одоогоор байхгүй байна");
+            setRainError("Хур тунадасны өгөгдөл одоогоор байхгүй");
           }
         } else {
-          setRainError("RainViewer API-тай холбогдож чадсангүй");
+          setRainError("RainViewer-тай холбогдож чадсангүй");
         }
       } catch (error: unknown) {
-        console.error("🌧️ RainViewer error:", error);
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error";
-        setRainError("RainViewer алдаа: " + errorMessage);
+        const msg =
+          error instanceof Error ? error.message : "Тодорхойгүй алдаа";
+        setRainError("RainViewer: " + msg);
       } finally {
         setRainLoading(false);
         setRainFetched(true);
@@ -129,24 +102,15 @@ export default function AQIMap({ stations }: AQIMapProps) {
     fetchRain();
   }, [weatherLayers.rain, rainFetched, rainLoading]);
 
-  // Бүсийн салхины өгөгдөл татах (Fetch regional wind data)
   useEffect(() => {
-    if (!weatherLayers.regionalWind) {
-      return;
-    }
-
-    if (regionalWind) {
-      // Already have data
-      return;
-    }
+    if (!weatherLayers.regionalWind || regionalWind) return;
 
     const fetchWind = async () => {
       const data = await fetchRegionalWindData();
       if (data && data.hourly.time.length > 0) {
-        const currentIndex = 0;
         setRegionalWind({
-          speed: data.hourly.wind_speed_10m[currentIndex],
-          direction: data.hourly.wind_direction_10m[currentIndex],
+          speed: data.hourly.wind_speed_10m[0],
+          direction: data.hourly.wind_direction_10m[0],
         });
       }
     };
@@ -154,47 +118,30 @@ export default function AQIMap({ stations }: AQIMapProps) {
     fetchWind();
   }, [weatherLayers.regionalWind, regionalWind]);
 
-  // Станцуудын дэлгэрэнгүй өгөгдөл татах
   useEffect(() => {
     const needsDetails = weatherLayers.temperature || weatherLayers.stationWind;
-
     if (!needsDetails) {
-      // Reset when both layers are disabled
       setDetailsFetched(false);
       return;
     }
+    if (detailsFetched || detailsLoading) return;
 
-    if (detailsFetched || detailsLoading) {
-      // Already fetched or currently fetching
-      return;
-    }
-
-    // Start fetching
     const fetchDetails = async () => {
       setDetailsLoading(true);
-
-      console.log(
-        "📊 Fetching station details for",
-        stations.length,
-        "stations"
-      );
-
       try {
         const details = await Promise.all(
           stations.map(async (station) => {
-            const stationData = await fetchStationDetails(station.uid);
+            const d = await fetchStationDetails(station.uid);
             return {
               uid: station.uid,
-              temp: stationData?.temp || null,
-              wind: stationData?.wind || null,
+              temp: d?.temp || null,
+              wind: d?.wind || null,
             };
-          })
+          }),
         );
-
-        console.log("📊 Station details loaded:", details);
         setStationDetails(details);
       } catch (error: unknown) {
-        console.error("📊 Error fetching station details:", error);
+        console.error("Station details error:", error);
       } finally {
         setDetailsLoading(false);
         setDetailsFetched(true);
@@ -210,26 +157,28 @@ export default function AQIMap({ stations }: AQIMapProps) {
     detailsLoading,
   ]);
 
-  // Давхарга асаах/унтраах (Toggle layer)
   const toggleLayer = useCallback((layer: keyof typeof weatherLayers) => {
-    setWeatherLayers((prev) => ({
-      ...prev,
-      [layer]: !prev[layer],
-    }));
+    setWeatherLayers((prev) => ({ ...prev, [layer]: !prev[layer] }));
   }, []);
 
   if (!isMounted || stations.length === 0) {
     return (
-      <div className="w-full h-[500px] bg-gray-100 rounded-xl flex items-center justify-center">
-        <p className="text-gray-500">Газрын зураг ачааллаж байна...</p>
+      <div
+        className="w-full border border-gray-100 flex items-center justify-center"
+        style={{ height: "500px" }}
+      >
+        <p
+          className="text-gray-300 uppercase"
+          style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+        >
+          Газрын зураг ачааллаж байна
+        </p>
       </div>
     );
   }
 
-  // Улаанбаатарын төв цэг
   const centerPosition: LatLngExpression = [47.9184, 106.9177];
 
-  // AQI-д харгалзах өнгө авах
   const getAQIColor = (aqi: number): string => {
     if (aqi <= 50) return "#22c55e";
     if (aqi <= 100) return "#C9B458";
@@ -239,7 +188,6 @@ export default function AQIMap({ stations }: AQIMapProps) {
     return "#7f1d1d";
   };
 
-  // Температурын өнгө (Temperature color - Mongolia winter scale)
   const getTempColor = (temp: number): string => {
     if (temp <= -30) return "#1e3a8a";
     if (temp <= -20) return "#3b82f6";
@@ -251,87 +199,78 @@ export default function AQIMap({ stations }: AQIMapProps) {
     return "#dc2626";
   };
 
-  // Салхины сум icon үүсгэх (Create wind arrow icon)
   const createWindArrow = (speed: number, direction: number) => {
     const category = getWindSpeedCategory(speed);
     const rotation = getArrowRotation(direction);
-
     return new DivIcon({
-      html: `
-        <div style="
-          transform: rotate(${rotation}deg);
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        ">
-          <div style="
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-bottom: 24px solid ${category.color};
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-          "></div>
-        </div>
-      `,
+      html: `<div style="transform:rotate(${rotation}deg);width:40px;height:40px;display:flex;align-items:center;justify-content:center;"><div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:22px solid ${category.color};opacity:0.8;"></div></div>`,
       className: "wind-arrow-marker",
       iconSize: [40, 40],
       iconAnchor: [20, 20],
     });
   };
 
-  // Станцын температур олох (Get station temperature)
-  const getStationTemp = (uid: number): number | null => {
-    const detail = stationDetails.find((d) => d.uid === uid);
-    return detail?.temp || null;
-  };
-
-  // Станцын салхи олох (Get station wind)
-  const getStationWind = (uid: number): number | null => {
-    const detail = stationDetails.find((d) => d.uid === uid);
-    return detail?.wind || null;
-  };
+  const getStationTemp = (uid: number) =>
+    stationDetails.find((d) => d.uid === uid)?.temp ?? null;
+  const getStationWind = (uid: number) =>
+    stationDetails.find((d) => d.uid === uid)?.wind ?? null;
 
   return (
-    <div>
-      {/* Weather Layer Controls (Давхарга сонгох товчлуурууд) */}
+    <div style={{ fontFamily: "var(--font-inter)" }}>
+      {/* Layer controls */}
       <WeatherLayerControls layers={weatherLayers} onToggle={toggleLayer} />
 
-      {/* Loading indicator */}
+      {/* Status bar — loading or error, never both */}
       {(rainLoading || detailsLoading) && (
-        <div className="mb-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-xl flex items-center gap-3">
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
-          <p className="text-sm text-blue-900">
-            {rainLoading && "Бороо/цасны өгөгдөл ачааллаж байна..."}
-            {detailsLoading && "Станцуудын өгөгдөл ачааллаж байна..."}
+        <div className="px-6 py-3 border-b border-gray-100 flex items-center gap-3">
+          <div
+            className="flex-shrink-0"
+            style={{
+              width: "4px",
+              height: "4px",
+              borderRadius: "50%",
+              background: "#9ca3af",
+              animation: "pulse 1.5s infinite",
+            }}
+          />
+          <p
+            className="text-gray-400"
+            style={{ fontSize: "11px", letterSpacing: "0.02em" }}
+          >
+            {rainLoading
+              ? "Хур тунадасны өгөгдөл татаж байна"
+              : "Станцуудын өгөгдөл татаж байна"}
           </p>
         </div>
       )}
 
-      {/* Error messages */}
-      {rainError && (
-        <div className="mb-4 p-3 bg-red-50 border-2 border-red-200 rounded-xl">
-          <p className="text-sm text-red-900">⚠️ {rainError}</p>
+      {rainError && !rainLoading && (
+        <div className="px-6 py-3 border-b border-gray-100">
+          <p
+            className="text-gray-400"
+            style={{ fontSize: "11px", letterSpacing: "0.02em" }}
+          >
+            {rainError}
+          </p>
         </div>
       )}
 
-      {/* Map Container */}
-      <div className="w-full h-[500px] rounded-xl overflow-hidden border-2 border-gray-200 shadow-lg">
+      {/* Map */}
+      <div
+        className="w-full overflow-hidden border-t border-gray-100"
+        style={{ height: "500px" }}
+      >
         <MapContainer
           center={centerPosition}
           zoom={11}
           scrollWheelZoom={true}
           className="w-full h-full"
         >
-          {/* Base Map: OpenStreetMap */}
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          {/* 🌧️ RainViewer Бороо/Цасны давхарга (Rain/Snow Layer) */}
           {weatherLayers.rain && rainTileUrl && (
             <TileLayer
               url={rainTileUrl}
@@ -340,71 +279,116 @@ export default function AQIMap({ stations }: AQIMapProps) {
             />
           )}
 
-          {/* 🌡️ Температурын давхарга (Temperature zones - real data) */}
           {weatherLayers.temperature &&
             stationDetails.length > 0 &&
             stations.map((station) => {
               const temp = getStationTemp(station.uid);
-
               if (temp === null) return null;
-
-              const tempColor = getTempColor(temp);
-
               return (
                 <CircleMarker
                   key={`temp-${station.uid}`}
                   center={station.station.geo as LatLngExpression}
                   radius={50}
                   pathOptions={{
-                    fillColor: tempColor,
-                    color: tempColor,
+                    fillColor: getTempColor(temp),
+                    color: getTempColor(temp),
                     weight: 1,
-                    opacity: 0.4,
-                    fillOpacity: 0.3,
+                    opacity: 0.3,
+                    fillOpacity: 0.2,
                   }}
                 >
                   <Popup>
-                    <div className="text-center p-2">
-                      <p className="font-semibold mb-1">
+                    <div
+                      style={{
+                        textAlign: "center",
+                        padding: "8px",
+                        fontFamily: "var(--font-inter)",
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontSize: "11px",
+                          color: "#6b7280",
+                          marginBottom: "4px",
+                        }}
+                      >
                         {station.station.name}
                       </p>
-                      <p className="text-3xl font-bold">{temp}°C</p>
+                      <p
+                        style={{
+                          fontSize: "24px",
+                          fontWeight: 500,
+                          color: "#111",
+                        }}
+                      >
+                        {temp}°C
+                      </p>
                     </div>
                   </Popup>
                 </CircleMarker>
               );
             })}
 
-          {/* AQI Станцууд (AQI Stations - always visible) */}
           {stations.map((station) => {
             const healthMsg = getHealthMessage(station.aqi);
-            const color = getAQIColor(station.aqi);
-
             return (
               <CircleMarker
                 key={`aqi-${station.uid}`}
                 center={station.station.geo as LatLngExpression}
-                radius={15}
+                radius={14}
                 pathOptions={{
-                  fillColor: color,
+                  fillColor: getAQIColor(station.aqi),
                   color: "#fff",
-                  weight: 3,
+                  weight: 2,
                   opacity: 1,
-                  fillOpacity: 0.8,
+                  fillOpacity: 0.85,
                 }}
               >
                 <Popup>
-                  <div className="text-center p-2">
-                    <p className="font-bold text-lg mb-2">
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "8px",
+                      fontFamily: "var(--font-inter)",
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontSize: "11px",
+                        color: "#6b7280",
+                        marginBottom: "6px",
+                        letterSpacing: "0.04em",
+                      }}
+                    >
                       {station.station.name}
                     </p>
-                    <p className="text-4xl font-bold mb-2">{station.aqi}</p>
                     <p
-                      className={`${healthMsg.color} text-white px-3 py-1 rounded-full text-sm font-semibold`}
+                      style={{
+                        fontSize: "32px",
+                        fontWeight: 500,
+                        color: "#111",
+                        lineHeight: 1,
+                        marginBottom: "8px",
+                      }}
+                    >
+                      {station.aqi}
+                    </p>
+                    <p
+                      style={{
+                        fontSize: "10px",
+                        letterSpacing: "0.10em",
+                        color: "#9ca3af",
+                      }}
                     >
                       {healthMsg.text}
                     </p>
-                    <p className="text-xs text-gray-600 mt-2">
+                    <p
+                      style={{
+                        fontSize: "10px",
+                        color: "#9ca3af",
+                        marginTop: "4px",
+                      }}
+                    >
                       {healthMsg.advice}
                     </p>
                   </div>
@@ -413,16 +397,12 @@ export default function AQIMap({ stations }: AQIMapProps) {
             );
           })}
 
-          {/* 💨 Станцын салхины сумууд (Station wind arrows - real speed) */}
           {weatherLayers.stationWind &&
             stationDetails.length > 0 &&
             stations.map((station) => {
               const windSpeed = getStationWind(station.uid);
-
               if (!windSpeed || windSpeed < 1) return null;
-
               const windDirection = 270 + (station.uid % 90);
-
               return (
                 <Marker
                   key={`wind-${station.uid}`}
@@ -430,13 +410,30 @@ export default function AQIMap({ stations }: AQIMapProps) {
                   icon={createWindArrow(windSpeed, windDirection)}
                 >
                   <Popup>
-                    <div className="text-center p-2">
-                      <p className="font-semibold mb-1">
+                    <div
+                      style={{
+                        textAlign: "center",
+                        padding: "8px",
+                        fontFamily: "var(--font-inter)",
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontSize: "11px",
+                          color: "#6b7280",
+                          marginBottom: "4px",
+                        }}
+                      >
                         {station.station.name}
                       </p>
-                      <p className="text-sm">💨 Салхи: {windSpeed} м/с</p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        (Чиглэл: ойролцоо баруун)
+                      <p
+                        style={{
+                          fontSize: "18px",
+                          fontWeight: 500,
+                          color: "#111",
+                        }}
+                      >
+                        {windSpeed} м/с
                       </p>
                     </div>
                   </Popup>
@@ -444,23 +441,46 @@ export default function AQIMap({ stations }: AQIMapProps) {
               );
             })}
 
-          {/* 🌬️ Бүсийн салхины сум (Regional wind arrow) */}
           {weatherLayers.regionalWind && regionalWind && (
             <Marker
               position={centerPosition}
               icon={createWindArrow(regionalWind.speed, regionalWind.direction)}
             >
               <Popup>
-                <div className="text-center p-3">
-                  <p className="font-bold mb-2">Бүсийн салхи</p>
-                  <p className="text-2xl font-bold mb-1">
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "8px",
+                    fontFamily: "var(--font-inter)",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: "11px",
+                      color: "#6b7280",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    Бүсийн салхи
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: 500,
+                      color: "#111",
+                      marginBottom: "4px",
+                    }}
+                  >
                     {regionalWind.speed.toFixed(1)} м/с
                   </p>
-                  <p className="text-sm text-gray-600">
-                    🧭 {degreesToCompass(regionalWind.direction)}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-2">
-                    {getWindSpeedCategory(regionalWind.speed).label}
+                  <p
+                    style={{
+                      fontSize: "10px",
+                      letterSpacing: "0.08em",
+                      color: "#9ca3af",
+                    }}
+                  >
+                    {degreesToCompass(regionalWind.direction)}
                   </p>
                 </div>
               </Popup>
@@ -468,50 +488,6 @@ export default function AQIMap({ stations }: AQIMapProps) {
           )}
         </MapContainer>
       </div>
-
-      {/* Active Layers Info */}
-      {Object.values(weatherLayers).some((v) => v) && (
-        <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">ℹ️</span>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-blue-900 mb-2">
-                Идэвхтэй давхаргууд:
-              </p>
-              <ul className="text-sm text-blue-800 space-y-1">
-                {weatherLayers.rain && (
-                  <li>
-                    🌧️ <strong>Бороо/Цас Radar</strong>: Бодит цагийн хур
-                    тунадас (RainViewer)
-                  </li>
-                )}
-                {weatherLayers.temperature && (
-                  <li>
-                    🌡️ <strong>Температур</strong>: Станцуудын температурын бүс
-                    ({stationDetails.filter((d) => d.temp !== null).length}{" "}
-                    станц)
-                  </li>
-                )}
-                {weatherLayers.stationWind && (
-                  <li>
-                    💨 <strong>Станцын салхи</strong>: Хэмжилтийн цэг бүрийн
-                    салхины хурд (
-                    {stationDetails.filter((d) => d.wind !== null).length}{" "}
-                    станц)
-                  </li>
-                )}
-                {weatherLayers.regionalWind && regionalWind && (
-                  <li>
-                    🌬️ <strong>Бүсийн салхи</strong>:{" "}
-                    {regionalWind.speed.toFixed(1)} м/с,{" "}
-                    {degreesToCompass(regionalWind.direction)} (Open-Meteo)
-                  </li>
-                )}
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

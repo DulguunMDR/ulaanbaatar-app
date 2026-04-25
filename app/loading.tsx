@@ -1,18 +1,46 @@
 // app/loading.tsx
+
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="text-center">
-        {/* Animated Loading Spinner (Ачаалалтын дүрс) */}
-        <div className="relative w-20 h-20 mx-auto mb-6">
-          <div className="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
-          <div className="absolute inset-0 border-4 border-golden border-t-transparent rounded-full animate-spin"></div>
-        </div>
+    <div className="pt-14 md:pt-16 min-h-screen bg-white flex items-center justify-center">
+      <div className="grid" style={{ gridTemplateColumns: "32px 1fr" }}>
+        {/* Spine placeholder */}
+        <div className="border-r border-gray-100" />
 
-        {/* Loading Text (Ачаалж байна текст) */}
-        <p className="font-mongolian text-xl text-gray-600 animate-pulse">
-          Ачаалж байна...
-        </p>
+        {/* Content */}
+        <div className="px-8 md:px-14 py-20">
+          <p
+            className="text-gray-300 uppercase mb-8"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Ачаалж байна · Loading
+          </p>
+
+          {/* Animated bars */}
+          <div className="flex items-end gap-1 h-12 mb-8">
+            {[0.4, 0.7, 1, 0.6, 0.85, 0.5, 0.9].map((h, i) => (
+              <div
+                key={i}
+                className="w-1.5 bg-gray-200 rounded-full animate-pulse"
+                style={{
+                  height: `${h * 100}%`,
+                  animationDelay: `${i * 80}ms`,
+                }}
+              />
+            ))}
+          </div>
+
+          <p
+            className="font-normal text-gray-300"
+            style={{
+              fontFamily: "var(--font-playfair)",
+              fontStyle: "italic",
+              fontSize: "18px",
+            }}
+          >
+            Улаанбаатар...
+          </p>
+        </div>
       </div>
     </div>
   );

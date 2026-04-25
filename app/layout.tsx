@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { fetchAQI } from "@/lib/fetchAQI";
 import { fetchOpenMeteo } from "@/lib/fetchOpenMeteo";
+import { Playfair_Display } from "next/font/google";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -19,6 +20,13 @@ const notoSansMongolian = Noto_Sans({
   weight: ["400", "700"],
   display: "swap",
   variable: "--font-mongolian",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+  variable: "--font-playfair",
 });
 
 export const viewport: Viewport = {
@@ -106,7 +114,7 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${notoSansMongolian.variable} antialiased`}
+        className={`${inter.variable} ${notoSansMongolian.variable} ${playfair.variable} antialiased`}
       >
         <Header
           temp={temp}

@@ -1,6 +1,4 @@
 // components/charts/TodayInHistoryCard.tsx
-// "Өнөөдөр түүхэнд" - өнөөдөртэй ижил өдрийн өмнөх жилүүдийн бохирдол (Today in History - pollution on this day in previous years)
-
 "use client";
 
 import { format } from "date-fns";
@@ -11,13 +9,13 @@ interface Props {
   currentAqi: number;
 }
 
-function getAqiColor(aqi: number): string {
-  if (aqi <= 50) return "bg-green-500";
-  if (aqi <= 100) return "bg-yellow-500";
-  if (aqi <= 150) return "bg-orange-500";
-  if (aqi <= 200) return "bg-red-500";
-  if (aqi <= 300) return "bg-purple-500";
-  return "bg-red-900";
+function getAQIDotColor(aqi: number): string {
+  if (aqi <= 50) return "#22c55e";
+  if (aqi <= 100) return "#f59e0b";
+  if (aqi <= 150) return "#f97316";
+  if (aqi <= 200) return "#ef4444";
+  if (aqi <= 300) return "#a855f7";
+  return "#7c2d12";
 }
 
 function getAqiLabel(aqi: number): string {
@@ -31,30 +29,14 @@ function getAqiLabel(aqi: number): string {
 
 function getComparison(
   historicalAqi: number,
-  currentAqi: number
-): {
-  text: string;
-  icon: string;
-  color: string;
-} {
+  currentAqi: number,
+): { text: string; positive: boolean | null } {
   const diff = currentAqi - historicalAqi;
-  const percentDiff = Math.abs((diff / historicalAqi) * 100);
-
-  if (Math.abs(diff) < 10) {
-    return { text: "Ижил түвшин", icon: "➡️", color: "text-gray-600" };
-  } else if (diff > 0) {
-    return {
-      text: `${Math.round(percentDiff)}% муудсан`,
-      icon: "📈",
-      color: "text-red-600",
-    };
-  } else {
-    return {
-      text: `${Math.round(percentDiff)}% сайжирсан`,
-      icon: "📉",
-      color: "text-green-600",
-    };
-  }
+  const pct = Math.abs((diff / historicalAqi) * 100);
+  if (Math.abs(diff) < 10) return { text: "Ижил түвшин", positive: null };
+  if (diff > 0)
+    return { text: `+${Math.round(pct)}% муудсан`, positive: false };
+  return { text: `${Math.round(pct)}% сайжирсан`, positive: true };
 }
 
 export default function TodayInHistoryCard({ data, currentAqi }: Props) {
@@ -62,20 +44,13 @@ export default function TodayInHistoryCard({ data, currentAqi }: Props) {
   const todayMonth = today.getMonth();
   const todayDate = today.getDate();
 
-  // Өнөөдөртэй ижил өдрийг жил бүрээс олох (Find same day in each year)
   const historicalToday = data.years
     .map((yearData) => {
-      // Энэ жилийн өнөөдөртэй ижил өдрийг олох
       const sameDay = yearData.data.find((point) => {
-        const pointDate = new Date(point.date);
-        return (
-          pointDate.getMonth() === todayMonth &&
-          pointDate.getDate() === todayDate
-        );
+        const d = new Date(point.date);
+        return d.getMonth() === todayMonth && d.getDate() === todayDate;
       });
-
       if (!sameDay) return null;
-
       return {
         year: yearData.year,
         aqi: sameDay.aqi,
@@ -87,64 +62,127 @@ export default function TodayInHistoryCard({ data, currentAqi }: Props) {
 
   if (historicalToday.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-gray-200">
-        <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-          📅 Өнөөдөр түүхэнд
-        </h3>
-        <p className="text-gray-600">Өгөгдөл олдсонгүй</p>
+      <div className="border border-gray-100 px-5 py-6">
+        <p
+          className="text-gray-400 uppercase mb-2"
+          style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+        >
+          Өнөөдөр түүхэнд · Today in history
+        </p>
+        <p
+          className="text-gray-400"
+          style={{ fontFamily: "var(--font-inter)", fontSize: "13px" }}
+        >
+          Өгөгдөл олдсонгүй
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg p-6 border-2 border-blue-200">
-      <h3 className="text-xl font-bold text-gray-900 mb-1 flex items-center gap-2">
-        📅 Өнөөдөр түүхэнд
-      </h3>
-      <p className="text-sm text-gray-600 mb-4">
-        {format(today, "MM сарын dd")} - өмнөх жилүүдтэй харьцуулалт
-      </p>
+    <div className="border border-gray-100">
+      {/* Header */}
+      <div className="px-5 py-4 border-b border-gray-100 flex items-baseline justify-between">
+        <p
+          className="text-gray-400 uppercase"
+          style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+        >
+          Өнөөдөр түүхэнд · Today in history
+        </p>
+        <p className="text-gray-300" style={{ fontSize: "10px" }}>
+          {format(today, "MM/dd")}
+        </p>
+      </div>
 
-      <div className="space-y-3">
+      {/* Historical rows */}
+      <div className="border-b border-gray-100">
+        {/* Column headers */}
+        <div
+          className="grid border-b border-gray-100"
+          style={{ gridTemplateColumns: "60px 1fr 80px 80px" }}
+        >
+          {["Жил", "PM2.5", "AQI", "Харьц."].map((h) => (
+            <div
+              key={h}
+              className="px-4 py-2 border-r border-gray-100 last:border-r-0"
+            >
+              <span
+                className="text-gray-300 uppercase"
+                style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+              >
+                {h}
+              </span>
+            </div>
+          ))}
+        </div>
+
         {historicalToday.map((item) => {
           if (!item) return null;
-
-          const comparison = getComparison(item.aqi, currentAqi);
-          const aqiColor = getAqiColor(item.aqi);
-
+          const cmp = getComparison(item.aqi, currentAqi);
           return (
             <div
               key={item.year}
-              className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+              className="grid border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors"
+              style={{ gridTemplateColumns: "60px 1fr 80px 80px" }}
             >
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <p className="font-bold text-gray-900">{item.year} он</p>
-                  <p className="text-sm text-gray-600">
-                    {format(new Date(item.date), "MM/dd")}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <div className="flex items-center gap-2 justify-end">
-                    <span
-                      className={`inline-block w-3 h-3 rounded-full ${aqiColor}`}
-                    ></span>
-                    <span className="text-2xl font-bold text-gray-900">
-                      {item.aqi}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    {getAqiLabel(item.aqi)}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between text-sm border-t pt-2 mt-2">
-                <span className="text-gray-600">
-                  PM2.5: {item.pm25.toFixed(1)} μg/m³
+              <div className="px-4 py-3 border-r border-gray-100 flex items-center">
+                <span
+                  className="text-gray-900"
+                  style={{
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                  }}
+                >
+                  {item.year}
                 </span>
-                <span className={`font-semibold ${comparison.color}`}>
-                  {comparison.icon} {comparison.text}
+              </div>
+              <div className="px-4 py-3 border-r border-gray-100 flex items-center">
+                <span
+                  className="text-gray-500"
+                  style={{
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "12px",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {item.pm25.toFixed(1)} μg/m³
+                </span>
+              </div>
+              <div className="px-4 py-3 border-r border-gray-100 flex items-center gap-1.5">
+                <span
+                  className="inline-block rounded-full flex-shrink-0"
+                  style={{
+                    width: 5,
+                    height: 5,
+                    backgroundColor: getAQIDotColor(item.aqi),
+                  }}
+                />
+                <span
+                  className="text-gray-900"
+                  style={{
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "14px",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {item.aqi}
+                </span>
+              </div>
+              <div className="px-4 py-3 flex items-center">
+                <span
+                  style={{
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "11px",
+                    color:
+                      cmp.positive === true
+                        ? "#22c55e"
+                        : cmp.positive === false
+                          ? "#ef4444"
+                          : "#9ca3af",
+                  }}
+                >
+                  {cmp.text}
                 </span>
               </div>
             </div>
@@ -152,10 +190,37 @@ export default function TodayInHistoryCard({ data, currentAqi }: Props) {
         })}
       </div>
 
-      <div className="mt-4 bg-blue-100 rounded-lg p-3">
-        <p className="text-sm text-blue-900">
-          <strong>Өнөөдөр:</strong> AQI {currentAqi} - {getAqiLabel(currentAqi)}
+      {/* Today row */}
+      <div className="px-5 py-4 flex items-center justify-between">
+        <p
+          className="text-gray-400 uppercase"
+          style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+        >
+          Өнөөдөр · Today
         </p>
+        <div className="flex items-center gap-2">
+          <span
+            className="inline-block rounded-full"
+            style={{
+              width: 6,
+              height: 6,
+              backgroundColor: getAQIDotColor(currentAqi),
+            }}
+          />
+          <span
+            className="text-gray-900"
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "15px",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
+            {currentAqi}
+          </span>
+          <span className="text-gray-400" style={{ fontSize: "11px" }}>
+            {getAqiLabel(currentAqi)}
+          </span>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,4 @@
 // components/charts/SeasonalComparison.tsx
-// Улирлын харьцуулалт (Seasonal comparison - Winter vs Summer pollution)
-
 "use client";
 
 import {
@@ -19,25 +17,20 @@ interface Props {
   data: MultiYearHistoricalData;
 }
 
-// Улирал тодорхойлох (Determine season)
 function getSeason(month: number): string {
-  if (month >= 11 || month <= 1) return "Өвөл"; // Dec, Jan, Feb
-  if (month >= 2 && month <= 4) return "Хавар"; // Mar, Apr, May
-  if (month >= 5 && month <= 7) return "Зун"; // Jun, Jul, Aug
-  return "Намар"; // Sep, Oct, Nov
+  if (month >= 11 || month <= 1) return "Өвөл";
+  if (month >= 2 && month <= 4) return "Хавар";
+  if (month >= 5 && month <= 7) return "Зун";
+  return "Намар";
 }
 
+// Muted, consistent palette — no bright multi-color
+const YEAR_COLORS = ["#1a1a1a", "#6b7280", "#9ca3af", "#d1d5db", "#e5e7eb"];
+
 export default function SeasonalComparison({ data }: Props) {
-  // Жил бүрийн улирлын өгөгдөл бэлтгэх (Prepare seasonal data for each year)
   const seasonalData = data.years.map((yearData) => {
     const seasons: { [key: string]: SeasonData } = {
-      Өвөл: {
-        season: "Өвөл",
-        avgAqi: 0,
-        avgPm25: 0,
-        avgTemp: 0,
-        daysCount: 0,
-      },
+      Өвөл: { season: "Өвөл", avgAqi: 0, avgPm25: 0, avgTemp: 0, daysCount: 0 },
       Хавар: {
         season: "Хавар",
         avgAqi: 0,
@@ -54,64 +47,46 @@ export default function SeasonalComparison({ data }: Props) {
         daysCount: 0,
       },
     };
-
-    // Улирал бүрээр өгөгдөл цуглуулах (Collect data by season)
     yearData.data.forEach((point) => {
       const month = new Date(point.date).getMonth();
       const season = getSeason(month);
-
       seasons[season].avgAqi += point.aqi;
       seasons[season].avgPm25 += point.components.pm2_5;
       seasons[season].daysCount += 1;
     });
-
-    // Дундажийг тооцоолох (Calculate averages)
     Object.values(seasons).forEach((season) => {
       if (season.daysCount > 0) {
         season.avgAqi = Math.round(season.avgAqi / season.daysCount);
         season.avgPm25 = Math.round(season.avgPm25 / season.daysCount);
       }
     });
-
-    return {
-      year: yearData.year,
-      seasons: Object.values(seasons),
-    };
+    return { year: yearData.year, seasons: Object.values(seasons) };
   });
 
-  // Chart өгөгдөл бэлтгэх (Prepare chart data)
   const chartData = ["Өвөл", "Хавар", "Зун", "Намар"].map((seasonName) => {
     const dataPoint: { season: string; [key: string]: string | number } = {
       season: seasonName,
     };
-
     seasonalData.forEach(({ year, seasons }) => {
-      const seasonData = seasons.find((s) => s.season === seasonName);
-      if (seasonData) {
-        dataPoint[year] = seasonData.avgAqi;
-      }
+      const s = seasons.find((s) => s.season === seasonName);
+      if (s) dataPoint[year] = s.avgAqi;
     });
-
     return dataPoint;
   });
 
-  // Өвөл vs Зун харьцуулалт (Winter vs Summer comparison)
   const winterSummerComparison = data.years.map((yearData) => {
-    const winterData = yearData.data.filter((point) => {
-      const month = new Date(point.date).getMonth();
-      return month === 11 || month === 0 || month === 1; // Dec, Jan, Feb
+    const winterData = yearData.data.filter((p) => {
+      const m = new Date(p.date).getMonth();
+      return m === 11 || m === 0 || m === 1;
     });
-
-    const summerData = yearData.data.filter((point) => {
-      const month = new Date(point.date).getMonth();
-      return month >= 5 && month <= 7; // Jun, Jul, Aug
+    const summerData = yearData.data.filter((p) => {
+      const m = new Date(p.date).getMonth();
+      return m >= 5 && m <= 7;
     });
-
     const winterAvg =
       winterData.reduce((sum, p) => sum + p.aqi, 0) / winterData.length || 0;
     const summerAvg =
       summerData.reduce((sum, p) => sum + p.aqi, 0) / summerData.length || 0;
-
     return {
       year: yearData.year,
       winterAvg: Math.round(winterAvg),
@@ -120,104 +95,199 @@ export default function SeasonalComparison({ data }: Props) {
     };
   });
 
+  const avgDiff = Math.round(
+    winterSummerComparison.reduce((sum, item) => sum + item.difference, 0) /
+      winterSummerComparison.length,
+  );
+  const maxDiff = Math.round(
+    Math.max(...winterSummerComparison.map((item) => item.difference)),
+  );
+
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-gray-200">
-      <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-        🌡️ Улирлын харьцуулалт
-      </h3>
-      <p className="text-sm text-gray-600 mb-6">
-        Өвөл, хавар, зун, намрын агаарын чанарын ялгаа
-      </p>
+    <div className="border border-gray-100">
+      {/* Header */}
+      <div className="px-5 py-4 border-b border-gray-100">
+        <p
+          className="text-gray-400 uppercase"
+          style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+        >
+          Улирлын харьцуулалт · Seasonal comparison
+        </p>
+      </div>
 
-      {/* Улирлын график (Seasonal chart) */}
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis dataKey="season" tick={{ fontSize: 12 }} />
-          <YAxis
-            label={{ value: "AQI", angle: -90, position: "insideLeft" }}
-            tick={{ fontSize: 12 }}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "#fff",
-              border: "2px solid #e5e7eb",
-              borderRadius: "8px",
-            }}
-          />
-          <Legend />
-          {data.years.map((yearData, idx) => (
-            <Bar
-              key={yearData.year}
-              dataKey={yearData.year}
-              name={`${yearData.year} он`}
-              fill={
-                ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"][idx % 5]
-              }
+      {/* Chart */}
+      <div className="px-2 py-6 border-b border-gray-100">
+        <ResponsiveContainer width="100%" height={320}>
+          <BarChart
+            data={chartData}
+            margin={{ top: 4, right: 12, left: -16, bottom: 0 }}
+          >
+            <CartesianGrid
+              strokeDasharray="2 4"
+              stroke="#f3f4f6"
+              vertical={false}
             />
-          ))}
-        </BarChart>
-      </ResponsiveContainer>
+            <XAxis
+              dataKey="season"
+              tick={{
+                fontSize: 11,
+                fill: "#9ca3af",
+                fontFamily: "var(--font-inter)",
+              }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              label={{
+                value: "AQI",
+                angle: -90,
+                position: "insideLeft",
+                style: { fontSize: 9, fill: "#d1d5db" },
+              }}
+              tick={{
+                fontSize: 10,
+                fill: "#d1d5db",
+                fontFamily: "var(--font-inter)",
+              }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip
+              contentStyle={{
+                border: "1px solid #f3f4f6",
+                borderRadius: 0,
+                fontFamily: "var(--font-inter)",
+                fontSize: 12,
+              }}
+              cursor={{ fill: "#f9fafb" }}
+            />
+            <Legend
+              wrapperStyle={{
+                fontSize: 10,
+                fontFamily: "var(--font-inter)",
+                color: "#9ca3af",
+              }}
+            />
+            {data.years.map((yearData, idx) => (
+              <Bar
+                key={yearData.year}
+                dataKey={yearData.year}
+                name={`${yearData.year}`}
+                fill={YEAR_COLORS[idx % YEAR_COLORS.length]}
+                radius={[2, 2, 0, 0]}
+                opacity={0.8}
+              />
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
 
-      {/* Өвөл vs Зун харьцуулалт (Winter vs Summer) */}
-      <div className="mt-6">
-        <h4 className="text-lg font-bold text-gray-900 mb-3">
-          ❄️ Өвөл vs ☀️ Зун
-        </h4>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {winterSummerComparison.map((item) => (
+      {/* Winter vs Summer table */}
+      <div className="border-b border-gray-100">
+        <div className="px-5 py-3 border-b border-gray-100">
+          <p
+            className="text-gray-400 uppercase"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Өвөл vs Зун · Winter vs Summer
+          </p>
+        </div>
+        <div
+          className="grid border-b border-gray-100"
+          style={{ gridTemplateColumns: "80px 1fr 1fr 80px" }}
+        >
+          {["Жил", "Өвөл", "Зун", "Зөрүү"].map((h) => (
             <div
-              key={item.year}
-              className="bg-gradient-to-br from-blue-50 to-orange-50 rounded-lg p-4 border-2 border-gray-200"
+              key={h}
+              className="px-4 py-2 border-r border-gray-100 last:border-r-0"
             >
-              <p className="font-bold text-gray-900 text-lg mb-2">
-                {item.year} он
-              </p>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-blue-700 font-semibold">❄️ Өвөл:</span>
-                  <span className="font-bold">{item.winterAvg} AQI</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-orange-700 font-semibold">☀️ Зун:</span>
-                  <span className="font-bold">{item.summerAvg} AQI</span>
-                </div>
-                <div className="flex justify-between border-t pt-2">
-                  <span className="text-gray-700 font-semibold">Зөрүү:</span>
-                  <span
-                    className={`font-bold ${
-                      item.difference > 0 ? "text-red-600" : "text-green-600"
-                    }`}
-                  >
-                    {item.difference > 0 ? "+" : ""}
-                    {item.difference}
-                  </span>
-                </div>
-              </div>
+              <span
+                className="text-gray-300 uppercase"
+                style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+              >
+                {h}
+              </span>
             </div>
           ))}
         </div>
+        {winterSummerComparison.map((item) => (
+          <div
+            key={item.year}
+            className="grid border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors"
+            style={{ gridTemplateColumns: "80px 1fr 1fr 80px" }}
+          >
+            <div className="px-4 py-3 border-r border-gray-100">
+              <span
+                className="text-gray-900"
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                }}
+              >
+                {item.year}
+              </span>
+            </div>
+            <div className="px-4 py-3 border-r border-gray-100">
+              <span
+                className="text-gray-900"
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "14px",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {item.winterAvg}
+              </span>
+            </div>
+            <div className="px-4 py-3 border-r border-gray-100">
+              <span
+                className="text-gray-400"
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "14px",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {item.summerAvg}
+              </span>
+            </div>
+            <div className="px-4 py-3 flex items-center">
+              <span
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "13px",
+                  fontVariantNumeric: "tabular-nums",
+                  color: item.difference > 0 ? "#ef4444" : "#22c55e",
+                }}
+              >
+                {item.difference > 0 ? "+" : ""}
+                {item.difference}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* Дүгнэлт (Conclusion) */}
-      <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border-2 border-blue-200">
-        <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
-          📌 Дүгнэлт
-        </h4>
-        <p className="text-sm text-gray-700">
+      {/* Conclusion */}
+      <div className="px-5 py-4">
+        <p
+          className="text-gray-400 uppercase mb-2"
+          style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+        >
+          Дүгнэлт · Conclusion
+        </p>
+        <p
+          className="text-gray-600"
+          style={{
+            fontFamily: "var(--font-inter)",
+            fontSize: "13px",
+            lineHeight: 1.6,
+          }}
+        >
           Улаанбаатарт өвлийн улиралд агаарын бохирдол зуныхаас дунджаар{" "}
-          <strong>
-            {Math.round(
-              winterSummerComparison.reduce(
-                (sum, item) => sum + item.difference,
-                0
-              ) / winterSummerComparison.length
-            )}
-            -
-            {Math.round(
-              Math.max(...winterSummerComparison.map((item) => item.difference))
-            )}{" "}
-            дахин
+          <strong className="text-gray-900">
+            {avgDiff}–{maxDiff} дахин
           </strong>{" "}
           их байна. Энэ нь халаалтын улмаас нүүрс шатааж байгаатай холбоотой.
         </p>

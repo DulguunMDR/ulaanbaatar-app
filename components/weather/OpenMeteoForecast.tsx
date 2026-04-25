@@ -12,19 +12,30 @@ export default async function OpenMeteoForecast() {
 
   if (!data) {
     return (
-      <section className="max-w-6xl mx-auto px-4 pb-12">
-        <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 text-center">
-          <p className="text-2xl mb-2">⚠️</p>
-          <p className="text-red-900 font-semibold">
-            Цаг агаарын таамагллыг татаж чадсангүй
+      <div
+        className="grid border-b border-gray-100"
+        style={{ gridTemplateColumns: "32px 1fr" }}
+      >
+        <div className="border-r border-gray-100" />
+        <div className="px-8 md:px-14 py-10">
+          <p
+            className="text-gray-400 uppercase mb-3"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Алдаа · Error
+          </p>
+          <p
+            className="text-gray-500"
+            style={{ fontFamily: "var(--font-inter)", fontSize: "13px" }}
+          >
+            Цаг агаарын таамагллыг татаж чадсангүй. · Could not load forecast.
           </p>
         </div>
-      </section>
+      </div>
     );
   }
 
-  // 7 хоногийн өгөгдөл боловсруулах (Process 7-day forecast)
-  const forecastDays = data.daily.time.map((date, index) => {
+  const forecastDays = data.daily.time.map((date: string, index: number) => {
     const weatherDesc = getWeatherDescription(data.daily.weather_code[index]);
     return {
       date,
@@ -38,121 +49,339 @@ export default async function OpenMeteoForecast() {
     };
   });
 
-  // Маргаашийн өгөгдөл (Tomorrow's data - index 1)
   const tomorrow = forecastDays[1];
 
   return (
-    <section className="max-w-6xl mx-auto px-4 pb-12">
-      <div className="mb-6">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-          🌤️ Цаг агаарын таамаглал
-        </h2>
-        <p className="text-gray-600">
-          Маргаашийн цаг агаар болон 7 хоногийн таамаглал
-        </p>
-      </div>
-
-      {/* Маргаашийн онцлох карт (Tomorrow's highlight card) */}
-      <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 mb-6 text-white shadow-xl">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-blue-100 text-sm font-semibold uppercase tracking-wide">
-              Маргааш
-            </p>
-            <p className="text-3xl font-bold">{tomorrow.weatherEmoji}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-5xl font-bold">{tomorrow.tempMax}°</p>
-            <p className="text-blue-100 text-sm">Бага {tomorrow.tempMin}°</p>
-          </div>
+    <>
+      {/* Tomorrow highlight */}
+      <div
+        className="grid border-b border-gray-100"
+        style={{ gridTemplateColumns: "32px 1fr" }}
+      >
+        <div
+          className="border-r border-gray-100 flex items-center justify-center py-10"
+          style={{
+            writingMode: "vertical-rl",
+            textOrientation: "mixed",
+            transform: "rotate(180deg)",
+          }}
+        >
+          <span
+            className="text-gray-300 uppercase"
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "9px",
+              letterSpacing: "0.4em",
+            }}
+          >
+            МАРГААШ · TOMORROW
+          </span>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between bg-white/10 rounded-lg px-4 py-2">
-            <span className="text-sm">Цаг агаар:</span>
-            <span className="font-semibold">{tomorrow.weatherText}</span>
-          </div>
-          <div className="flex items-center justify-between bg-white/10 rounded-lg px-4 py-2">
-            <span className="text-sm">Салхи:</span>
-            <span className="font-semibold">
-              {tomorrow.windSpeed.toFixed(1)} м/с ({tomorrow.windDesc})
+        <div className="px-8 md:px-14 py-10">
+          <p
+            className="text-gray-400 uppercase mb-6"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Маргаашийн цаг агаар · Tomorrow&apos;s weather
+          </p>
+
+          <div className="flex items-start justify-between mb-8">
+            <div>
+              <div className="flex items-baseline gap-3 mb-1">
+                <span
+                  className="font-normal text-gray-900 leading-none"
+                  style={{
+                    fontFamily: "var(--font-playfair)",
+                    fontSize: "clamp(56px, 8vw, 80px)",
+                  }}
+                >
+                  {tomorrow.tempMax}°
+                </span>
+                <span
+                  className="text-gray-400"
+                  style={{ fontFamily: "var(--font-inter)", fontSize: "13px" }}
+                >
+                  ↓ {tomorrow.tempMin}°
+                </span>
+              </div>
+              <p
+                className="text-gray-500"
+                style={{ fontFamily: "var(--font-inter)", fontSize: "13px" }}
+              >
+                {tomorrow.weatherText}
+              </p>
+            </div>
+
+            <span
+              className="text-gray-200 select-none"
+              style={{ fontSize: "clamp(48px, 6vw, 64px)", lineHeight: 1 }}
+              aria-hidden="true"
+            >
+              {tomorrow.weatherEmoji}
             </span>
           </div>
-          {tomorrow.precipitation > 0 && (
-            <div className="flex items-center justify-between bg-white/10 rounded-lg px-4 py-2">
-              <span className="text-sm">Хур тунадас:</span>
-              <span className="font-semibold">{tomorrow.precipitation} мм</span>
-            </div>
-          )}
-        </div>
 
-        {/* Агаарын чанарт нөлөөлөх зөвлөмж */}
-        <div className="mt-4 pt-4 border-t border-white/20">
-          <p className="text-sm text-blue-100">
-            {tomorrow.windSpeed > 5
-              ? "💨 Хүчтэй салхи агаарын бохирдлыг тараана"
-              : tomorrow.precipitation > 0
-              ? "🌧️ Бороо/цас агаарыг цэвэрлэнэ"
-              : "⚠️ Сул салхи - бохирдол үлдэж магадгүй"}
-          </p>
-        </div>
-      </div>
+          <hr className="border-gray-100 mb-6" />
 
-      {/* 7 хоногийн таамаглал (7-day forecast grid) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-3">
-        {forecastDays.map((day, index) => {
-          const date = new Date(day.date);
-          const dayName = date.toLocaleDateString("mn-MN", {
-            weekday: "short",
-          });
-          const isToday = index === 0;
-          const isTomorrow = index === 1;
-
-          return (
+          {/* Stats row */}
+          <div className="border border-gray-100">
             <div
-              key={day.date}
-              className={`
-                rounded-xl p-4 text-center transition-all
-                ${
-                  isTomorrow
-                    ? "bg-blue-50 border-2 border-blue-300 shadow-md"
-                    : isToday
-                    ? "bg-gray-50 border-2 border-gray-300"
-                    : "bg-white border-2 border-gray-200 hover:border-gray-300"
-                }
-              `}
+              className="grid"
+              style={{
+                gridTemplateColumns:
+                  tomorrow.precipitation > 0 ? "1fr 1fr 1fr" : "1fr 1fr",
+              }}
             >
-              <p className="text-xs font-semibold text-gray-600 uppercase mb-1">
-                {isToday ? "Өнөөдөр" : isTomorrow ? "Маргааш" : dayName}
-              </p>
-              <p className="text-3xl mb-2">{day.weatherEmoji}</p>
-              <p className="text-2xl font-bold text-gray-900 mb-1">
-                {day.tempMax}°
-              </p>
-              <p className="text-xs text-gray-600 mb-2">{day.tempMin}°</p>
-              <p className="text-xs text-gray-500">{day.weatherText}</p>
+              <div className="px-5 py-4 border-r border-gray-100">
+                <p
+                  className="text-gray-400 uppercase mb-2"
+                  style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+                >
+                  Салхи · Wind
+                </p>
+                <p
+                  className="text-gray-900"
+                  style={{
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "18px",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {tomorrow.windSpeed.toFixed(1)} м/с
+                </p>
+                <p
+                  className="text-gray-300 mt-0.5"
+                  style={{ fontSize: "10px" }}
+                >
+                  {tomorrow.windDesc}
+                </p>
+              </div>
 
-              {/* Салхины мэдээлэл (Wind info) */}
-              {day.windSpeed > 3 && (
-                <div className="mt-2 pt-2 border-t border-gray-200">
-                  <p className="text-xs text-gray-600">
-                    💨 {day.windSpeed.toFixed(0)} м/с
+              <div
+                className="px-5 py-4"
+                style={{
+                  borderRight:
+                    tomorrow.precipitation > 0 ? "1px solid #f3f4f6" : "none",
+                }}
+              >
+                <p
+                  className="text-gray-400 uppercase mb-2"
+                  style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+                >
+                  Агаарт нөлөөлөх · Air impact
+                </p>
+                <p
+                  className="text-gray-900"
+                  style={{ fontFamily: "var(--font-inter)", fontSize: "13px" }}
+                >
+                  {tomorrow.windSpeed > 5
+                    ? "Хүчтэй салхи тараана"
+                    : tomorrow.precipitation > 0
+                      ? "Хур тунадас цэвэрлэнэ"
+                      : "Бохирдол үлдэж магадгүй"}
+                </p>
+              </div>
+
+              {tomorrow.precipitation > 0 && (
+                <div className="px-5 py-4">
+                  <p
+                    className="text-gray-400 uppercase mb-2"
+                    style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+                  >
+                    Хур тунадас · Precip.
+                  </p>
+                  <p
+                    className="text-gray-900"
+                    style={{
+                      fontFamily: "var(--font-inter)",
+                      fontSize: "18px",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                  >
+                    {tomorrow.precipitation} мм
                   </p>
                 </div>
               )}
             </div>
-          );
-        })}
+          </div>
+        </div>
       </div>
 
-      {/* Тайлбар (Explanation) */}
-      <div className="mt-6 bg-gray-50 rounded-xl p-4 border-2 border-gray-200">
-        <p className="text-sm text-gray-700">
-          💡 <strong>Яагаад энэ чухал вэ?</strong> Хүчтэй салхи (5 м/с-аас их)
-          PM2.5 тоосонцорыг тараана. Бороо/цас агаарыг цэвэрлэнэ. Сул салхи +
-          хүйтэн (temperature inversion) = бохирдол ихсэнэ.
-        </p>
+      {/* 7-day forecast table */}
+      <div
+        className="grid border-b border-gray-100"
+        style={{ gridTemplateColumns: "32px 1fr" }}
+      >
+        <div
+          className="border-r border-gray-100 flex items-center justify-center"
+          style={{
+            writingMode: "vertical-rl",
+            textOrientation: "mixed",
+            transform: "rotate(180deg)",
+          }}
+        >
+          <span
+            className="text-gray-300 uppercase"
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "9px",
+              letterSpacing: "0.4em",
+            }}
+          >
+            7 ХОНОГ · 7-DAY
+          </span>
+        </div>
+
+        <div className="px-8 md:px-14 py-10">
+          <p
+            className="text-gray-400 uppercase mb-6"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            7 хоногийн таамаглал · 7-day forecast
+          </p>
+
+          <div className="border border-gray-100">
+            {/* Header */}
+            <div
+              className="grid border-b border-gray-100"
+              style={{ gridTemplateColumns: "1fr 1fr 56px 56px 72px" }}
+            >
+              {["Өдөр", "Нөхцөл", "Дээд°", "Доод°", "Салхи"].map((h) => (
+                <div
+                  key={h}
+                  className="px-4 py-2 border-r border-gray-100 last:border-r-0"
+                >
+                  <span
+                    className="text-gray-300 uppercase"
+                    style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+                  >
+                    {h}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Rows */}
+            {forecastDays.map(
+              (
+                day: {
+                  date: string;
+                  tempMax: number;
+                  tempMin: number;
+                  weatherText: string;
+                  weatherEmoji: string;
+                  windSpeed: number;
+                  precipitation: number;
+                },
+                index: number,
+              ) => {
+                const date = new Date(day.date);
+                const dayName = date.toLocaleDateString("mn-MN", {
+                  weekday: "short",
+                });
+                const isToday = index === 0;
+                const isTomorrow = index === 1;
+
+                return (
+                  <div
+                    key={day.date}
+                    className="grid border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors"
+                    style={{ gridTemplateColumns: "1fr 1fr 56px 56px 72px" }}
+                  >
+                    {/* Day */}
+                    <div className="px-4 py-4 border-r border-gray-100 flex flex-col justify-center">
+                      <span
+                        className="text-gray-900"
+                        style={{
+                          fontFamily: "var(--font-inter)",
+                          fontSize: "13px",
+                          fontWeight: isTomorrow || isToday ? 500 : 400,
+                        }}
+                      >
+                        {isToday ? "Өнөөдөр" : isTomorrow ? "Маргааш" : dayName}
+                      </span>
+                      {(isToday || isTomorrow) && (
+                        <span
+                          className="text-gray-300 mt-0.5"
+                          style={{ fontSize: "10px" }}
+                        >
+                          {date.toLocaleDateString("mn-MN", {
+                            month: "numeric",
+                            day: "numeric",
+                          })}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Condition */}
+                    <div className="px-4 py-4 border-r border-gray-100 flex items-center gap-2">
+                      <span
+                        className="text-gray-300 flex-shrink-0 select-none"
+                        style={{ fontSize: "16px" }}
+                        aria-hidden="true"
+                      >
+                        {day.weatherEmoji}
+                      </span>
+                      <span
+                        className="text-gray-500"
+                        style={{
+                          fontFamily: "var(--font-inter)",
+                          fontSize: "12px",
+                        }}
+                      >
+                        {day.weatherText}
+                      </span>
+                    </div>
+
+                    {/* Max */}
+                    <div className="px-3 py-4 border-r border-gray-100 flex items-center justify-center">
+                      <span
+                        className="text-gray-900"
+                        style={{
+                          fontFamily: "var(--font-inter)",
+                          fontSize: "14px",
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {day.tempMax}°
+                      </span>
+                    </div>
+
+                    {/* Min */}
+                    <div className="px-3 py-4 border-r border-gray-100 flex items-center justify-center">
+                      <span
+                        className="text-gray-400"
+                        style={{
+                          fontFamily: "var(--font-inter)",
+                          fontSize: "14px",
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {day.tempMin}°
+                      </span>
+                    </div>
+
+                    {/* Wind */}
+                    <div className="px-3 py-4 flex items-center justify-center">
+                      <span
+                        className="text-gray-400"
+                        style={{
+                          fontFamily: "var(--font-inter)",
+                          fontSize: "12px",
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {day.windSpeed.toFixed(0)} м/с
+                      </span>
+                    </div>
+                  </div>
+                );
+              },
+            )}
+          </div>
+        </div>
       </div>
-    </section>
+    </>
   );
 }

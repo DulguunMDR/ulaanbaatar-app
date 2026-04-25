@@ -1,5 +1,4 @@
 // components/map/WeatherLayerControls.tsx
-// Цаг агаарын давхаргууд унтраах/асаах (Weather layer toggle controls)
 
 "use client";
 
@@ -13,107 +12,144 @@ interface WeatherLayerControlsProps {
   onToggle: (layer: keyof WeatherLayerControlsProps["layers"]) => void;
 }
 
+const LAYERS = [
+  {
+    key: "rain" as const,
+    label: "Бороо / Цас",
+    sublabel: "Radar",
+  },
+  {
+    key: "stationWind" as const,
+    label: "Станцын салхи",
+    sublabel: "Хэмжилтийн цэг",
+  },
+  {
+    key: "regionalWind" as const,
+    label: "Бүсийн салхи",
+    sublabel: "Open-Meteo",
+  },
+  {
+    key: "temperature" as const,
+    label: "Температур",
+    sublabel: "Станцуудаар",
+  },
+] as const;
+
 export default function WeatherLayerControls({
   layers,
   onToggle,
 }: WeatherLayerControlsProps) {
-  const layerButtons = [
-    {
-      key: "rain" as const,
-      label: "Бороо/Цас Radar",
-      icon: "🌧️",
-      color: "bg-blue-500",
-      hoverColor: "hover:bg-blue-600",
-      description: "Бодит цагийн хур тунадас",
-    },
-    {
-      key: "stationWind" as const,
-      label: "Станцын Салхи",
-      icon: "💨",
-      color: "bg-cyan-500",
-      hoverColor: "hover:bg-cyan-600",
-      description: "Станц бүрийн салхины хурд",
-    },
-    {
-      key: "regionalWind" as const,
-      label: "Бүсийн Салхи",
-      icon: "🌬️",
-      color: "bg-indigo-500",
-      hoverColor: "hover:bg-indigo-600",
-      description: "Ерөнхий салхины урсгал",
-    },
-    {
-      key: "temperature" as const,
-      label: "Температур",
-      icon: "🌡️",
-      color: "bg-orange-500",
-      hoverColor: "hover:bg-orange-600",
-      description: "Станцуудын температур",
-    },
-  ];
-
   return (
-    <div className="bg-white rounded-xl shadow-lg p-4 mb-4 border-2 border-gray-200">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-bold text-gray-900">
-          🗺️ Цаг агаарын давхаргууд
-        </h3>
-        <p className="text-xs text-gray-500 hidden sm:block">
-          Товчлуур дарж асаах/унтраах
+    <div
+      className="border-b border-gray-100 mb-0"
+      style={{ fontFamily: "var(--font-inter)" }}
+    >
+      {/* Header */}
+      <div className="px-6 pt-5 pb-3 flex items-baseline justify-between">
+        <p
+          className="text-gray-400 uppercase"
+          style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+        >
+          Давхаргууд · Layers
+        </p>
+        <p
+          className="text-gray-300"
+          style={{ fontSize: "9px", letterSpacing: "0.10em" }}
+        >
+          Сонгох
         </p>
       </div>
 
-      {/* Desktop: горизонтал, Mobile: grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {layerButtons.map((btn) => {
-          const isActive = layers[btn.key];
+      {/* Layer rows */}
+      <div>
+        {LAYERS.map((layer, i) => {
+          const isActive = layers[layer.key];
           return (
             <button
-              key={btn.key}
-              onClick={() => onToggle(btn.key)}
+              key={layer.key}
+              onClick={() => onToggle(layer.key)}
               className={`
-                flex flex-col items-center justify-center
-                px-3 py-4 rounded-lg
-                transition-all duration-200
-                border-2
-                ${
-                  isActive
-                    ? `${btn.color} text-white border-transparent shadow-md scale-105`
-                    : `bg-gray-50 text-gray-600 border-gray-200 ${btn.hoverColor} hover:text-white hover:scale-105`
-                }
+                w-full text-left px-6 py-3 flex items-center justify-between
+                border-t border-gray-100
+                transition-colors duration-150
+                ${isActive ? "bg-gray-50" : "bg-white hover:bg-gray-50"}
               `}
-              title={btn.description}
             >
-              <span className="text-3xl mb-2">{btn.icon}</span>
-              <span className="text-xs font-semibold text-center leading-tight">
-                {btn.label}
-              </span>
+              <div className="flex items-center gap-4">
+                {/* Active indicator — thin left pip */}
+                <div
+                  className="flex-shrink-0"
+                  style={{
+                    width: "2px",
+                    height: "28px",
+                    background: isActive ? "#1a1a1a" : "transparent",
+                    transition: "background 0.15s",
+                  }}
+                />
+                <div>
+                  <p
+                    className={`transition-colors ${
+                      isActive ? "text-gray-900" : "text-gray-400"
+                    }`}
+                    style={{ fontSize: "12px", letterSpacing: "0.02em" }}
+                  >
+                    {layer.label}
+                  </p>
+                  <p
+                    className="text-gray-300 mt-0.5"
+                    style={{ fontSize: "9px", letterSpacing: "0.10em" }}
+                  >
+                    {layer.sublabel}
+                  </p>
+                </div>
+              </div>
+
+              {/* Toggle — minimal pill */}
+              <div
+                style={{
+                  width: "28px",
+                  height: "14px",
+                  borderRadius: "7px",
+                  background: isActive ? "#1a1a1a" : "transparent",
+                  border: isActive ? "none" : "1px solid #d1d5db",
+                  transition: "background 0.15s, border 0.15s",
+                  flexShrink: 0,
+                  position: "relative",
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "2px",
+                    left: isActive ? "16px" : "2px",
+                    width: "10px",
+                    height: "10px",
+                    borderRadius: "50%",
+                    background: isActive ? "#fff" : "#d1d5db",
+                    transition: "left 0.15s, background 0.15s",
+                  }}
+                />
+              </div>
             </button>
           );
         })}
       </div>
 
-      {/* Зааварчилгаа (Instructions) */}
-      <div className="mt-4 pt-4 border-t border-gray-200">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-gray-600">
-          <p>
-            🌧️ <strong>Бороо/Цас</strong>: Бодит цагийн radar (RainViewer)
-          </p>
-          <p>
-            💨 <strong>Станцын салхи</strong>: Хэмжилтийн цэг бүрийн өгөгдөл
-          </p>
-          <p>
-            🌬️ <strong>Бүсийн салхи</strong>: Ерөнхий урсгалын чиглэл
-          </p>
-          <p>
-            🌡️ <strong>Температур</strong>: Станцуудын температурын зураглал
+      {/* Footer note */}
+      {Object.values(layers).some((v) => v) && (
+        <div className="px-6 py-3 border-t border-gray-100">
+          <p
+            className="text-gray-300"
+            style={{
+              fontSize: "9px",
+              letterSpacing: "0.10em",
+              lineHeight: "1.6",
+            }}
+          >
+            Хүчтэй салхи (5 м/с+) агаарын бохирдлыг тараадаг
           </p>
         </div>
-        <p className="text-xs text-gray-500 mt-3 text-center">
-          💡 Салхи нь агаарын бохирдлыг тараахад тусалдаг. Хүчтэй салхи (5 м/с+)
-          = Агаар цэвэрхэн байх магадлал өндөр
-        </p>
-      </div>
+      )}
     </div>
   );
 }

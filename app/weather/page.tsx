@@ -1,5 +1,4 @@
 // app/weather/page.tsx
-// Цаг агаар хуудас (Weather Page) - /weather
 
 import { fetchAQI } from "@/lib/fetchAQI";
 import { fetchAllStations } from "@/lib/fetchStations";
@@ -9,86 +8,140 @@ import InsightsDashboard from "@/components/home/InsightsDashboard";
 import OpenMeteoForecast from "@/components/weather/OpenMeteoForecast";
 
 export default async function WeatherPage() {
-  // Fetch data from APIs (бүх өгөгдлийг зэрэг татах)
   const [aqiData, stations] = await Promise.all([
     fetchAQI(),
     fetchAllStations(),
   ]);
 
-  // Show error state if data fetch failed
+  // Error state
   if (!aqiData) {
     return (
-      <main className="min-h-screen bg-white flex items-center justify-center px-4">
-        <div className="text-center">
-          <p className="text-6xl mb-4">⚠️</p>
-          <h1 className="font-mongolian text-3xl font-bold text-gray-900 mb-4">
-            Өгөгдөл татаж чадсангүй
-          </h1>
-          <p className="text-gray-600 mb-4">
-            API түлхүүрүүдээ шалгана уу (.env.local файл)
-          </p>
-          <p className="text-sm text-gray-500 font-mono bg-gray-100 p-4 rounded">
-            NEXT_PUBLIC_WAQI_TOKEN
-            <br />
-            NEXT_PUBLIC_OPENWEATHER_KEY
-          </p>
-        </div>
+      <main className="pt-14 md:pt-16 min-h-screen bg-white">
+        <section
+          className="grid border-b border-gray-100"
+          style={{ gridTemplateColumns: "32px 1fr" }}
+        >
+          <div className="border-r border-gray-100" />
+          <div className="px-8 md:px-14 py-20">
+            <p
+              className="text-gray-400 uppercase mb-5"
+              style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+            >
+              Алдаа · Error
+            </p>
+            <h1
+              className="font-normal text-gray-800 mb-4"
+              style={{
+                fontFamily: "var(--font-playfair)",
+                fontSize: "clamp(28px, 4vw, 40px)",
+              }}
+            >
+              Өгөгдөл татаж чадсангүй
+            </h1>
+            <hr className="border-gray-100 mb-6 max-w-xs" />
+            <p className="text-sm text-gray-400 leading-relaxed mb-4">
+              API түлхүүрүүдээ шалгана уу.
+            </p>
+            <code className="block text-xs text-gray-400 font-mono bg-gray-50 border border-gray-100 rounded p-4 max-w-xs">
+              NEXT_PUBLIC_WAQI_TOKEN
+              <br />
+              NEXT_PUBLIC_OPENWEATHER_KEY
+            </code>
+          </div>
+        </section>
       </main>
     );
   }
 
-  // Station ID форматлах (Format station ID with @ prefix)
   const stationId = aqiData.idx ? `@${aqiData.idx}` : undefined;
 
   return (
-    <main className="min-h-screen bg-white">
-      {/* Add top padding to account for fixed header */}
-      <div className="pt-16">
-        {/* 1️⃣ Interactive Hero - Станц солиход бүх өгөгдөл шинэчлэгдэнэ */}
-        {stations.length > 0 ? (
-          <InteractiveHero stations={stations} initialData={aqiData} />
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-2xl text-gray-600">Станцын өгөгдөл олдсонгүй</p>
-          </div>
-        )}
+    <main className="pt-14 md:pt-16 min-h-screen bg-white">
+      {/* HERO — page label */}
+      <section
+        className="grid border-b border-gray-100"
+        style={{ gridTemplateColumns: "32px 1fr" }}
+      >
+        <div
+          className="border-r border-gray-100 flex items-center justify-center py-10"
+          style={{
+            writingMode: "vertical-rl",
+            textOrientation: "mixed",
+            transform: "rotate(180deg)",
+          }}
+        >
+          <span
+            className="text-gray-300 uppercase"
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "9px",
+              letterSpacing: "0.4em",
+            }}
+          >
+            ЦАГ АГААР · WEATHER
+          </span>
+        </div>
 
-        {/* 2️⃣ Interactive Map (Станцуудын газрын зураг) */}
-        {stations.length > 0 && (
-          <section className="max-w-6xl mx-auto px-4 pb-12">
-            <div className="mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                🗺️ Станцуудын газрын зураг
-              </h2>
-              <p className="text-gray-600">
-                Улаанбаатарын өөр өөр цэгүүдийн агаарын чанар + цаг агаарын
-                давхаргууд
-              </p>
-            </div>
+        <div className="px-8 md:px-14 py-8 md:py-12">
+          <p
+            className="text-gray-400 uppercase mb-3"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Агаарын чанар · Air quality
+          </p>
+          <h1
+            className="font-normal text-gray-900"
+            style={{
+              fontFamily: "var(--font-playfair)",
+              fontSize: "clamp(28px, 5vw, 48px)",
+            }}
+          >
+            Цаг агаар
+          </h1>
+        </div>
+      </section>
+
+      {/* INTERACTIVE HERO — station selector + AQI */}
+      {stations.length > 0 ? (
+        <InteractiveHero stations={stations} initialData={aqiData} />
+      ) : (
+        <div className="px-8 md:px-14 py-12 border-b border-gray-100">
+          <p className="text-sm text-gray-400">Станцын өгөгдөл олдсонгүй</p>
+        </div>
+      )}
+
+      {/* MAP */}
+      {stations.length > 0 && (
+        <section className="border-t border-gray-100 px-4 md:px-8 py-10">
+          <div className="max-w-6xl mx-auto">
+            <p
+              className="text-gray-400 uppercase mb-6 px-4"
+              style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+            >
+              Станцуудын газрын зураг · Station map
+            </p>
             <AQIMapWrapper stations={stations} />
-          </section>
-        )}
-
-        {/* 3️⃣ 🆕 Open-Meteo Weather Forecast (Цаг агаарын таамаглал) */}
-        <OpenMeteoForecast />
-
-        {/* 4️⃣ Historical Data & Weather Dashboard */}
-        {stationId ? (
-          <InsightsDashboard stationId={stationId} currentAqi={aqiData.aqi} />
-        ) : (
-          <div className="max-w-6xl mx-auto px-4 pb-12">
-            <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 text-center">
-              <p className="text-2xl mb-2">⚠️</p>
-              <p className="text-red-900 font-semibold">
-                Station ID олдсонгүй - InsightsDashboard харагдахгүй байна
-              </p>
-              <p className="text-sm text-red-700 mt-2">
-                aqiData.idx утга: {aqiData.idx || "undefined"}
-              </p>
-            </div>
           </div>
-        )}
-      </div>
+        </section>
+      )}
+
+      {/* FORECAST */}
+      <section className="border-t border-gray-100">
+        <OpenMeteoForecast />
+      </section>
+
+      {/* INSIGHTS DASHBOARD */}
+      {stationId ? (
+        <section className="border-t border-gray-100">
+          <InsightsDashboard stationId={stationId} currentAqi={aqiData.aqi} />
+        </section>
+      ) : (
+        <section className="px-8 md:px-14 py-10 border-t border-gray-100">
+          <p className="text-sm text-gray-400">
+            Station ID олдсонгүй — dashboard харагдахгүй байна.
+          </p>
+        </section>
+      )}
     </main>
   );
 }

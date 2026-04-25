@@ -1,9 +1,40 @@
 // components/Menu.tsx
-// Файлын байршил: components/Menu.tsx
-// Цэсний компонент (Navigation menu component)
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+
+const menuItems = [
+  {
+    label: "Нүүр хуудас",
+    href: "/",
+  },
+  {
+    label: "Ариун хот",
+    href: "/sacred",
+    sub: null,
+  },
+  {
+    label: "Музей · Галерей",
+    href: "/museums",
+  },
+  {
+    label: "Тэмдэглэл",
+    href: "/journal",
+  },
+  {
+    label: "Цаг агаар",
+    href: "/weather",
+    sub: { label: "↳ Нэр томъёо", href: "/weather/terms" },
+  },
+  {
+    label: "Passivhaus",
+    href: "/passivhaus",
+  },
+  {
+    label: "Бидний тухай",
+    href: "/about",
+  },
+];
 
 export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,96 +44,71 @@ export default function Menu() {
 
   return (
     <>
-      {/* Hamburger Button (Цэс товч) */}
+      {/* Hamburger button */}
       <button
         onClick={toggleMenu}
-        className="flex flex-col gap-1.5 p-2 hover:bg-gray-100 rounded-lg transition-colors z-50 relative"
+        className="flex flex-col gap-1.5 p-2 hover:bg-gray-50 rounded-lg transition-colors z-50 relative"
         aria-label="Цэс"
       >
         <span
-          className={`w-6 h-0.5 bg-gray-700 transition-transform ${
-            isOpen ? "rotate-45 translate-y-2" : ""
-          }`}
+          className={`w-5 h-px bg-gray-600 transition-transform origin-center ${isOpen ? "rotate-45 translate-y-[7px]" : ""}`}
         />
         <span
-          className={`w-6 h-0.5 bg-gray-700 transition-opacity ${
-            isOpen ? "opacity-0" : ""
-          }`}
+          className={`w-5 h-px bg-gray-600 transition-opacity ${isOpen ? "opacity-0" : ""}`}
         />
         <span
-          className={`w-6 h-0.5 bg-gray-700 transition-transform ${
-            isOpen ? "-rotate-45 -translate-y-2" : ""
-          }`}
+          className={`w-5 h-px bg-gray-600 transition-transform origin-center ${isOpen ? "-rotate-45 -translate-y-[7px]" : ""}`}
         />
       </button>
 
-      {/* Dropdown Menu Panel (Цэсний самбар - дээрээс буух) */}
+      {/* Dropdown panel */}
       <div
-        className={`fixed left-0 right-0 bg-white shadow-lg transition-all duration-300 ease-in-out z-40 ${
-          isOpen ? "top-16 opacity-100" : "top-0 opacity-0 pointer-events-none"
-        }`}
+        className={`fixed left-0 right-0 bg-white border-b border-gray-100
+                    transition-all duration-300 ease-in-out z-40
+                    ${isOpen ? "top-14 md:top-16 opacity-100" : "top-0 opacity-0 pointer-events-none"}`}
       >
-        {/* Menu Items (Цэсний жагсаалт) */}
-        <nav className="max-w-7xl mx-auto px-4 py-6">
-          <ul className="space-y-1">
-            {/* Нүүр хуудас */}
-            <li>
-              <Link
-                href="/"
-                onClick={closeMenu}
-                className="block px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-mongolian text-gray-700 hover:text-gray-900"
-              >
-                Нүүр хуудас
-              </Link>
-            </li>
+        <nav className="max-w-7xl mx-auto px-8 md:px-14 py-8">
+          {/* Section label */}
+          <p
+            className="text-gray-300 uppercase mb-5"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Цэс · Navigation
+          </p>
 
-            {/* Цаг агаар (Parent) */}
-            <li>
-              <Link
-                href="/weather"
-                onClick={closeMenu}
-                className="block px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-mongolian text-gray-900 hover:text-gray-900 font-semibold"
-              >
-                Цаг агаар
-              </Link>
-              {/* Nested item - Нэр томъёо (Child under Weather) */}
-              <Link
-                href="/weather/terms"
-                onClick={closeMenu}
-                className="block pl-8 pr-4 py-2 rounded-lg hover:bg-gray-50 transition-colors font-mongolian text-gray-600 hover:text-gray-900 text-sm ml-4 border-l-2 border-gray-200"
-              >
-                ↳ Нэр томъёо
-              </Link>
-            </li>
+          <ul className="space-y-0.5">
+            {menuItems.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  onClick={closeMenu}
+                  className="block px-0 py-2.5 text-gray-600 hover:text-gray-900
+                             transition-colors border-b border-gray-50"
+                  style={{ fontSize: "15px" }}
+                >
+                  {item.label}
+                </Link>
 
-            {/* Passivhaus */}
-            <li>
-              <Link
-                href="/passivhaus"
-                onClick={closeMenu}
-                className="block px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-mongolian text-gray-700 hover:text-gray-900"
-              >
-                Passivhaus
-              </Link>
-            </li>
-
-            {/* Бидний тухай */}
-            <li>
-              <Link
-                href="/about"
-                onClick={closeMenu}
-                className="block px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-mongolian text-gray-700 hover:text-gray-900"
-              >
-                Бидний тухай
-              </Link>
-            </li>
+                {item.sub && (
+                  <Link
+                    href={item.sub.href}
+                    onClick={closeMenu}
+                    className="block pl-4 py-2 text-gray-400 hover:text-gray-700
+                               transition-colors border-b border-gray-50"
+                    style={{ fontSize: "13px" }}
+                  >
+                    {item.sub.label}
+                  </Link>
+                )}
+              </li>
+            ))}
           </ul>
         </nav>
       </div>
 
-      {/* Overlay (Дэвсгэр) */}
+      {/* Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black/20 z-30" onClick={closeMenu} />
+        <div className="fixed inset-0 bg-black/10 z-30" onClick={closeMenu} />
       )}
     </>
   );
