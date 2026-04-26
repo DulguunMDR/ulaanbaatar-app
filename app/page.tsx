@@ -227,18 +227,7 @@ export default function Home() {
         >
           {today} · Өнөөдрийн тэмдэглэл
         </p>
-        <blockquote
-          className="font-normal text-gray-600 leading-relaxed max-w-2xl"
-          style={{
-            fontFamily: "var(--font-playfair)",
-            fontStyle: "italic",
-            fontSize: "clamp(18px, 2.5vw, 24px)",
-          }}
-        >
-          &quot;Өнөөдөр Богд хайрхан уулыг манан дундаас харлаа. Утаа биш —
-          манан. Ялгаа бага байлаа. Гэхдээ уул байсаар байна. Үргэлж
-          байна.&quot;
-        </blockquote>
+
         <Link
           href="/journal"
           className="text-gray-400 hover:text-gray-600 transition-colors mt-8 block tracking-wider"

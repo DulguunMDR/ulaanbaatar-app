@@ -1,547 +1,472 @@
 // app/passivhaus/heating/page.tsx
-// Файлын байршил: app/passivhaus/heating/page.tsx
-// Халаалтын хуудас - Шинэчлэгдсэн загвар
 
 import Link from "next/link";
 
+const heatingOptions = [
+  {
+    number: "01",
+    title: "Цахилгаан халаалт",
+    subtitle: "Electric Heating",
+    description:
+      "Хамгийн энгийн, суурилуулахад хямд. Passivhaus-д бага эрчим хүч шаардагдах тул үр ашигтай.",
+    stats: [
+      { label: "Үр ашиг", value: "100%" },
+      { label: "Суурилуулалт", value: "₮2–3 сая" },
+      { label: "Ажиллалт", value: "₮0.12/кWh" },
+      { label: "Засвар", value: "Бага" },
+    ],
+  },
+  {
+    number: "02",
+    title: "Агаарын дулааны насос",
+    subtitle: "Air Source Heat Pump",
+    description:
+      "Гадны агаарын дулааныг ашиглан халаана. Монголын −40°C-д үр ашиг буурдаг, гэхдээ бага эрчим хүч хэрэглэнэ.",
+    stats: [
+      { label: "Үр ашиг", value: "200–300%" },
+      { label: "Суурилуулалт", value: "₮8–12 сая" },
+      { label: "Ажиллалт", value: "Бага" },
+      { label: "Засвар", value: "Дунд зэрэг" },
+    ],
+  },
+  {
+    number: "03",
+    title: "Газрын дулааны насос",
+    subtitle: "Ground Source Heat Pump",
+    description:
+      "Газрын доорх тогтвортой дулааныг ашиглана. Монголд хамгийн тохиромжтой, гэхдээ өндөр үнэтэй.",
+    stats: [
+      { label: "Үр ашиг", value: "300–400%" },
+      { label: "Суурилуулалт", value: "₮15–25 сая" },
+      { label: "Ажиллалт", value: "Маш бага" },
+      { label: "Засвар", value: "Бага" },
+    ],
+  },
+  {
+    number: "04",
+    title: "Нарны коллектор",
+    subtitle: "Solar Thermal",
+    description:
+      "Нарны эрчим хүчийг ашиглана. Зуны улиралд сайн, өвөл нэмэлт халаалт хэрэгтэй.",
+    stats: [
+      { label: "Үр ашиг", value: "Улирлаас" },
+      { label: "Суурилуулалт", value: "₮5–8 сая" },
+      { label: "Ажиллалт", value: "Үнэгүй" },
+      { label: "Засвар", value: "Бага" },
+    ],
+  },
+];
+
+const backupOptions = [
+  {
+    title: "Цахилгаан халаагч",
+    subtitle: "Нөөц",
+    body: "1–2 кВт чадалтай, жижиг өрөө тус бүрт байршуулах. Зөвхөн хамгийн хүйтэн үед ашиглана.",
+  },
+  {
+    title: "Шалны халаалт",
+    subtitle: "Нөөц",
+    body: "Ариун цэврийн өрөө, хүүхдийн өрөөнд. Тав тухтай, дулааныг жигд тархаана.",
+  },
+  {
+    title: "Модны зуух",
+    subtitle: "Нэмэлт",
+    body: "Зөвхөн онцгой үед. Утаа HRV системээр дамжуулж гадагш гаргах шаардлагатай.",
+  },
+];
+
+const checklist = [
+  "Халаалтын хэрэгцээг тооцоолох (PHPP програм ашиглах)",
+  "Монголын −40°C-д ажиллах эсэхийг шалгах",
+  "Нөөц халаалтын систем төлөвлөх",
+  "20 жилийн зардлыг харьцуулах (анхны үнэ + ажиллалт)",
+  "Засвар үйлчилгээ хийх мэргэжилтэн байгаа эсэхийг лавлах",
+];
+
 export default function HeatingPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-4xl mx-auto px-4 pt-20 pb-12 md:pt-24 md:pb-16">
-        {/* Breadcrumb */}
-        <div className="mb-8">
+    <main className="pt-14 md:pt-16 min-h-screen bg-white">
+      {/* HERO */}
+      <section
+        className="grid border-b border-gray-100"
+        style={{ gridTemplateColumns: "32px 1fr" }}
+      >
+        <div
+          className="border-r border-gray-100 flex items-center justify-center py-16"
+          style={{
+            writingMode: "vertical-rl",
+            textOrientation: "mixed",
+            transform: "rotate(180deg)",
+          }}
+        >
+          <span
+            className="text-gray-300 uppercase"
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "9px",
+              letterSpacing: "0.4em",
+            }}
+          >
+            06 · ХАЛААЛТ
+          </span>
+        </div>
+
+        <div className="px-8 md:px-14 py-12 md:py-20">
           <Link
             href="/passivhaus"
-            className="text-rose-600 hover:text-rose-800 font-mongolian text-sm flex items-center gap-2 transition-colors"
+            className="text-gray-300 hover:text-gray-500 transition-colors mb-8 inline-block"
+            style={{ fontSize: "11px", letterSpacing: "0.1em" }}
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Passivhaus гарын авлага руу буцах
+            ← Passivhaus гарын авлага
           </Link>
-        </div>
 
-        {/* Header */}
-        <div className="mb-12">
-          <div className="inline-block mb-4">
-            <div className="text-sm font-semibold tracking-widest text-rose-600 uppercase mb-2">
-              06 — Халаалт
-            </div>
-            <h1 className="font-mongolian text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
-              Эрчим Хүч Хэмнэсэн
-              <br />
-              Халаалтын Систем
-            </h1>
-          </div>
-          <div className="h-1 w-24 bg-gradient-to-r from-rose-500 to-pink-500 mb-6"></div>
-          <p className="text-xl text-gray-600 font-mongolian leading-relaxed max-w-2xl">
-            Бага эрчим хүчээр дулаацуулах шийдэл
+          <p
+            className="text-gray-400 uppercase mb-5"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Heating · Эрчим хүч хэмнэсэн халаалт
+          </p>
+
+          <h1
+            className="font-normal tracking-tight text-gray-900 mb-8"
+            style={{
+              fontFamily: "var(--font-playfair)",
+              fontSize: "clamp(36px, 7vw, 72px)",
+              lineHeight: "0.92",
+            }}
+          >
+            Халаалт
+            <span
+              className="block text-gray-300"
+              style={{ marginLeft: "clamp(1.5rem, 4vw, 4rem)" }}
+            >
+              Heating
+            </span>
+          </h1>
+
+          <hr className="border-gray-100 mb-6" />
+
+          <p className="text-sm text-gray-400 leading-relaxed max-w-sm">
+            Бага эрчим хүчээр дулаацуулах шийдэл. Жилийн халаалтын эрчим хүч{" "}
+            <span className="font-mono">15 кWh/м²</span> хүртэл — ердийн гэрээс
+            90% бага.
           </p>
         </div>
+      </section>
 
-        {/* Content */}
-        <div className="space-y-12">
-          {/* Minimal heating needs */}
-          <section>
-            <div className="bg-white border-l-4 border-rose-500 rounded-r-xl p-8 shadow-sm">
-              <h2 className="font-mongolian text-2xl font-bold text-gray-900 mb-6">
-                Passivhaus-д халаалтын хэрэгцээ бага
-              </h2>
-              <p className="font-mongolian text-gray-700 leading-relaxed mb-4">
-                Дулаалга, агааргүйдэл, HRV системийн ачаар Passivhaus-д халаалт
-                бараг хэрэггүй болдог. Жилийн халаалтын эрчим хүч нь{" "}
-                <strong>15 кWh/м² хүртэл</strong> байна. Энэ нь ердийн гэрээс{" "}
-                <strong>90% бага</strong>.
-              </p>
-              <div className="bg-rose-50 border-2 border-rose-200 rounded-xl p-6">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-rose-600 rounded-lg flex items-center justify-center">
-                      <span className="text-white font-bold text-xs">
-                        15кWh
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-mongolian font-semibold text-rose-900 mb-2">
-                      Жишээ тооцоолол
-                    </h3>
-                    <p className="font-mongolian text-sm text-rose-800 leading-relaxed">
-                      100м² байшин: 15 кWh/м² × 100м² = 1,500 кWh жилд. Энэ нь
-                      сард ойролцоогоор 125 кWh буюу{" "}
-                      <strong>₮25,000-35,000</strong> (цахилгаан халаалт).
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+      {/* KEY NUMBERS */}
+      <section className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-100">
+        <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-gray-100">
+          <p
+            className="text-gray-400 uppercase mb-4"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Passivhaus стандарт
+          </p>
+          <div
+            className="font-mono font-light text-gray-900 mb-3"
+            style={{ fontSize: "clamp(32px, 5vw, 48px)", lineHeight: 1 }}
+          >
+            15 кWh
+          </div>
+          <p className="text-sm text-gray-400 leading-relaxed">
+            Жилд 100м² тутамд
+          </p>
+        </div>
+        <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-gray-100">
+          <p
+            className="text-gray-400 uppercase mb-4"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Ердийн гэр
+          </p>
+          <div
+            className="font-mono font-light text-gray-900 mb-3"
+            style={{ fontSize: "clamp(32px, 5vw, 48px)", lineHeight: 1 }}
+          >
+            150+ кWh
+          </div>
+          <p className="text-sm text-gray-400 leading-relaxed">
+            Жилд 100м² тутамд
+          </p>
+        </div>
+        <div className="p-8 md:p-12">
+          <p
+            className="text-gray-400 uppercase mb-4"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            20 жилийн хэмнэлт
+          </p>
+          <div
+            className="font-mono font-light text-gray-900 mb-3"
+            style={{ fontSize: "clamp(32px, 5vw, 48px)", lineHeight: 1 }}
+          >
+            ₮66.8 сая
+          </div>
+          <p className="text-sm text-gray-400 leading-relaxed">100м² байшинд</p>
+        </div>
+      </section>
 
-          {/* Heating comparison */}
-          <section>
-            <h2 className="font-mongolian text-2xl font-bold text-gray-900 mb-6">
-              Халаалтын зардлын харьцуулалт
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-xl p-6">
-                <div className="text-red-600 font-bold text-sm mb-3 uppercase tracking-wide">
-                  Ердийн гэр
-                </div>
-                <div className="text-4xl font-bold text-red-900 mb-2">
-                  150+ кWh
-                </div>
-                <p className="font-mongolian text-sm text-gray-700 leading-relaxed mb-4">
-                  Жилд 100м² тутамд
-                </p>
-                <div className="bg-white rounded-lg p-3">
-                  <p className="font-mongolian text-xs text-gray-600 mb-1">
-                    Сарын зардал (өвөл):
-                  </p>
-                  <p className="font-mongolian text-lg font-bold text-red-700">
-                    ₮300,000-500,000
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6">
-                <div className="text-green-600 font-bold text-sm mb-3 uppercase tracking-wide">
-                  Passivhaus
-                </div>
-                <div className="text-4xl font-bold text-green-900 mb-2">
-                  ≤15 кWh
-                </div>
-                <p className="font-mongolian text-sm text-gray-700 leading-relaxed mb-4">
-                  Жилд 100м² тутамд
-                </p>
-                <div className="bg-white rounded-lg p-3">
-                  <p className="font-mongolian text-xs text-gray-600 mb-1">
-                    Сарын зардал (өвөл):
-                  </p>
-                  <p className="font-mongolian text-lg font-bold text-green-700">
-                    ₮25,000-35,000
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Heating options */}
-          <section>
-            <h2 className="font-mongolian text-2xl font-bold text-gray-900 mb-6">
-              Халаалтын сонголтууд
-            </h2>
-            <div className="bg-gradient-to-br from-slate-50 to-gray-100 border-2 border-gray-200 rounded-xl p-8">
-              <div className="space-y-6">
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 bg-rose-600 text-white rounded-lg flex items-center justify-center font-bold">
-                    1
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-mongolian font-semibold text-gray-900 mb-1">
-                      Цахилгаан халаалт (Electric Heating)
-                    </h3>
-                    <p className="font-mongolian text-sm text-gray-700 mb-3">
-                      Хамгийн энгийн, суурилуулахад хямд. Passivhaus-д бага
-                      эрчим хүч шаардагдах тул үр ашигтай.
-                    </p>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Үр ашиг:</span>{" "}
-                        <strong className="text-green-600">100%</strong>
-                      </div>
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Суурилуулалт:</span>{" "}
-                        <strong className="text-blue-600">₮2-3 сая</strong>
-                      </div>
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Ажиллалт:</span>{" "}
-                        <strong className="text-orange-600">₮0.12/кWh</strong>
-                      </div>
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Засвар:</span>{" "}
-                        <strong className="text-purple-600">Бага</strong>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 bg-rose-600 text-white rounded-lg flex items-center justify-center font-bold">
-                    2
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-mongolian font-semibold text-gray-900 mb-1">
-                      Агаарын дулааны насос (Air Source Heat Pump)
-                    </h3>
-                    <p className="font-mongolian text-sm text-gray-700 mb-3">
-                      Гадны агаарын дулааныг ашиглан халаана. Монголын -40°C-д
-                      үр ашиг буурдаг, гэхдээ бага эрчим хүч хэрэглэнэ.
-                    </p>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Үр ашиг:</span>{" "}
-                        <strong className="text-green-600">200-300%</strong>
-                      </div>
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Суурилуулалт:</span>{" "}
-                        <strong className="text-blue-600">₮8-12 сая</strong>
-                      </div>
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Ажиллалт:</span>{" "}
-                        <strong className="text-orange-600">Бага</strong>
-                      </div>
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Засвар:</span>{" "}
-                        <strong className="text-purple-600">Дунд зэрэг</strong>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 bg-rose-600 text-white rounded-lg flex items-center justify-center font-bold">
-                    3
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-mongolian font-semibold text-gray-900 mb-1">
-                      Газрын дулааны насос (Ground Source Heat Pump)
-                    </h3>
-                    <p className="font-mongolian text-sm text-gray-700 mb-3">
-                      Газрын доорх тогтвортой дулааныг ашиглана. Монголд хамгийн
-                      тохиромжтой, гэхдээ өндөр үнэтэй.
-                    </p>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Үр ашиг:</span>{" "}
-                        <strong className="text-green-600">300-400%</strong>
-                      </div>
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Суурилуулалт:</span>{" "}
-                        <strong className="text-blue-600">₮15-25 сая</strong>
-                      </div>
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Ажиллалт:</span>{" "}
-                        <strong className="text-orange-600">Маш бага</strong>
-                      </div>
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Засвар:</span>{" "}
-                        <strong className="text-purple-600">Бага</strong>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 bg-rose-600 text-white rounded-lg flex items-center justify-center font-bold">
-                    4
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-mongolian font-semibold text-gray-900 mb-1">
-                      Нарны коллектор (Solar Thermal)
-                    </h3>
-                    <p className="font-mongolian text-sm text-gray-700 mb-3">
-                      Нарны эрчим хүчийг ашиглана. Зуны улиралд сайн, өвөл
-                      нэмэлт халаалт хэрэгтэй.
-                    </p>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Үр ашиг:</span>{" "}
-                        <strong className="text-green-600">
-                          Улирлаас хамаарна
-                        </strong>
-                      </div>
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Суурилуулалт:</span>{" "}
-                        <strong className="text-blue-600">₮5-8 сая</strong>
-                      </div>
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Ажиллалт:</span>{" "}
-                        <strong className="text-orange-600">Үнэгүй</strong>
-                      </div>
-                      <div className="bg-white rounded px-3 py-2">
-                        <span className="text-gray-600">Засвар:</span>{" "}
-                        <strong className="text-purple-600">Бага</strong>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Backup heating */}
-          <section>
-            <h2 className="font-mongolian text-2xl font-bold text-gray-900 mb-6">
-              Нөөц халаалт (-40°C-д)
-            </h2>
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-8">
-              <p className="font-mongolian text-gray-700 leading-relaxed mb-6">
-                Монголын хамгийн хүйтэн өдрүүдэд (5-10 хоног) нэмэлт халаалт
-                шаардлагатай байж болно. Passivhaus зарчим нь бага эрчим хүчээр
-                удаан хугацаагаар халаах.
-              </p>
-
-              <div className="space-y-3">
-                <div className="bg-white border-l-4 border-blue-500 rounded-r-xl p-5 shadow-sm">
-                  <h3 className="font-mongolian font-semibold text-blue-900 mb-2">
-                    Цахилгаан халаагч (Нөөц)
-                  </h3>
-                  <p className="font-mongolian text-sm text-gray-700">
-                    1-2 кВт чадалтай, жижиг өрөө тус бүрт байршуулах. Зөвхөн
-                    хамгийн хүйтэн үед ашиглана.
-                  </p>
-                </div>
-
-                <div className="bg-white border-l-4 border-orange-500 rounded-r-xl p-5 shadow-sm">
-                  <h3 className="font-mongolian font-semibold text-orange-900 mb-2">
-                    Шалны халаалт (Нөөц)
-                  </h3>
-                  <p className="font-mongolian text-sm text-gray-700">
-                    Ариун цэврийн өрөө, хүүхдийн өрөөнд. Тав тухтай, дулааныг
-                    жигд тархаана.
-                  </p>
-                </div>
-
-                <div className="bg-white border-l-4 border-green-500 rounded-r-xl p-5 shadow-sm">
-                  <h3 className="font-mongolian font-semibold text-green-900 mb-2">
-                    Модны зуух (Нэмэлт)
-                  </h3>
-                  <p className="font-mongolian text-sm text-gray-700">
-                    Зөвхөн онцгой үед. Утаа HRV системээр дамжуулж гадагш гаргах
-                    шаардлагатай.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-6 bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6">
-                <div className="flex items-start gap-3">
-                  <svg
-                    className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+      {/* HEATING OPTIONS */}
+      <section className="border-b border-gray-100">
+        <div className="px-8 md:px-14 py-8 border-b border-gray-100">
+          <p
+            className="text-gray-400 uppercase"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Халаалтын сонголтууд · Heating options
+          </p>
+        </div>
+        {heatingOptions.map((opt, i) => (
+          <div
+            key={opt.number}
+            className={
+              "grid border-b border-gray-100 " +
+              (i === heatingOptions.length - 1 ? "border-b-0" : "")
+            }
+            style={{ gridTemplateColumns: "32px 1fr" }}
+          >
+            <div className="border-r border-gray-100" />
+            <div className="px-8 md:px-14 py-10">
+              <div className="flex items-baseline gap-4 mb-4">
+                <span
+                  className="font-mono text-gray-200"
+                  style={{ fontSize: "11px" }}
+                >
+                  {opt.number}
+                </span>
+                <div>
+                  <h3
+                    className="text-gray-800 font-normal"
+                    style={{
+                      fontFamily: "var(--font-playfair)",
+                      fontSize: "20px",
+                    }}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                  <div>
-                    <h4 className="font-mongolian font-semibold text-yellow-900 mb-1">
-                      Чухал
-                    </h4>
-                    <p className="font-mongolian text-sm text-yellow-800 leading-relaxed">
-                      Passivhaus-д халаалтын систем жижиг байж болно. Том зуух,
-                      халаагч худалдан авахгүй. Үр ашиггүй, үнэтэй.
+                    {opt.title}
+                  </h3>
+                  <p
+                    className="text-gray-300 uppercase"
+                    style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+                  >
+                    {opt.subtitle}
+                  </p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-400 leading-relaxed mb-6 max-w-xl">
+                {opt.description}
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border border-gray-100">
+                {opt.stats.map((stat, si) => (
+                  <div
+                    key={stat.label}
+                    className={
+                      "p-4 " +
+                      (si < opt.stats.length - 1
+                        ? "border-b md:border-b-0 md:border-r border-gray-100"
+                        : "")
+                    }
+                  >
+                    <p
+                      className="text-gray-300 uppercase mb-1"
+                      style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+                    >
+                      {stat.label}
+                    </p>
+                    <p className="font-mono text-sm text-gray-700">
+                      {stat.value}
                     </p>
                   </div>
-                </div>
+                ))}
               </div>
             </div>
-          </section>
+          </div>
+        ))}
+      </section>
 
-          {/* Cost analysis */}
-          <section>
-            <h2 className="font-mongolian text-2xl font-bold text-gray-900 mb-6">
-              20 жилийн зардлын харьцуулалт
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
-                <h3 className="font-mongolian font-semibold text-gray-900 mb-4">
-                  Ердийн гэр (100м²)
-                </h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between pb-2 border-b border-gray-200">
-                    <span className="font-mongolian text-gray-600">
-                      Халаалтын систем:
-                    </span>
-                    <strong className="font-mongolian">₮5,000,000</strong>
-                  </div>
-                  <div className="flex justify-between pb-2 border-b border-gray-200">
-                    <span className="font-mongolian text-gray-600">
-                      Жилийн зардал:
-                    </span>
-                    <strong className="font-mongolian">₮3,600,000</strong>
-                  </div>
-                  <div className="flex justify-between pb-2 border-b border-gray-200">
-                    <span className="font-mongolian text-gray-600">
-                      20 жилийн ажиллалт:
-                    </span>
-                    <strong className="font-mongolian">₮72,000,000</strong>
-                  </div>
-                  <div className="flex justify-between pt-2">
-                    <span className="font-mongolian text-gray-900 font-semibold">
-                      Нийт зардал:
-                    </span>
-                    <strong className="font-mongolian text-red-600 text-lg">
-                      ₮77,000,000
-                    </strong>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl p-6">
-                <h3 className="font-mongolian font-semibold text-green-900 mb-4">
-                  Passivhaus (100м²)
-                </h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between pb-2 border-b border-green-200">
-                    <span className="font-mongolian text-gray-700">
-                      Халаалтын систем:
-                    </span>
-                    <strong className="font-mongolian">₮3,000,000</strong>
-                  </div>
-                  <div className="flex justify-between pb-2 border-b border-green-200">
-                    <span className="font-mongolian text-gray-700">
-                      Жилийн зардал:
-                    </span>
-                    <strong className="font-mongolian">₮360,000</strong>
-                  </div>
-                  <div className="flex justify-between pb-2 border-b border-green-200">
-                    <span className="font-mongolian text-gray-700">
-                      20 жилийн ажиллалт:
-                    </span>
-                    <strong className="font-mongolian">₮7,200,000</strong>
-                  </div>
-                  <div className="flex justify-between pt-2">
-                    <span className="font-mongolian text-gray-900 font-semibold">
-                      Нийт зардал:
-                    </span>
-                    <strong className="font-mongolian text-green-600 text-lg">
-                      ₮10,200,000
-                    </strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-xl p-6 text-center">
-              <p className="font-mongolian text-blue-900 font-semibold text-lg mb-2">
-                20 жилд хэмнэлт
-              </p>
-              <p className="font-mongolian text-4xl font-bold text-blue-600">
-                ₮66,800,000
-              </p>
-            </div>
-          </section>
-
-          {/* Checklist */}
-          <section>
-            <div className="bg-gradient-to-br from-rose-50 to-pink-50 border-2 border-rose-200 rounded-xl p-8">
-              <h2 className="font-mongolian text-2xl font-bold text-rose-900 mb-6">
-                Халаалтын систем сонгох
-              </h2>
-
-              <div className="space-y-3">
-                <label className="flex items-start gap-3 p-4 bg-white rounded-lg hover:bg-rose-50 transition-colors cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mt-1 w-5 h-5 text-rose-600"
-                  />
-                  <span className="font-mongolian text-sm text-gray-700">
-                    Халаалтын хэрэгцээг тооцоолох (PHPP програм ашиглах)
-                  </span>
-                </label>
-
-                <label className="flex items-start gap-3 p-4 bg-white rounded-lg hover:bg-rose-50 transition-colors cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mt-1 w-5 h-5 text-rose-600"
-                  />
-                  <span className="font-mongolian text-sm text-gray-700">
-                    Монголын -40°C-д ажиллах эсэхийг шалгах
-                  </span>
-                </label>
-
-                <label className="flex items-start gap-3 p-4 bg-white rounded-lg hover:bg-rose-50 transition-colors cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mt-1 w-5 h-5 text-rose-600"
-                  />
-                  <span className="font-mongolian text-sm text-gray-700">
-                    Нөөц халаалтын систем төлөвлөх
-                  </span>
-                </label>
-
-                <label className="flex items-start gap-3 p-4 bg-white rounded-lg hover:bg-rose-50 transition-colors cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mt-1 w-5 h-5 text-rose-600"
-                  />
-                  <span className="font-mongolian text-sm text-gray-700">
-                    20 жилийн зардлыг харьцуулах (анхны үнэ + ажиллалт)
-                  </span>
-                </label>
-
-                <label className="flex items-start gap-3 p-4 bg-white rounded-lg hover:bg-rose-50 transition-colors cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mt-1 w-5 h-5 text-rose-600"
-                  />
-                  <span className="font-mongolian text-sm text-gray-700">
-                    Засвар үйлчилгээ хийх мэргэжилтэн байгаа эсэхийг лавлах
-                  </span>
-                </label>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        {/* Navigation */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-12 border-t-2 border-gray-200 mt-12">
-          <Link
-            href="/passivhaus/airtightness"
-            className="text-gray-600 hover:text-gray-900 font-mongolian flex items-center gap-2 transition-colors"
+      {/* 20-YEAR COST COMPARISON */}
+      <section className="border-b border-gray-100">
+        <div className="px-8 md:px-14 py-8 border-b border-gray-100">
+          <p
+            className="text-gray-400 uppercase"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Өмнөх: Агааргүйдэл
-          </Link>
-
-          <Link
-            href="/passivhaus/materials"
-            className="bg-gradient-to-r from-rose-600 to-pink-600 text-white px-8 py-3 rounded-full hover:from-rose-700 hover:to-pink-700 font-mongolian flex items-center gap-2 transition-all shadow-lg hover:shadow-xl"
-          >
-            Дараах: Материал ба Нийлүүлэгч
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M14 5l7 7m0 0l-7 7m7-7H3"
-              />
-            </svg>
-          </Link>
+            20 жилийн зардлын харьцуулалт · 20-year cost comparison
+          </p>
         </div>
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          {/* Regular house */}
+          <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-gray-100">
+            <p
+              className="text-gray-400 uppercase mb-6"
+              style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+            >
+              Ердийн гэр · 100м²
+            </p>
+            {[
+              { label: "Халаалтын систем", value: "₮5,000,000" },
+              { label: "Жилийн зардал", value: "₮3,600,000" },
+              { label: "20 жилийн ажиллалт", value: "₮72,000,000" },
+            ].map((row) => (
+              <div
+                key={row.label}
+                className="flex justify-between py-3 border-b border-gray-100"
+              >
+                <span className="text-sm text-gray-400">{row.label}</span>
+                <span className="font-mono text-sm text-gray-600">
+                  {row.value}
+                </span>
+              </div>
+            ))}
+            <div className="flex justify-between pt-4">
+              <span className="text-sm text-gray-700 font-medium">
+                Нийт зардал
+              </span>
+              <span className="font-mono text-sm text-gray-900">
+                ₮77,000,000
+              </span>
+            </div>
+          </div>
+
+          {/* Passivhaus */}
+          <div className="p-8 md:p-12">
+            <p
+              className="text-gray-400 uppercase mb-6"
+              style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+            >
+              Passivhaus · 100м²
+            </p>
+            {[
+              { label: "Халаалтын систем", value: "₮3,000,000" },
+              { label: "Жилийн зардал", value: "₮360,000" },
+              { label: "20 жилийн ажиллалт", value: "₮7,200,000" },
+            ].map((row) => (
+              <div
+                key={row.label}
+                className="flex justify-between py-3 border-b border-gray-100"
+              >
+                <span className="text-sm text-gray-400">{row.label}</span>
+                <span className="font-mono text-sm text-gray-600">
+                  {row.value}
+                </span>
+              </div>
+            ))}
+            <div className="flex justify-between pt-4">
+              <span className="text-sm text-gray-700 font-medium">
+                Нийт зардал
+              </span>
+              <span className="font-mono text-sm text-gray-900">
+                ₮10,200,000
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* BACKUP HEATING */}
+      <section className="border-b border-gray-100">
+        <div className="px-8 md:px-14 py-8 border-b border-gray-100">
+          <p
+            className="text-gray-400 uppercase"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Нөөц халаалт · Backup heating (−40°C)
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3">
+          {backupOptions.map((opt, i) => (
+            <div
+              key={opt.title}
+              className={
+                "p-8 " +
+                (i < backupOptions.length - 1
+                  ? "border-b md:border-b-0 md:border-r border-gray-100"
+                  : "")
+              }
+            >
+              <p
+                className="text-gray-300 uppercase mb-2"
+                style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+              >
+                {opt.subtitle}
+              </p>
+              <h3
+                className="text-gray-800 font-normal mb-4"
+                style={{ fontFamily: "var(--font-playfair)", fontSize: "17px" }}
+              >
+                {opt.title}
+              </h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                {opt.body}
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="px-8 md:px-14 py-6 border-t border-gray-100">
+          <p className="text-sm text-gray-400 leading-relaxed max-w-xl">
+            <span
+              className="text-gray-300 uppercase mr-2"
+              style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+            >
+              Чухал:
+            </span>
+            Passivhaus-д халаалтын систем жижиг байж болно. Том зуух, халаагч
+            худалдан авахгүй — үр ашиггүй, үнэтэй.
+          </p>
+        </div>
+      </section>
+
+      {/* CHECKLIST */}
+      <section className="border-b border-gray-100">
+        <div className="px-8 md:px-14 py-8 border-b border-gray-100">
+          <p
+            className="text-gray-400 uppercase"
+            style={{ fontSize: "9px", letterSpacing: "0.14em" }}
+          >
+            Шалгах жагсаалт · Checklist
+          </p>
+        </div>
+        <div className="grid" style={{ gridTemplateColumns: "32px 1fr" }}>
+          <div className="border-r border-gray-100" />
+          <div className="px-8 md:px-14 py-10">
+            {checklist.map((item, i) => (
+              <label
+                key={i}
+                className={
+                  "flex items-start gap-5 py-5 cursor-pointer group " +
+                  (i < checklist.length - 1 ? "border-b border-gray-100" : "")
+                }
+              >
+                <input
+                  type="checkbox"
+                  className="mt-0.5 w-4 h-4 border-gray-300 rounded-none accent-gray-800 shrink-0"
+                />
+                <span className="text-sm text-gray-500 leading-relaxed group-hover:text-gray-700 transition-colors">
+                  {item}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* NAV */}
+      <section className="px-8 md:px-14 py-10 flex justify-between items-center">
+        <Link
+          href="/passivhaus/airtightness"
+          className="text-gray-400 hover:text-gray-700 transition-colors tracking-wider"
+          style={{ fontSize: "11px" }}
+        >
+          ← Агааргүйдэл
+        </Link>
+        <Link
+          href="/passivhaus/materials"
+          className="text-gray-400 hover:text-gray-700 transition-colors tracking-wider"
+          style={{ fontSize: "11px" }}
+        >
+          Материал →
+        </Link>
+      </section>
     </main>
   );
 }

@@ -27,14 +27,14 @@ const topics = [
   {
     id: "ventilation",
     number: "04",
-    title: "Агааржуулалт",
+    title: "Агааржуулалтын систем",
     description: "Дулаан сэргээх агааржуулалтын систем",
     href: "/passivhaus/ventilation",
   },
   {
     id: "airtightness",
     number: "05",
-    title: "Агааргүйдэл",
+    title: "Агаар орохгүй битүүмжлэлт",
     description: "Агаар алдагдахгүй барилгын техник",
     href: "/passivhaus/airtightness",
   },

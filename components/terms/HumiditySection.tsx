@@ -1,187 +1,292 @@
-// ============================================
-// ФАЙЛ: components/terms/HumiditySection.tsx
-// Файлын байршил: components/terms/HumiditySection.tsx
-// ============================================
+// components/terms/HumiditySection.tsx
 
 "use client";
 
 import { useState } from "react";
 
-export function HumiditySection() {
-  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
+const humidityLevels = [
+  {
+    range: "0–30%",
+    label: "Хуурай",
+    labelEn: "Dry",
+    dot: "#d97706", // amber — only for data semantics
+    health: "Арьсны асуудал, амьсгалын замын цочрол",
+    advice: "Чийгшүүлэгч ашиглах, ус их уух",
+    description:
+      "Агаар хэт хуурай. Арьс, хамар, хоолой хатна. Цахилгаан гарах магадлал өндөр.",
+  },
+  {
+    range: "30–60%",
+    label: "Тохиромжтой",
+    labelEn: "Comfortable",
+    dot: "#16a34a",
+    health: "Эрүүл мэндэд оновчтой, тав тухтай",
+    advice: "Энэ түвшинг хадгалахыг эрмэлзээрэй",
+    description: "Хүний биед хамгийн тааламжтай түвшин.",
+  },
+  {
+    range: "60–80%",
+    label: "Чийглэг",
+    labelEn: "Humid",
+    dot: "#2563eb",
+    health: "Хэт халалт мэдрэгдэх, амьсгал давчдах",
+    advice: "Агааржуулалт сайжруулах, салхивч ашиглах",
+    description: "Агаар чийглэг. Халуунд амьсгалахад хүндрэлтэй.",
+  },
+  {
+    range: "80–100%",
+    label: "Маш чийглэг",
+    labelEn: "Saturated",
+    dot: "#7c3aed",
+    health: "Мөөгөнцөр, хөгц үүсэх, амьсгалд хүндрэх",
+    advice: "Чийгшилтэй газар агааржуулах, чийгшилт арилгагч ашиглах",
+    description: "Агаар ханасан. Манан, бороо орох магадлал өндөр.",
+  },
+];
 
-  const humidityLevels = [
-    {
-      range: "0-30%",
-      label: "Хуурай",
-      icon: "",
-      color: "bg-yellow-100 border-yellow-300",
-      textColor: "text-yellow-800",
-      description: "Агаар хэт хуурай. Арьс, хамар, хоолой хатна.",
-      health: "Арьсны асуудал, амьсгалын замын цочрол",
-      advice: "Чийгшүүлэгч ашиглах, ус их уух",
-    },
-    {
-      range: "30-60%",
-      label: "Тохиромжтой",
-      icon: "",
-      color: "bg-green-100 border-green-300",
-      textColor: "text-green-800",
-      description: "Хүний биед хамгийн тааламжтай түвшин.",
-      health: "Эрүүл мэндэд оновчтой, тав тухтай",
-      advice: "Энэ түвшинг хадгалахыг эрмэлзээрэй",
-    },
-    {
-      range: "60-80%",
-      label: "Чийглэг",
-      icon: "",
-      color: "bg-blue-100 border-blue-300",
-      textColor: "text-blue-800",
-      description: "Агаар чийглэг. Халуунд амьсгалахад хүндрэлтэй.",
-      health: "Хэт халалт мэдрэгдэх, амьсгал давчдах",
-      advice: "Агааржуулалт сайжруулах, салхивч ашиглах",
-    },
-    {
-      range: "80-100%",
-      label: "Маш чийглэг",
-      icon: "",
-      color: "bg-indigo-100 border-indigo-300",
-      textColor: "text-indigo-800",
-      description: "Агаар ханасан. Манан, бороо орох магадлал өндөр.",
-      health: "Мөөгөнцөр, хөгц үүсэх, амьсгалд хүндрэх",
-      advice: "Чийгшилтэй газар агааржуулах, чийгшилт арилгагч ашиглах",
-    },
-  ];
+export function HumiditySection() {
+  const [selected, setSelected] = useState<number | null>(null);
 
   return (
-    <section className="mb-10">
-      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-indigo-100">
-        {/* Гарчиг (Header) */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="text-4xl"></div>
-          <div>
-            <h2 className="font-mongolian text-2xl font-bold text-gray-900">
-              Чийгшил
-            </h2>
-            <p className="text-sm text-gray-500">
-              Humidity / Харьцангуй чийгшил
+    <section>
+      {/* Eyebrow */}
+      <p
+        className="text-gray-400 uppercase mb-5"
+        style={{
+          fontSize: "9px",
+          letterSpacing: "0.14em",
+          fontFamily: "var(--font-inter)",
+        }}
+      >
+        Цаг агаар · Weather
+      </p>
+
+      {/* Title */}
+      <h2
+        className="font-normal tracking-tight text-gray-900 mb-4"
+        style={{
+          fontFamily: "var(--font-playfair)",
+          fontSize: "clamp(28px, 4vw, 42px)",
+          lineHeight: "1",
+        }}
+      >
+        Чийгшил
+      </h2>
+      <hr className="border-gray-100 mb-6" />
+
+      {/* Body */}
+      <p
+        className="text-sm text-gray-500 leading-relaxed max-w-lg mb-10"
+        style={{ fontFamily: "var(--font-mongolian)" }}
+      >
+        Харьцангуй чийгшил (Relative Humidity) гэдэг нь тухайн температурт агаар
+        хамгийн ихдээ агуулж чадах чийгний хэдэн хувь байгааг харуулна. Хувиар
+        (%) илэрхийлэгддэг.
+      </p>
+
+      {/* Levels — interactive rows */}
+      <div className="border border-gray-100 mb-10">
+        {humidityLevels.map((level, i) => {
+          const isOpen = selected === i;
+          return (
+            <div key={i} className="border-b border-gray-100 last:border-0">
+              <button
+                className="w-full text-left"
+                onClick={() => setSelected(isOpen ? null : i)}
+              >
+                <div
+                  className="grid px-5 py-4 hover:bg-gray-50 transition-colors duration-100"
+                  style={{ gridTemplateColumns: "12px 1fr 80px 16px" }}
+                >
+                  {/* Color dot */}
+                  <div className="flex items-center">
+                    <span
+                      className="block rounded-full"
+                      style={{
+                        width: "6px",
+                        height: "6px",
+                        backgroundColor: level.dot,
+                        flexShrink: 0,
+                      }}
+                    />
+                  </div>
+
+                  {/* Label */}
+                  <div className="flex items-center gap-3">
+                    <p
+                      className="text-sm text-gray-900"
+                      style={{ fontFamily: "var(--font-mongolian)" }}
+                    >
+                      {level.label}
+                    </p>
+                    <p
+                      className="text-gray-400 uppercase"
+                      style={{
+                        fontSize: "9px",
+                        letterSpacing: "0.12em",
+                        fontFamily: "var(--font-inter)",
+                      }}
+                    >
+                      {level.labelEn}
+                    </p>
+                  </div>
+
+                  {/* Range */}
+                  <div className="flex items-center justify-end">
+                    <p className="font-mono text-sm text-gray-500">
+                      {level.range}
+                    </p>
+                  </div>
+
+                  {/* Toggle */}
+                  <div className="flex items-center justify-end">
+                    <p
+                      className="font-mono text-gray-300"
+                      style={{ fontSize: "11px" }}
+                    >
+                      {isOpen ? "−" : "+"}
+                    </p>
+                  </div>
+                </div>
+              </button>
+
+              {/* Expanded */}
+              {isOpen && (
+                <div className="px-5 pb-5 border-t border-gray-100">
+                  <p
+                    className="text-sm text-gray-500 leading-relaxed mt-4 mb-5"
+                    style={{ fontFamily: "var(--font-mongolian)" }}
+                  >
+                    {level.description}
+                  </p>
+                  <div
+                    className="grid gap-px bg-gray-100"
+                    style={{ gridTemplateColumns: "1fr 1fr" }}
+                  >
+                    <div className="bg-white px-4 py-3">
+                      <p
+                        className="text-gray-400 uppercase mb-2"
+                        style={{
+                          fontSize: "9px",
+                          letterSpacing: "0.14em",
+                          fontFamily: "var(--font-inter)",
+                        }}
+                      >
+                        Эрүүл мэндэд үзүүлэх нөлөө
+                      </p>
+                      <p
+                        className="text-sm text-gray-600"
+                        style={{ fontFamily: "var(--font-mongolian)" }}
+                      >
+                        {level.health}
+                      </p>
+                    </div>
+                    <div className="bg-white px-4 py-3">
+                      <p
+                        className="text-gray-400 uppercase mb-2"
+                        style={{
+                          fontSize: "9px",
+                          letterSpacing: "0.14em",
+                          fontFamily: "var(--font-inter)",
+                        }}
+                      >
+                        Зөвлөмж
+                      </p>
+                      <p
+                        className="text-sm text-gray-600"
+                        style={{ fontFamily: "var(--font-mongolian)" }}
+                      >
+                        {level.advice}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Humidity scale — data viz strip */}
+      <p
+        className="text-gray-400 uppercase mb-3"
+        style={{
+          fontSize: "9px",
+          letterSpacing: "0.14em",
+          fontFamily: "var(--font-inter)",
+        }}
+      >
+        Чийгшлийн шкал · Scale
+      </p>
+      <div
+        className="h-px w-full mb-2"
+        style={{
+          background:
+            "linear-gradient(to right, #d97706, #16a34a 40%, #2563eb 70%, #7c3aed)",
+        }}
+      />
+      <div
+        className="flex justify-between"
+        style={{ fontFamily: "var(--font-inter)" }}
+      >
+        {["0%", "30%", "60%", "80%", "100%"].map((v) => (
+          <p
+            key={v}
+            className="font-mono text-gray-300"
+            style={{ fontSize: "9px" }}
+          >
+            {v}
+          </p>
+        ))}
+      </div>
+
+      {/* Temperature relationship note */}
+      <div className="border border-gray-100 mt-10">
+        <div className="grid border-b border-gray-100 bg-gray-50 px-5 py-3">
+          <p
+            className="text-gray-400 uppercase"
+            style={{
+              fontSize: "9px",
+              letterSpacing: "0.14em",
+              fontFamily: "var(--font-inter)",
+            }}
+          >
+            Температур ба чийгшлийн хамаарал
+          </p>
+        </div>
+        <div
+          className="grid gap-px bg-gray-100"
+          style={{ gridTemplateColumns: "1fr 1fr" }}
+        >
+          <div className="bg-white px-5 py-4">
+            <p className="font-mono text-sm text-gray-900 mb-1">−20°C · Өвөл</p>
+            <p
+              className="text-sm text-gray-500"
+              style={{ fontFamily: "var(--font-mongolian)" }}
+            >
+              40% чийгшил = тохиромжтой
+            </p>
+          </div>
+          <div className="bg-white px-5 py-4">
+            <p className="font-mono text-sm text-gray-900 mb-1">+30°C · Зун</p>
+            <p
+              className="text-sm text-gray-500"
+              style={{ fontFamily: "var(--font-mongolian)" }}
+            >
+              50% чийгшил = халуун мэдрэгдэнэ
             </p>
           </div>
         </div>
-
-        {/* Тайлбар (Description) */}
-        <p className="text-gray-700 leading-relaxed mb-6">
-          Чийгшил буюу харьцангуй чийгшил (Relative Humidity) гэдэг нь агаарт
-          агуулагдах усны уурын хэмжээ юм. Тухайн температурт агаар хамгийн
-          ихдээ агуулж чадах чийгний хэдэн хувь байгааг харуулна. Хувиар (%)
-          илэрхийлэгддэг.
-        </p>
-
-        {/* Түвшин (Levels) */}
-        <div className="space-y-3 mb-6">
-          {humidityLevels.map((level, index) => (
-            <div
-              key={index}
-              className={`${
-                level.color
-              } border-2 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-[1.02] ${
-                selectedLevel === index
-                  ? "ring-4 ring-indigo-400 shadow-lg"
-                  : ""
-              }`}
-              onClick={() =>
-                setSelectedLevel(selectedLevel === index ? null : index)
-              }
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-3xl">{level.icon}</span>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className={`font-bold text-lg ${level.textColor}`}>
-                      {level.range} - {level.label}
-                    </h3>
-                  </div>
-                  <p className="text-sm text-gray-700 mb-2">
-                    {level.description}
-                  </p>
-
-                  {/* Дэлгэрэнгүй мэдээлэл (Expanded details) */}
-                  {selectedLevel === index && (
-                    <div className="mt-3 pt-3 border-t border-current/20 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                      <div className="bg-white/50 rounded-lg p-3">
-                        <p className="text-xs font-semibold text-gray-700 mb-1">
-                          Эрүүл мэндэд үзүүлэх нөлөө:
-                        </p>
-                        <p className="text-sm text-gray-600">{level.health}</p>
-                      </div>
-                      <div className="bg-white/50 rounded-lg p-3">
-                        <p className="text-xs font-semibold text-gray-700 mb-1">
-                          Зөвлөмж:
-                        </p>
-                        <p className="text-sm text-gray-600">{level.advice}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Чийгшилийн визуал индикатор (Visual humidity indicator) */}
-        <div className="bg-white/70 rounded-lg p-4 border border-indigo-200 mb-4">
-          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <span></span>
-            Чийгшлийн шкал (Humidity scale)
-          </h3>
-          <div className="relative h-8 bg-gradient-to-r from-yellow-200 via-green-200 via-blue-200 to-indigo-300 rounded-full overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-between px-2 text-xs font-semibold text-gray-700">
-              <span>0%</span>
-              <span>30%</span>
-              <span>60%</span>
-              <span>80%</span>
-              <span>100%</span>
-            </div>
-          </div>
-          <div className="flex items-center justify-between mt-2 text-xs text-gray-600">
-            <span> Хуурай</span>
-            <span> Эрүүл</span>
-            <span> Чийглэг</span>
-            <span> Их чийглэг</span>
-          </div>
-        </div>
-
-        {/* Нэмэлт мэдээлэл (Additional info) */}
-        <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-          <h3 className="font-semibold text-gray-900 mb-3">
-            Температур ба чийгшлийн хамаарал
-          </h3>
-          <p className="text-sm text-gray-700 mb-3">
-            Халуун агаар их усны ууp агуулж чаддаг. Иймээс зуны улиралд 60%
-            чийгшил өвлийн 60%-аас илүү чийглэг мэдрэгддэг. Мөн халуун + өндөр
-            чийгшил нь хүнийг илүү халаах шалтгаан болдог (heat index).
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-            <div className="bg-white rounded-lg p-3">
-              <p className="font-semibold text-purple-800">Өвөл (−20°C)</p>
-              <p className="text-gray-600">40% чийгшил = тохиромжтой</p>
-            </div>
-            <div className="bg-white rounded-lg p-3">
-              <p className="font-semibold text-purple-800">Зун (+30°C)</p>
-              <p className="text-gray-600">50% чийгшил = халуун мэдрэгдэнэ</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Зөвлөгөө (General advice) */}
-        <div className="mt-4 bg-indigo-50 rounded-lg p-4 border border-indigo-200">
-          <p className="text-sm text-indigo-900">
-            <span className="font-semibold"> Ерөнхий зөвлөгөө:</span> Гэртээ
-            чийгшлийг хэмжих багаж (hygrometer) байлгавал эрүүл орчинг
-            хадгалахад тустай. Идэвхтэй чийгшил: 40-50% нь оновчтой.
-          </p>
-        </div>
       </div>
+
+      {/* Note */}
+      <p
+        className="text-gray-400 mt-6 leading-relaxed"
+        style={{ fontSize: "11px", fontFamily: "var(--font-inter)" }}
+      >
+        Гэртээ чийгшлийг хэмжих багаж (hygrometer) байлгавал эрүүл орчинг
+        хадгалахад тустай. Идэвхтэй чийгшил: 40–50% нь оновчтой.
+      </p>
     </section>
   );
 }

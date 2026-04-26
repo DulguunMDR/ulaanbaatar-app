@@ -1,294 +1,514 @@
-// ============================================
-// ФАЙЛ 2: components/terms/OzoneSection.tsx
-// Файлын байршил: components/terms/OzoneSection.tsx
-// ============================================
+// components/terms/OzoneSection.tsx
 
 "use client";
 
 import { useState } from "react";
 
+const levels = [
+  {
+    range: "0–54",
+    label: "Аюулгүй",
+    labelEn: "Good",
+    dot: "#16a34a",
+  },
+  {
+    range: "54–70",
+    label: "Дунд зэрэг",
+    labelEn: "Moderate",
+    dot: "#ca8a04",
+  },
+  {
+    range: "70–85",
+    label: "Эрүүл мэндэд муу",
+    labelEn: "Unhealthy",
+    dot: "#ea580c",
+  },
+  {
+    range: "85+",
+    label: "Аюултай",
+    labelEn: "Hazardous",
+    dot: "#dc2626",
+  },
+];
+
+const formationSteps = [
+  {
+    n: "01",
+    label: "Бохирдуулагч ялгарна",
+    detail: "Машин, үйлдвэрээс NOx, VOC ялгарна",
+  },
+  {
+    n: "02",
+    label: "Нарны туяа нэмэгдэнэ",
+    detail: "UV туяа химийн урвалыг идэвхжүүлнэ",
+  },
+  {
+    n: "03",
+    label: "Химийн урвал үүснэ",
+    detail: "NOx + VOC + нарны гэрэл → урвал",
+  },
+  {
+    n: "04",
+    label: "Озон үүснэ",
+    detail: "O₃ агаарт хуримтлагдана",
+  },
+];
+
+const healthEffects = [
+  { label: "Нүдний цочрол", severity: "Дунд" },
+  { label: "Уушгины үрэвсэл", severity: "Хүнд" },
+  { label: "Астма дордох", severity: "Хүнд" },
+  { label: "Амьсгал хүндрэх", severity: "Дунд" },
+];
+
+const seasonal = [
+  { label: "Хавар", labelEn: "Spring", level: "Дунд" },
+  { label: "Зун", labelEn: "Summer", level: "Өндөр" },
+  { label: "Намар", labelEn: "Autumn", level: "Дунд" },
+  { label: "Өвөл", labelEn: "Winter", level: "Бага" },
+];
+
+const recommendations = [
+  "Үд дундын 12:00–17:00 цагт гадуур гарахаас зайлсхийх",
+  "Зуны халуун өдрүүдэд гадаа дасгал хийхгүй байх",
+  "Өндөр түвшинд цонхоо хааж, дотор байх",
+  "Озоны мэдээллийг өглөө шалгах",
+];
+
+type Tab = "info" | "formation" | "effects";
+
 export function OzoneSection() {
-  const [activeTab, setActiveTab] = useState<"info" | "formation" | "effects">(
-    "info"
-  );
+  const [tab, setTab] = useState<Tab>("info");
 
-  // Түвшний өгөгдөл (Level indicators)
-  const levels = [
-    { range: "0-54", label: "Сайн", color: "bg-green-500", width: "35%" },
-    { range: "54-70", label: "Дунд", color: "bg-yellow-500", width: "25%" },
-    { range: "70-85", label: "Муу", color: "bg-orange-500", width: "20%" },
-    { range: "85+", label: "Аюултай", color: "bg-red-600", width: "20%" },
-  ];
-
-  // Үүсэх механизм (Formation process)
-  const formationSteps = [
-    {
-      step: 1,
-      icon: "",
-      text: "Машин, үйлдвэрээс NOx, VOC ялгарна",
-      color: "text-gray-700",
-    },
-    {
-      step: 2,
-      icon: "",
-      text: "Нарны хурц гэрэл (UV туяа)",
-      color: "text-yellow-600",
-    },
-    { step: 3, icon: "", text: "Химийн урвал үүснэ", color: "text-blue-600" },
-    { step: 4, icon: "", text: "Озон (O₃) үүснэ", color: "text-purple-600" },
-  ];
-
-  // Эрүүл мэндийн нөлөө (Health effects)
-  const healthEffects = [
-    {
-      icon: "",
-      effect: "Нүдний цочрол",
-      severity: "Дунд",
-      color: "bg-yellow-100",
-    },
-    {
-      icon: "",
-      effect: "Уушгины үрэвсэл",
-      severity: "Хүнд",
-      color: "bg-orange-100",
-    },
-    {
-      icon: "",
-      effect: "Астма дордох",
-      severity: "Хүнд",
-      color: "bg-red-100",
-    },
-    {
-      icon: "",
-      effect: "Амьсгал хүндрэх",
-      severity: "Дунд",
-      color: "bg-yellow-100",
-    },
-  ];
-
-  // Улирлын хувилбар (Seasonal variation)
-  const seasonalData = [
-    { season: " Хавар", level: "Дунд", description: "Озон эхэлж нэмэгдэнэ" },
-    {
-      season: " Зун",
-      level: "Өндөр",
-      description: "Хамгийн их түвшин (халуун, нартай)",
-    },
-    { season: " Намар", level: "Дунд", description: "Аажмаар буурна" },
-    {
-      season: " Өвөл",
-      level: "Бага",
-      description: "Хамгийн бага (нар багатай)",
-    },
+  const tabs: { key: Tab; label: string }[] = [
+    { key: "info", label: "Мэдээлэл" },
+    { key: "formation", label: "Үүсэх үйл явц" },
+    { key: "effects", label: "Эрүүл мэнд" },
   ];
 
   return (
-    <section className="mb-10">
-      <div className="bg-gradient-to-br from-blue-50 to-sky-100 rounded-2xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-blue-200">
-        {/* Header section */}
-        <div className="flex items-start gap-4 mb-6">
-          <div className="text-5xl"></div>
-          <div className="flex-1">
-            <h2 className="font-mongolian text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              O₃ - Озон (Газрын гадаргын)
-            </h2>
-            <p className="text-gray-600 text-sm md:text-base">
-              Ozone - Нарны гэрэлтэй үүсдэг химийн бодис
-            </p>
-          </div>
+    <section>
+      {/* Eyebrow */}
+      <p
+        className="text-gray-400 uppercase mb-5"
+        style={{
+          fontSize: "9px",
+          letterSpacing: "0.14em",
+          fontFamily: "var(--font-inter)",
+        }}
+      >
+        Агаарын бохирдол · Pollutant
+      </p>
+
+      {/* Title */}
+      <h2
+        className="font-normal tracking-tight text-gray-900 mb-1"
+        style={{
+          fontFamily: "var(--font-playfair)",
+          fontSize: "clamp(28px, 4vw, 42px)",
+          lineHeight: "1",
+        }}
+      >
+        O₃
+      </h2>
+      <p
+        className="text-gray-400 mb-4"
+        style={{ fontFamily: "var(--font-inter)", fontSize: "13px" }}
+      >
+        Озон · Ozone — Газрын гадаргын
+      </p>
+      <hr className="border-gray-100 mb-6" />
+
+      {/* Body */}
+      <p
+        className="text-sm text-gray-500 leading-relaxed max-w-lg mb-4"
+        style={{ fontFamily: "var(--font-mongolian)" }}
+      >
+        Озон шууд ялгардаггүй — нарны гэрэл, автомашины яндан, үйлдвэрийн
+        ялгарлын химийн урвалаар үүсдэг хоёрдогч бохирдуулагч. Зуны нартай
+        өдрүүдэд хамгийн өндөр байна.
+      </p>
+
+      {/* Stratospheric note */}
+      <div className="border-l-2 border-gray-200 pl-5 mb-10">
+        <p
+          className="text-sm text-gray-500 leading-relaxed"
+          style={{ fontFamily: "var(--font-mongolian)" }}
+        >
+          Стратосферийн озон (дээд давхарга) биднийг нарны туяанаас хамгаална.
+          Харин газрын гадарга дээрх озон (доод давхарга) хортой — нэг нэр,
+          эсрэг нөлөө.
+        </p>
+      </div>
+
+      {/* Levels */}
+      <p
+        className="text-gray-400 uppercase mb-3"
+        style={{
+          fontSize: "9px",
+          letterSpacing: "0.14em",
+          fontFamily: "var(--font-inter)",
+        }}
+      >
+        Концентрацийн түвшин · ppb
+      </p>
+
+      <div className="border border-gray-100 mb-10">
+        <div
+          className="grid border-b border-gray-100 bg-gray-50"
+          style={{ gridTemplateColumns: "12px 1fr 80px" }}
+        >
+          {["", "Түвшин", "ppb"].map((h, i) => (
+            <div
+              key={i}
+              className="px-5 py-3 border-r border-gray-100 last:border-0"
+            >
+              <p
+                className="text-gray-400 uppercase"
+                style={{
+                  fontSize: "9px",
+                  letterSpacing: "0.14em",
+                  fontFamily: "var(--font-inter)",
+                }}
+              >
+                {h}
+              </p>
+            </div>
+          ))}
         </div>
 
-        {/* Visual scale indicator */}
-        <div className="mb-6">
-          <div className="flex h-8 rounded-lg overflow-hidden shadow-inner mb-2">
-            {levels.map((level, idx) => (
+        {levels.map((level, i) => (
+          <div
+            key={i}
+            className="grid border-b border-gray-100 last:border-0"
+            style={{ gridTemplateColumns: "12px 1fr 80px" }}
+          >
+            <div className="flex items-start pt-4 pl-5">
+              <span
+                className="block rounded-full mt-1"
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  backgroundColor: level.dot,
+                  flexShrink: 0,
+                }}
+              />
+            </div>
+            <div className="px-4 py-4 border-r border-gray-100">
+              <div className="flex items-baseline gap-3">
+                <p
+                  className="text-sm text-gray-900"
+                  style={{ fontFamily: "var(--font-mongolian)" }}
+                >
+                  {level.label}
+                </p>
+                <p
+                  className="text-gray-400 uppercase"
+                  style={{
+                    fontSize: "9px",
+                    letterSpacing: "0.12em",
+                    fontFamily: "var(--font-inter)",
+                  }}
+                >
+                  {level.labelEn}
+                </p>
+              </div>
+            </div>
+            <div className="px-5 py-4">
+              <p className="font-mono text-sm text-gray-500">{level.range}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Tab switcher */}
+      <div className="flex gap-6 border-b border-gray-100 mb-8">
+        {tabs.map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`pb-3 transition-colors duration-100 ${
+              tab === t.key
+                ? "border-b border-gray-900 text-gray-900"
+                : "text-gray-400 hover:text-gray-600"
+            }`}
+            style={{
+              fontSize: "11px",
+              letterSpacing: "0.08em",
+              fontFamily: "var(--font-inter)",
+              marginBottom: "-1px",
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab: Info */}
+      {tab === "info" && (
+        <div>
+          <div className="border border-gray-100 mb-8">
+            {[
+              {
+                label: "Химийн томьёо",
+                value: "O₃ — гурван хүчилтөрөгчийн атом",
+              },
+              { label: "Хэмжих нэгж", value: "ppb — parts per billion" },
+              { label: "Оргил цаг", value: "12:00–17:00 — үд дунд" },
+              { label: "Оргил улирал", value: "Зун — нартай, халуун өдрүүдэд" },
+            ].map((row, i) => (
               <div
-                key={idx}
-                className={`${level.color} flex items-center justify-center text-white text-xs font-bold transition-all hover:opacity-80`}
-                style={{ width: level.width }}
-                title={level.range}
+                key={i}
+                className="grid border-b border-gray-100 last:border-0"
+                style={{ gridTemplateColumns: "140px 1fr" }}
               >
-                {level.range}
+                <div className="px-5 py-4 border-r border-gray-100">
+                  <p
+                    className="text-gray-400"
+                    style={{
+                      fontSize: "11px",
+                      fontFamily: "var(--font-inter)",
+                    }}
+                  >
+                    {row.label}
+                  </p>
+                </div>
+                <div className="px-5 py-4">
+                  <p
+                    className="text-sm text-gray-700"
+                    style={{ fontFamily: "var(--font-mongolian)" }}
+                  >
+                    {row.value}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
-          <div className="flex justify-between text-xs text-gray-500">
-            <span>Аюулгүй</span>
-            <span>Аюултай →</span>
+
+          {/* Seasonal grid */}
+          <p
+            className="text-gray-400 uppercase mb-3"
+            style={{
+              fontSize: "9px",
+              letterSpacing: "0.14em",
+              fontFamily: "var(--font-inter)",
+            }}
+          >
+            Улирлын хэлбэлзэл · Seasonal Variation
+          </p>
+          <div
+            className="grid border border-gray-100"
+            style={{ gridTemplateColumns: "1fr 1fr 1fr 1fr" }}
+          >
+            {seasonal.map((s, i) => (
+              <div
+                key={i}
+                className="border-r border-gray-100 last:border-0 px-4 py-4"
+              >
+                <p
+                  className="text-gray-400 uppercase mb-2"
+                  style={{
+                    fontSize: "9px",
+                    letterSpacing: "0.12em",
+                    fontFamily: "var(--font-inter)",
+                  }}
+                >
+                  {s.labelEn}
+                </p>
+                <p
+                  className="text-sm text-gray-900 mb-1"
+                  style={{ fontFamily: "var(--font-mongolian)" }}
+                >
+                  {s.label}
+                </p>
+                <p
+                  className="font-mono text-gray-500"
+                  style={{ fontSize: "11px" }}
+                >
+                  {s.level}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
+      )}
 
-        {/* Tab navigation */}
-        <div className="flex gap-2 mb-6 flex-wrap">
-          <button
-            onClick={() => setActiveTab("info")}
-            className={`px-4 py-2 rounded-lg font-medium transition-all ${
-              activeTab === "info"
-                ? "bg-blue-600 text-white shadow-md"
-                : "bg-white text-gray-600 hover:bg-blue-50"
-            }`}
+      {/* Tab: Formation */}
+      {tab === "formation" && (
+        <div>
+          <p
+            className="text-sm text-gray-500 leading-relaxed mb-6"
+            style={{ fontFamily: "var(--font-mongolian)" }}
           >
-            Мэдээлэл
-          </button>
-          <button
-            onClick={() => setActiveTab("formation")}
-            className={`px-4 py-2 rounded-lg font-medium transition-all ${
-              activeTab === "formation"
-                ? "bg-blue-600 text-white shadow-md"
-                : "bg-white text-gray-600 hover:bg-blue-50"
-            }`}
-          >
-            Үүсэх үйл явц
-          </button>
-          <button
-            onClick={() => setActiveTab("effects")}
-            className={`px-4 py-2 rounded-lg font-medium transition-all ${
-              activeTab === "effects"
-                ? "bg-blue-600 text-white shadow-md"
-                : "bg-white text-gray-600 hover:bg-blue-50"
-            }`}
-          >
-            Эрүүл мэнд
-          </button>
-        </div>
-
-        {/* Tab content */}
-        <div className="bg-white rounded-xl p-6 shadow-inner">
-          {activeTab === "info" && (
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <span className="text-2xl"></span>
-                <div>
-                  <p className="font-semibold text-gray-800">Хэмжих нэгж</p>
-                  <p className="text-gray-600">
-                    ppb (parts per billion - тэрбумын хэсэг)
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="text-2xl"></span>
-                <div>
-                  <p className="font-semibold text-gray-800">Химийн томьёо</p>
-                  <p className="text-gray-600">
-                    O₃ (гурван хүчилтөрөгчийн атом)
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="text-2xl"></span>
-                <div>
-                  <p className="font-semibold text-gray-800">Огцом цаг</p>
-                  <p className="text-gray-600">
-                    Үд дунд 12:00-17:00 цагт хамгийн өндөр байна
-                  </p>
-                </div>
-              </div>
-              <div className="bg-blue-50 border-l-4 border-blue-400 rounded-lg p-4 mt-4">
-                <p className="text-sm text-blue-900">
-                  <strong> Сонирхолтой:</strong> Стратосферийн озон (дээд
-                  давхарга) биднийг хамгаална. Харин газрын гадарга дээрх озон
-                  (доод давхарга) хортой!
-                </p>
-              </div>
-
-              {/* Seasonal variation mini section */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
-                {seasonalData.map((season, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-gradient-to-br from-blue-50 to-white p-3 rounded-lg border border-blue-100 text-center"
+            Озон нь шууд ялгардаггүй, харин химийн урвалаар үүснэ:
+          </p>
+          <div className="border border-gray-100">
+            {formationSteps.map((step, i) => (
+              <div
+                key={i}
+                className="grid border-b border-gray-100 last:border-0"
+                style={{ gridTemplateColumns: "48px 1fr" }}
+              >
+                <div className="flex items-start px-5 py-4 border-r border-gray-100">
+                  <p
+                    className="font-mono text-gray-300"
+                    style={{ fontSize: "11px" }}
                   >
-                    <p className="text-2xl mb-1">
-                      {season.season.split(" ")[0]}
-                    </p>
-                    <p className="text-xs font-semibold text-gray-700">
-                      {season.level}
-                    </p>
-                  </div>
-                ))}
+                    {step.n}
+                  </p>
+                </div>
+                <div className="px-5 py-4">
+                  <p
+                    className="text-sm text-gray-900 mb-1"
+                    style={{ fontFamily: "var(--font-mongolian)" }}
+                  >
+                    {step.label}
+                  </p>
+                  <p
+                    className="text-sm text-gray-400"
+                    style={{ fontFamily: "var(--font-mongolian)" }}
+                  >
+                    {step.detail}
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
 
-          {activeTab === "formation" && (
-            <div className="space-y-4">
-              <p className="text-gray-700 mb-4">
-                Озон нь шууд ялгардаггүй, харин химийн урвалаар үүснэ:
-              </p>
-              {formationSteps.map((step, idx) => (
+          <div className="border-l-2 border-gray-200 pl-5 mt-6">
+            <p
+              className="text-sm text-gray-500 leading-relaxed"
+              style={{ fontFamily: "var(--font-mongolian)" }}
+            >
+              Зуны халуун, нартай өдрүүдэд озоны түвшин огцом өснө. Үд дундын
+              цагаар гадаа явахаас зайлсхийх хэрэгтэй.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Health effects */}
+      {tab === "effects" && (
+        <div>
+          <div className="border border-gray-100 mb-8">
+            <div
+              className="grid border-b border-gray-100 bg-gray-50"
+              style={{ gridTemplateColumns: "1fr 80px" }}
+            >
+              {["Нөлөө", "Ноцтой байдал"].map((h, i) => (
                 <div
-                  key={idx}
-                  className="flex items-center gap-4 p-4 bg-gradient-to-r from-white to-blue-50 rounded-lg border border-blue-100"
+                  key={i}
+                  className="px-5 py-3 border-r border-gray-100 last:border-0"
                 >
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-sm shrink-0">
-                    {step.step}
-                  </div>
-                  <span className="text-3xl">{step.icon}</span>
-                  <p className={`${step.color} font-medium`}>{step.text}</p>
+                  <p
+                    className="text-gray-400 uppercase"
+                    style={{
+                      fontSize: "9px",
+                      letterSpacing: "0.14em",
+                      fontFamily: "var(--font-inter)",
+                    }}
+                  >
+                    {h}
+                  </p>
                 </div>
               ))}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
-                <p className="text-sm text-yellow-900">
-                  <strong> Анхаарах:</strong> Зуны халуун, нартай өдрүүдэд озоны
-                  түвшин огцом өснө. Үд дундын цагаар гадаа явахаас зайлсхийх
-                  хэрэгтэй!
-                </p>
-              </div>
             </div>
-          )}
-
-          {activeTab === "effects" && (
-            <div className="space-y-4">
-              <p className="text-gray-700 mb-4">
-                Өндөр түвшний озон дараах эрүүл мэндийн асуудал үүсгэнэ:
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {healthEffects.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className={`${item.color} p-4 rounded-lg border-2 border-gray-200 hover:shadow-md transition-shadow`}
+            {healthEffects.map((item, i) => (
+              <div
+                key={i}
+                className="grid border-b border-gray-100 last:border-0"
+                style={{ gridTemplateColumns: "1fr 80px" }}
+              >
+                <div className="px-5 py-4 border-r border-gray-100">
+                  <p
+                    className="text-sm text-gray-700"
+                    style={{ fontFamily: "var(--font-mongolian)" }}
                   >
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-3xl">{item.icon}</span>
-                      <div>
-                        <p className="font-semibold text-gray-800">
-                          {item.effect}
-                        </p>
-                        <p className="text-xs text-gray-600">
-                          Ноцтой байдал: {item.severity}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                    {item.label}
+                  </p>
+                </div>
+                <div className="px-5 py-4">
+                  <p
+                    className="font-mono text-gray-500"
+                    style={{ fontSize: "11px" }}
+                  >
+                    {item.severity}
+                  </p>
+                </div>
               </div>
-              <div className="bg-red-50 border-l-4 border-red-400 rounded-lg p-4 mt-4">
-                <p className="text-sm text-red-900 mb-2">
-                  <strong> Эмзэг бүлэг:</strong>
-                </p>
-                <ul className="text-sm text-red-800 space-y-1 ml-4">
-                  <li>• Астма өвчтэй хүмүүс</li>
-                  <li>• Хүүхдүүд (уушиг хөгжиж байгаа)</li>
-                  <li>• Өндөр настнууд</li>
-                  <li>• Гадаа ажилладаг хүмүүс</li>
-                </ul>
-              </div>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
 
-        {/* Protection tips */}
-        <div className="mt-6 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4">
-          <p className="text-sm font-semibold text-gray-800 mb-2">
-            Хамгаалах аргууд:
+          {/* Vulnerable groups */}
+          <p
+            className="text-gray-400 uppercase mb-3"
+            style={{
+              fontSize: "9px",
+              letterSpacing: "0.14em",
+              fontFamily: "var(--font-inter)",
+            }}
+          >
+            Эмзэг бүлэг · Vulnerable Groups
           </p>
-          <ul className="text-sm text-gray-700 space-y-1 ml-4">
-            <li>• Үд дундын 12:00-17:00 цагт гадуур гарахаас зайлсхийх</li>
-            <li>• Зуны халуун өдрүүдэд гадаа дасгал хийхгүй байх</li>
-            <li>• Цонхоо хааж, дотор байх (өндөр түвшинд)</li>
-            <li>• Озоны мэдээллийг өглөө шалгах</li>
-          </ul>
+          <div className="border border-gray-100">
+            {[
+              "Астма өвчтэй хүмүүс",
+              "Хүүхдүүд — уушиг хөгжиж байгаа",
+              "Өндөр настнууд",
+              "Гадаа ажилладаг хүмүүс",
+            ].map((group, i) => (
+              <div
+                key={i}
+                className="grid border-b border-gray-100 last:border-0 px-5 py-4"
+                style={{ gridTemplateColumns: "24px 1fr" }}
+              >
+                <p
+                  className="font-mono text-gray-300"
+                  style={{ fontSize: "11px" }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </p>
+                <p
+                  className="text-sm text-gray-600"
+                  style={{ fontFamily: "var(--font-mongolian)" }}
+                >
+                  {group}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
+      )}
+
+      {/* Recommendations — always visible */}
+      <p
+        className="text-gray-400 uppercase mb-3 mt-10"
+        style={{
+          fontSize: "9px",
+          letterSpacing: "0.14em",
+          fontFamily: "var(--font-inter)",
+        }}
+      >
+        Хамгаалах арга хэмжээ · Recommendations
+      </p>
+      <div className="border border-gray-100">
+        {recommendations.map((rec, i) => (
+          <div
+            key={i}
+            className="grid border-b border-gray-100 last:border-0 px-5 py-4"
+            style={{ gridTemplateColumns: "24px 1fr" }}
+          >
+            <p className="font-mono text-gray-300" style={{ fontSize: "11px" }}>
+              {String(i + 1).padStart(2, "0")}
+            </p>
+            <p
+              className="text-sm text-gray-600"
+              style={{ fontFamily: "var(--font-mongolian)" }}
+            >
+              {rec}
+            </p>
+          </div>
+        ))}
       </div>
     </section>
   );
