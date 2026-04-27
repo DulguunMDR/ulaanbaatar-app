@@ -457,7 +457,7 @@ export default function HeatingPage() {
           className="text-gray-400 hover:text-gray-700 transition-colors tracking-wider"
           style={{ fontSize: "11px" }}
         >
-          ← Агааргүйдэл
+          ← Агаар орохгүйгээр битүүмжлэх
         </Link>
         <Link
           href="/passivhaus/materials"

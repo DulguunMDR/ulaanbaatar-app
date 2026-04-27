@@ -415,7 +415,7 @@ export default function VentilationPage() {
             className="text-gray-400 hover:text-gray-700 transition-colors tracking-wider"
             style={{ fontSize: "11px" }}
           >
-            05 · Агааргүйдэл →
+            05 · Агаар орохгүйгээр битүүмжлэх →
           </Link>
         </div>
       </section>

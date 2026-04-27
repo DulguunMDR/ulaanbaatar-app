@@ -3,12 +3,6 @@
 import Link from "next/link";
 
 export default function Home() {
-  const today = new Date().toLocaleDateString("mn-MN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-
   return (
     <main className="pt-14 md:pt-16 min-h-screen bg-white">
       {/* ════════════════════════════════════════════
@@ -214,26 +208,6 @@ export default function Home() {
           >
             Газруудыг үзэх →
           </span>
-        </Link>
-      </section>
-
-      {/* ════════════════════════════════════════════
-          JOURNAL STRIP — personal voice
-      ════════════════════════════════════════════ */}
-      <section className="px-8 md:px-14 py-12 md:py-16 bg-gray-50/50">
-        <p
-          className="text-gray-300 uppercase mb-5"
-          style={{ fontSize: "9px", letterSpacing: "0.14em" }}
-        >
-          {today} · Өнөөдрийн тэмдэглэл
-        </p>
-
-        <Link
-          href="/journal"
-          className="text-gray-400 hover:text-gray-600 transition-colors mt-8 block tracking-wider"
-          style={{ fontSize: "11px" }}
-        >
-          Тэмдэглэлийн бүх хуудас →
         </Link>
       </section>
     </main>

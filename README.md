@@ -17,12 +17,38 @@ This is not a news site or a government dashboard. It is one person's attempt to
 | **Sacred City**         | The history of Ulaanbaatar as a sacred place — monasteries, mountains, Zanabazar |
 | **Museums & Galleries** | Personal guide to the cultural memory of the city                                |
 | **Passivhaus**          | Complete guide to building energy-efficient homes in Mongolia's climate          |
-| **Journal**             | Personal entries — observations from living in UB                                |
-| **Road Violation Map**  | Citizen-reported traffic violations on a live map                                |
 
 ---
 
-## Design Language
+## Writing rules
+
+These rules apply everywhere in the codebase — in `.tsx` files, `.ts` data files, markdown, and any string that will be rendered to the browser.
+
+**Never use HTML entities for readable characters.** Write the character itself.
+
+| Wrong      | Right                                      |
+| ---------- | ------------------------------------------ |
+| `&quot;`   | `"`                                        |
+| `&apos;`   | `'`                                        |
+| `&amp;`    | `&`                                        |
+| `&mdash;`  | `—`                                        |
+| `&ndash;`  | `–`                                        |
+| `&laquo;`  | `«`                                        |
+| `&raquo;`  | `»`                                        |
+| `&hellip;` | `…`                                        |
+| `&nbsp;`   | Use a real space, or a CSS layout solution |
+
+The only HTML entities that are acceptable are `&lt;` and `&gt;` when they appear inside JSX or HTML where the literal `<` or `>` would be interpreted as markup. Everywhere else — punctuation, quotes, dashes, ellipses — use the actual Unicode character. The source should read like writing, not like markup from 2003.
+
+This applies to:
+
+- All string content in `.tsx` components
+- All museum descriptions, sacred city content, and any other data files
+- Any future content files added to the project
+
+---
+
+## Design language
 
 The site uses a Japanese minimalist aesthetic — sparse, high-contrast, intentional. Every element earns its place.
 
@@ -52,11 +78,10 @@ The site uses a Japanese minimalist aesthetic — sparse, high-contrast, intenti
 
 - Mongolian primary, English secondary on cultural/poetic content
 - Data labels in Mongolian
-- Journal entries are personal and written in first person
 
 ---
 
-## Data Sources
+## Data sources
 
 | Data                | Source     | Revalidation | Notes                                                   |
 | ------------------- | ---------- | ------------ | ------------------------------------------------------- |
@@ -70,7 +95,7 @@ The site uses a Japanese minimalist aesthetic — sparse, high-contrast, intenti
 
 ---
 
-## Tech Stack
+## Tech stack
 
 - **Framework:** Next.js 15 (App Router)
 - **Language:** TypeScript
@@ -83,7 +108,7 @@ The site uses a Japanese minimalist aesthetic — sparse, high-contrast, intenti
 
 ---
 
-## Project Structure
+## Project structure
 
 ```
 ulaanbaatar/
@@ -94,10 +119,6 @@ ulaanbaatar/
 │   │   ├── forecast/route.ts
 │   │   ├── historical/route.ts
 │   │   └── historical-pollution/route.ts
-│   ├── journal/
-│   │   └── page.tsx
-│   ├── map/
-│   │   └── page.tsx
 │   ├── museums/
 │   │   └── page.tsx
 │   ├── passivhaus/
@@ -122,10 +143,10 @@ ulaanbaatar/
 ├── components/
 │   ├── charts/
 │   ├── home/
-│   │   ├── AQINumber.tsx       ← city-level AQI display (top of weather page)
-│   │   ├── AQIDetail.tsx       ← station-level drill-down (below map)
+│   │   ├── AQINumber.tsx
+│   │   ├── AQIDetail.tsx
 │   │   ├── InsightsDashboard.tsx
-│   │   └── InteractiveHero.tsx ← legacy, kept for other pages
+│   │   └── InteractiveHero.tsx
 │   ├── map/
 │   │   ├── AQIMap.tsx
 │   │   ├── AQIMapWrapper.tsx
@@ -134,12 +155,7 @@ ulaanbaatar/
 │   ├── weather/
 │   ├── Footer.tsx
 │   ├── Header.tsx
-│   ├── Menu.tsx
-│   └── ViolationMap.tsx
-├── content/
-│   └── journal/
-│       ├── 2026-04-25.ts
-│       └── index.ts
+│   └── Menu.tsx
 └── lib/
     ├── constants.ts
     ├── fetchAQI.ts
@@ -159,7 +175,7 @@ ulaanbaatar/
 
 ---
 
-## Weather Page Structure
+## Weather page structure
 
 The weather page follows a deliberate information hierarchy — from universal and quick to specific and deep:
 
@@ -176,20 +192,20 @@ The weather page follows a deliberate information hierarchy — from universal a
 
 ---
 
-## Files to Create
+## AQI health levels
 
-| File                       | Status          | Priority                             |
-| -------------------------- | --------------- | ------------------------------------ |
-| `app/sacred/page.tsx`      | ❌ Not built    | High — most distinctive content      |
-| `app/museums/page.tsx`     | ❌ Not built    | High                                 |
-| `app/journal/page.tsx`     | ❌ Not built    | High — gives site its personal voice |
-| `content/journal/index.ts` | ❌ Not built    | Required for journal page            |
-| `components/Menu.tsx`      | ⚠️ Needs update | Add links to new pages               |
-| `components/Footer.tsx`    | ⚠️ Needs update | Add links to new pages               |
+| AQI     | Level                       | Advice                             |
+| ------- | --------------------------- | ---------------------------------- |
+| 0–50    | Сайн                        | Safe to go outside                 |
+| 51–100  | Дунд зэрэг                  | Sensitive groups should be careful |
+| 101–150 | Мэдрэмтгий бүлэгт эрүүл бус | Wear masks, keep children inside   |
+| 151–200 | Эрүүл бус                   | Use HEPA filters, close windows    |
+| 201–300 | Маш эрүүл бус               | Avoid going outside                |
+| 300+    | Аюултай                     | DO NOT GO OUTSIDE                  |
 
 ---
 
-## Environment Variables
+## Environment variables
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
@@ -206,21 +222,6 @@ NEXT_PUBLIC_OPENWEATHER_KEY=your_openweather_key
 npm install
 npm run dev
 ```
-
-Run the Supabase SQL migration in your project's SQL editor before using the violation map (`/supabase/schema.sql`).
-
----
-
-## AQI Health Levels
-
-| AQI     | Level                       | Advice                             |
-| ------- | --------------------------- | ---------------------------------- |
-| 0–50    | Сайн                        | Safe to go outside                 |
-| 51–100  | Дунд зэрэг                  | Sensitive groups should be careful |
-| 101–150 | Мэдрэмтгий бүлэгт эрүүл бус | Wear masks, keep children inside   |
-| 151–200 | Эрүүл бус                   | Use HEPA filters, close windows    |
-| 201–300 | Маш эрүүл бус               | Avoid going outside                |
-| 300+    | Аюултай                     | DO NOT GO OUTSIDE                  |
 
 ---
 

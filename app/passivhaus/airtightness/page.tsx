@@ -445,7 +445,7 @@ export default function AirtightnessPage() {
           className="text-gray-400 hover:text-gray-700 transition-colors tracking-wider"
           style={{ fontSize: "11px" }}
         >
-          ← Агаар орохгүйгээр битүүмжилсэн
+          ← Агааржуулалт
         </Link>
         <Link
           href="/passivhaus/heating"

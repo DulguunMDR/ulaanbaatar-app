@@ -18,10 +18,6 @@ const menuItems = [
     href: "/museums",
   },
   {
-    label: "Тэмдэглэл",
-    href: "/journal",
-  },
-  {
     label: "Цаг агаар",
     href: "/weather",
     sub: { label: "↳ Нэр томъёо", href: "/weather/terms" },
@@ -38,7 +34,6 @@ const menuItems = [
 
 export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
-
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
 
@@ -75,7 +70,6 @@ export default function Menu() {
           >
             Цэс · Navigation
           </p>
-
           <ul className="space-y-0.5">
             {menuItems.map((item) => (
               <li key={item.href}>
@@ -88,7 +82,6 @@ export default function Menu() {
                 >
                   {item.label}
                 </Link>
-
                 {item.sub && (
                   <Link
                     href={item.sub.href}
