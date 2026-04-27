@@ -36,15 +36,6 @@ export default function Footer() {
                   Музей · Галерей
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/journal"
-                  className="text-gray-500 hover:text-gray-900 transition-colors"
-                  style={{ fontSize: "13px" }}
-                >
-                  Тэмдэглэл
-                </Link>
-              </li>
             </ul>
           </div>
 

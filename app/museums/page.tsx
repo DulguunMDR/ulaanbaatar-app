@@ -349,31 +349,6 @@ export default function MuseumsPage() {
               Музейн цаана байгаа түүхийг унших →
             </span>
           </Link>
-
-          <Link href="/journal" className="group">
-            <p
-              className="text-gray-300 uppercase mb-2"
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "9px",
-                letterSpacing: "0.14em",
-              }}
-            >
-              Холбоотой
-            </p>
-            <p
-              className="text-gray-700 mb-1"
-              style={{ fontFamily: "var(--font-playfair)", fontSize: "16px" }}
-            >
-              Тэмдэглэл
-            </p>
-            <span
-              className="text-gray-400 group-hover:text-gray-600 transition-colors block tracking-wider"
-              style={{ fontSize: "11px" }}
-            >
-              Хотод амьдрах тухай →
-            </span>
-          </Link>
         </div>
       </section>
     </main>
