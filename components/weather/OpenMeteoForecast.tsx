@@ -1,11 +1,21 @@
 // components/weather/OpenMeteoForecast.tsx
-// Open-Meteo цаг агаарын 7 хоногийн таамаглал (7-day weather forecast)
 
 import {
   fetchOpenMeteo,
   getWeatherDescription,
   getWindDescription,
 } from "@/lib/fetchOpenMeteo";
+
+function getCurrentHourIndex(times: string[]): number {
+  const now = new Date();
+  const currentHour =
+    `${now.getFullYear()}-` +
+    `${String(now.getMonth() + 1).padStart(2, "0")}-` +
+    `${String(now.getDate()).padStart(2, "0")}T` +
+    `${String(now.getHours()).padStart(2, "0")}:00`;
+  const idx = times.indexOf(currentHour);
+  return idx !== -1 ? idx : 0;
+}
 
 export default async function OpenMeteoForecast() {
   const data = await fetchOpenMeteo();
@@ -35,6 +45,12 @@ export default async function OpenMeteoForecast() {
     );
   }
 
+  // Current hour from hourly data
+  const hourIdx = getCurrentHourIndex(data.hourly.time);
+  const currentTemp = Math.round(data.hourly.temperature_2m[hourIdx]);
+  const currentWind = data.hourly.wind_speed_10m[hourIdx];
+
+  // Daily forecast rows
   const forecastDays = data.daily.time.map((date: string, index: number) => {
     const weatherDesc = getWeatherDescription(data.daily.weather_code[index]);
     return {
@@ -49,11 +65,12 @@ export default async function OpenMeteoForecast() {
     };
   });
 
-  const tomorrow = forecastDays[1];
+  // Today = index 0
+  const today = forecastDays[0];
 
   return (
     <>
-      {/* Tomorrow highlight */}
+      {/* Today highlight */}
       <div
         className="grid border-b border-gray-100"
         style={{ gridTemplateColumns: "32px 1fr" }}
@@ -74,7 +91,7 @@ export default async function OpenMeteoForecast() {
               letterSpacing: "0.4em",
             }}
           >
-            МАРГААШ · TOMORROW
+            ӨНӨӨДӨР · TODAY
           </span>
         </div>
 
@@ -83,12 +100,13 @@ export default async function OpenMeteoForecast() {
             className="text-gray-400 uppercase mb-6"
             style={{ fontSize: "9px", letterSpacing: "0.14em" }}
           >
-            Маргаашийн цаг агаар · Tomorrow&apos;s weather
+            Өнөөдрийн цаг агаар · Today&apos;s weather
           </p>
 
           <div className="flex items-start justify-between mb-8">
             <div>
               <div className="flex items-baseline gap-3 mb-1">
+                {/* Current hour temp as hero number */}
                 <span
                   className="font-normal text-gray-900 leading-none"
                   style={{
@@ -96,20 +114,21 @@ export default async function OpenMeteoForecast() {
                     fontSize: "clamp(56px, 8vw, 80px)",
                   }}
                 >
-                  {tomorrow.tempMax}°
+                  {currentTemp}°
                 </span>
+                {/* Daily range as secondary */}
                 <span
                   className="text-gray-400"
                   style={{ fontFamily: "var(--font-inter)", fontSize: "13px" }}
                 >
-                  ↓ {tomorrow.tempMin}°
+                  ↑ {today.tempMax}° · ↓ {today.tempMin}°
                 </span>
               </div>
               <p
                 className="text-gray-500"
                 style={{ fontFamily: "var(--font-inter)", fontSize: "13px" }}
               >
-                {tomorrow.weatherText}
+                {today.weatherText}
               </p>
             </div>
 
@@ -118,7 +137,7 @@ export default async function OpenMeteoForecast() {
               style={{ fontSize: "clamp(48px, 6vw, 64px)", lineHeight: 1 }}
               aria-hidden="true"
             >
-              {tomorrow.weatherEmoji}
+              {today.weatherEmoji}
             </span>
           </div>
 
@@ -130,7 +149,7 @@ export default async function OpenMeteoForecast() {
               className="grid"
               style={{
                 gridTemplateColumns:
-                  tomorrow.precipitation > 0 ? "1fr 1fr 1fr" : "1fr 1fr",
+                  today.precipitation > 0 ? "1fr 1fr 1fr" : "1fr 1fr",
               }}
             >
               <div className="px-5 py-4 border-r border-gray-100">
@@ -148,13 +167,13 @@ export default async function OpenMeteoForecast() {
                     fontVariantNumeric: "tabular-nums",
                   }}
                 >
-                  {tomorrow.windSpeed.toFixed(1)} м/с
+                  {currentWind.toFixed(1)} м/с
                 </p>
                 <p
                   className="text-gray-300 mt-0.5"
                   style={{ fontSize: "10px" }}
                 >
-                  {tomorrow.windDesc}
+                  {getWindDescription(currentWind)}
                 </p>
               </div>
 
@@ -162,7 +181,7 @@ export default async function OpenMeteoForecast() {
                 className="px-5 py-4"
                 style={{
                   borderRight:
-                    tomorrow.precipitation > 0 ? "1px solid #f3f4f6" : "none",
+                    today.precipitation > 0 ? "1px solid #f3f4f6" : "none",
                 }}
               >
                 <p
@@ -175,15 +194,15 @@ export default async function OpenMeteoForecast() {
                   className="text-gray-900"
                   style={{ fontFamily: "var(--font-inter)", fontSize: "13px" }}
                 >
-                  {tomorrow.windSpeed > 5
+                  {currentWind > 5
                     ? "Хүчтэй салхи тараана"
-                    : tomorrow.precipitation > 0
+                    : today.precipitation > 0
                       ? "Хур тунадас цэвэрлэнэ"
                       : "Бохирдол үлдэж магадгүй"}
                 </p>
               </div>
 
-              {tomorrow.precipitation > 0 && (
+              {today.precipitation > 0 && (
                 <div className="px-5 py-4">
                   <p
                     className="text-gray-400 uppercase mb-2"
@@ -199,7 +218,7 @@ export default async function OpenMeteoForecast() {
                       fontVariantNumeric: "tabular-nums",
                     }}
                   >
-                    {tomorrow.precipitation} мм
+                    {today.precipitation} мм
                   </p>
                 </div>
               )}
@@ -208,7 +227,7 @@ export default async function OpenMeteoForecast() {
         </div>
       </div>
 
-      {/* 7-day forecast table */}
+      {/* 7-day forecast table — unchanged */}
       <div
         className="grid border-b border-gray-100"
         style={{ gridTemplateColumns: "32px 1fr" }}
@@ -289,14 +308,13 @@ export default async function OpenMeteoForecast() {
                     className="grid border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors"
                     style={{ gridTemplateColumns: "1fr 1fr 56px 56px 72px" }}
                   >
-                    {/* Day */}
                     <div className="px-4 py-4 border-r border-gray-100 flex flex-col justify-center">
                       <span
                         className="text-gray-900"
                         style={{
                           fontFamily: "var(--font-inter)",
                           fontSize: "13px",
-                          fontWeight: isTomorrow || isToday ? 500 : 400,
+                          fontWeight: isToday || isTomorrow ? 500 : 400,
                         }}
                       >
                         {isToday ? "Өнөөдөр" : isTomorrow ? "Маргааш" : dayName}
@@ -314,7 +332,6 @@ export default async function OpenMeteoForecast() {
                       )}
                     </div>
 
-                    {/* Condition */}
                     <div className="px-4 py-4 border-r border-gray-100 flex items-center gap-2">
                       <span
                         className="text-gray-300 flex-shrink-0 select-none"
@@ -334,7 +351,6 @@ export default async function OpenMeteoForecast() {
                       </span>
                     </div>
 
-                    {/* Max */}
                     <div className="px-3 py-4 border-r border-gray-100 flex items-center justify-center">
                       <span
                         className="text-gray-900"
@@ -348,7 +364,6 @@ export default async function OpenMeteoForecast() {
                       </span>
                     </div>
 
-                    {/* Min */}
                     <div className="px-3 py-4 border-r border-gray-100 flex items-center justify-center">
                       <span
                         className="text-gray-400"
@@ -362,7 +377,6 @@ export default async function OpenMeteoForecast() {
                       </span>
                     </div>
 
-                    {/* Wind */}
                     <div className="px-3 py-4 flex items-center justify-center">
                       <span
                         className="text-gray-400"

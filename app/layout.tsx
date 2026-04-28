@@ -1,13 +1,10 @@
-// app/layout.tsx
 import type { Metadata, Viewport } from "next";
-import { Inter, Noto_Sans } from "next/font/google";
+import { Inter, Noto_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { fetchAQI } from "@/lib/fetchAQI";
-import { fetchOpenMeteo } from "@/lib/fetchOpenMeteo";
-import { Playfair_Display } from "next/font/google";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -77,31 +74,10 @@ function getAQILabel(aqi: number): string {
   return "Аюултай";
 }
 
-function getCurrentHourIndex(times: string[]): number {
-  const now = new Date();
-  const currentHour = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}T${String(now.getHours()).padStart(2, "0")}:00`;
-  const idx = times.indexOf(currentHour);
-  return idx !== -1 ? idx : 0;
-}
-
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [aqiData, meteoData] = await Promise.all([
-    fetchAQI(),
-    fetchOpenMeteo(),
-  ]);
-
-  const hourIdx = meteoData ? getCurrentHourIndex(meteoData.hourly.time) : 0;
-
-  const temp = meteoData
-    ? Math.round(meteoData.hourly.temperature_2m[hourIdx])
-    : null;
-
-  const windSpeed = meteoData
-    ? Math.round(meteoData.hourly.wind_speed_10m[hourIdx])
-    : 0;
-
+  const aqiData = await fetchAQI();
   const aqi = aqiData?.aqi ?? null;
   const aqiLabel = aqi !== null ? getAQILabel(aqi) : null;
 
@@ -116,12 +92,7 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} ${notoSansMongolian.variable} ${playfair.variable} antialiased`}
       >
-        <Header
-          temp={temp}
-          windSpeed={windSpeed}
-          aqi={aqi}
-          aqiLabel={aqiLabel}
-        />
+        <Header aqi={aqi} aqiLabel={aqiLabel} />
         {children}
         <Footer />
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" />
