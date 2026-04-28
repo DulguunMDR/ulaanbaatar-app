@@ -88,10 +88,14 @@ The site uses a Japanese minimalist aesthetic — sparse, high-contrast, intenti
 | AQI (city-level)    | WAQI API   | 2 min        | `/feed/ulaanbaatar/` — used in header + AQINumber       |
 | AQI (station-level) | WAQI API   | on-demand    | Per-station fetch in AQIDetail — differs from city feed |
 | Weather forecast    | Open-Meteo | 1 hour       | No API key required                                     |
+| Header temperature  | Open-Meteo | client fetch | Fetched fresh on every page load by `HeaderLiveWeather` |
+| Header wind speed   | Open-Meteo | client fetch | Same request as header temperature — current hour only  |
 | Precipitation radar | RainViewer | on-demand    | Loaded only when layer is toggled                       |
 | Regional wind       | Open-Meteo | on-demand    | Loaded only when layer is toggled                       |
 
-**Header vs weather page:** The header shows city-level WAQI data and Open-Meteo temperature — both fetched in `layout.tsx`. The weather page shows the same city-level AQI in `AQINumber`, then offers station-level drill-down in `AQIDetail`. Station readings may differ from the city aggregate; this is labeled explicitly in the UI.
+**Header architecture:** The AQI pill is server-fetched in `layout.tsx` (2-min revalidation). Temperature and wind are fetched client-side by `HeaderLiveWeather` — a `'use client'` component that calls Open-Meteo directly on page load, always showing the current hour. This keeps the header in sync with the weather page without relying on cached layout data.
+
+**Weather page:** `OpenMeteoForecast` shows the current hour's temperature and wind as the hero values, with today's daily high/low as secondary context. The 7-day table follows below. AQI is shown separately via `AQINumber`, then expanded in `AQIDetail` with station-level drill-down. Station readings may differ from the city aggregate; this is labeled explicitly in the UI.
 
 ---
 
@@ -155,6 +159,7 @@ ulaanbaatar/
 │   ├── weather/
 │   ├── Footer.tsx
 │   ├── Header.tsx
+│   ├── HeaderLiveWeather.tsx
 │   └── Menu.tsx
 └── lib/
     ├── constants.ts
@@ -181,12 +186,14 @@ The weather page follows a deliberate information hierarchy — from universal a
 
 ```
 1. Page label
-2. OpenMeteoForecast       ← temperature, rain, wind (everyone)
+2. OpenMeteoForecast       ← current temp & wind, today's range, 7-day table
 3. AQINumber               ← city-level AQI at a glance (matches header)
 4. AQIMapWrapper           ← spatial context for the AQI reading
 5. AQIDetail               ← station drill-down: pollutants + station selector
 6. InsightsDashboard       ← historical trends (power users)
 ```
+
+`OpenMeteoForecast` leads with the current hour's temperature and wind as the hero — not tomorrow's forecast. The daily high/low for today appears as secondary context. The 7-day table follows.
 
 `AQINumber` and `AQIDetail` replace the old `InteractiveHero` component. `InteractiveHero` is kept for any other pages that reference it.
 

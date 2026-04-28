@@ -7,12 +7,16 @@ import {
 } from "@/lib/fetchOpenMeteo";
 
 function getCurrentHourIndex(times: string[]): number {
+  // Server runs in UTC — must convert to Asia/Ulaanbaatar explicitly
   const now = new Date();
+  const ubTime = new Date(
+    now.toLocaleString("en-US", { timeZone: "Asia/Ulaanbaatar" }),
+  );
   const currentHour =
-    `${now.getFullYear()}-` +
-    `${String(now.getMonth() + 1).padStart(2, "0")}-` +
-    `${String(now.getDate()).padStart(2, "0")}T` +
-    `${String(now.getHours()).padStart(2, "0")}:00`;
+    `${ubTime.getFullYear()}-` +
+    `${String(ubTime.getMonth() + 1).padStart(2, "0")}-` +
+    `${String(ubTime.getDate()).padStart(2, "0")}T` +
+    `${String(ubTime.getHours()).padStart(2, "0")}:00`;
   const idx = times.indexOf(currentHour);
   return idx !== -1 ? idx : 0;
 }
