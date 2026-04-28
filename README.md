@@ -24,27 +24,52 @@ This is not a news site or a government dashboard. It is one person's attempt to
 
 These rules apply everywhere in the codebase — in `.tsx` files, `.ts` data files, markdown, and any string that will be rendered to the browser.
 
-**Never use HTML entities for readable characters.** Write the character itself.
+### 1. File location comment
 
-| Wrong      | Right                                      |
-| ---------- | ------------------------------------------ |
-| `&quot;`   | `"`                                        |
-| `&apos;`   | `'`                                        |
-| `&amp;`    | `&`                                        |
-| `&mdash;`  | `—`                                        |
-| `&ndash;`  | `–`                                        |
-| `&laquo;`  | `«`                                        |
-| `&raquo;`  | `»`                                        |
-| `&hellip;` | `…`                                        |
-| `&nbsp;`   | Use a real space, or a CSS layout solution |
+Every file must begin with a comment stating its path relative to the project root. This makes it easy to locate a file from a code snippet shared out of context.
 
-The only HTML entities that are acceptable are `&lt;` and `&gt;` when they appear inside JSX or HTML where the literal `<` or `>` would be interpreted as markup. Everywhere else — punctuation, quotes, dashes, ellipses — use the actual Unicode character. The source should read like writing, not like markup from 2003.
+**`.tsx` / `.ts` files:**
 
-This applies to:
+```tsx
+// app/about/page.tsx
+```
 
-- All string content in `.tsx` components
-- All museum descriptions, sacred city content, and any other data files
+**`.css` files:**
+
+```css
+/* app/globals.css */
+```
+
+This comment goes on the very first line, before imports.
+
+---
+
+### 2. HTML entities for text content in JSX
+
+Use HTML entities for punctuation and special characters inside JSX. This keeps VSCode and the TypeScript compiler from raising warnings, and avoids ambiguity between markup and content.
+
+| Character | Entity     |
+| --------- | ---------- |
+| `"`       | `&quot;`   |
+| `'`       | `&apos;`   |
+| `&`       | `&amp;`    |
+| `—`       | `&mdash;`  |
+| `–`       | `&ndash;`  |
+| `«`       | `&laquo;`  |
+| `»`       | `&raquo;`  |
+| `…`       | `&hellip;` |
+
+`&lt;` and `&gt;` are always required when a literal `<` or `>` would be interpreted as markup.
+
+Non-breaking space (`&nbsp;`) should still be avoided in favour of CSS layout solutions — it creates invisible characters that are hard to debug.
+
+This rule applies to:
+
+- All string content inside JSX returns in `.tsx` components
+- Museum descriptions, sacred city content, and any other data files rendered to the browser
 - Any future content files added to the project
+
+Note: entities are not needed in `.ts` files that never produce JSX output, or in plain string variables that are not rendered directly as HTML. Use judgement — if it touches the DOM, use entities.
 
 ---
 

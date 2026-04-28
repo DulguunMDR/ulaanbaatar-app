@@ -1,4 +1,3 @@
-// components/Menu.tsx
 "use client";
 import { useState } from "react";
 import Link from "next/link";
@@ -7,15 +6,6 @@ const menuItems = [
   {
     label: "Нүүр хуудас",
     href: "/",
-  },
-  {
-    label: "Ариун хот",
-    href: "/sacred",
-    sub: null,
-  },
-  {
-    label: "Музей · Галерей",
-    href: "/museums",
   },
   {
     label: "Цаг агаар",
@@ -63,7 +53,6 @@ export default function Menu() {
                     ${isOpen ? "top-14 md:top-16 opacity-100" : "top-0 opacity-0 pointer-events-none"}`}
       >
         <nav className="max-w-7xl mx-auto px-8 md:px-14 py-8">
-          {/* Section label */}
           <p
             className="text-gray-300 uppercase mb-5"
             style={{ fontSize: "9px", letterSpacing: "0.14em" }}

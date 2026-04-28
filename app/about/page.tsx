@@ -1,5 +1,3 @@
-// app/about/page.tsx
-
 import Link from "next/link";
 
 const sections = [
@@ -7,16 +5,6 @@ const sections = [
     label: "Агаарын чанар",
     href: "/weather",
     body: "Бодит цагийн AQI, PM2.5, PM10 болон цаг агаарын мэдээлэл. Өдөр бүр шинэчлэгддэг.",
-  },
-  {
-    label: "Ариун гэгээн хот",
-    href: "/sacred",
-    body: "Улаанбаатарын түүх — 1639 оноос өнөөг хүртэл. Олон хүн мэддэггүй энэ хотын нэгэн өөр нүүр.",
-  },
-  {
-    label: "Музей · Галерей",
-    href: "/museums",
-    body: "Чойжин ламын сүм, Богд хааны ордон, Занабазарын музей — хотын санах ойн газрууд.",
   },
   {
     label: "Passivhaus",
@@ -155,13 +143,14 @@ export default function AboutPage() {
 
           <div className="space-y-4 max-w-lg">
             <p className="text-sm text-gray-500 leading-relaxed">
-              Улаанбаатар бол өвлийн улиралд утаа агаарыг бүрхдэг дэлхийн
-              хамгийн их агаарын бохирдолтой хотуудын нэг.
+              Улаанбаатар бол дэлхийн хамгийн хүйтэн нийслэл хот. Өвлийн улиралд
+              температур &minus;40&deg;C хүрдэг — энэ нь дулааны эрчим хүчний
+              хэрэглээг асар их нэмэгдүүлдэг.
             </p>
             <p className="text-sm text-gray-500 leading-relaxed">
-              Гэхдээ манай хот, зөвхөн утаагаар танигдахаас гадна, 1639 онд
-              дөрвөн тахилгат уулаар хүрээлэгдэн, ариун гэгээн суурин болж
-              үүссэн, олон зуун жилийн түүхэн хот билээ.
+              Гэрийн дулаалга муу байснаас болж нүүрс их шатааж, агаарын
+              бохирдол үүсдэг. Passivhaus стандарт нь энэ асуудлыг үндсээр нь
+              шийдэх арга зам юм &mdash; бага эрчим хүчээр, илүү дулаан байшин.
             </p>
           </div>
         </div>
@@ -178,7 +167,7 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 md:grid-cols-2">
           {sections.map((item, i) => (
             <Link
               key={item.href}
@@ -186,8 +175,8 @@ export default function AboutPage() {
               className={
                 "group p-8 hover:bg-gray-50 transition-colors duration-300 border-b border-gray-100 " +
                 (i < sections.length - 1
-                  ? "lg:border-b-0 lg:border-r"
-                  : "lg:border-b-0")
+                  ? "md:border-b-0 md:border-r"
+                  : "md:border-b-0")
               }
             >
               <h3
@@ -223,7 +212,7 @@ export default function AboutPage() {
             fontSize: "clamp(16px, 2vw, 20px)",
           }}
         >
-          &ldquo;Улаанбаатарт хамтдаа.&rdquo;
+          &quot;Улаанбаатарт хамтдаа.&quot;
         </blockquote>
       </section>
     </main>

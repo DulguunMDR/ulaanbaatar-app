@@ -1,4 +1,3 @@
-// components/Footer.tsx
 import Link from "next/link";
 
 export default function Footer() {
@@ -8,37 +7,7 @@ export default function Footer() {
     <footer className="border-t border-gray-100 py-12 bg-white">
       <div className="max-w-7xl mx-auto px-8 md:px-14">
         {/* Link columns */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
-          {/* City */}
-          <div>
-            <p
-              className="text-gray-300 uppercase mb-4"
-              style={{ fontSize: "9px", letterSpacing: "0.14em" }}
-            >
-              Хот · City
-            </p>
-            <ul className="space-y-2.5">
-              <li>
-                <Link
-                  href="/sacred"
-                  className="text-gray-500 hover:text-gray-900 transition-colors"
-                  style={{ fontSize: "13px" }}
-                >
-                  Ариун хот
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/museums"
-                  className="text-gray-500 hover:text-gray-900 transition-colors"
-                  style={{ fontSize: "13px" }}
-                >
-                  Музей · Галерей
-                </Link>
-              </li>
-            </ul>
-          </div>
-
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mb-10">
           {/* Data */}
           <div>
             <p
